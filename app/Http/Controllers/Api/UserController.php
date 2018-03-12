@@ -36,8 +36,7 @@ class UserController extends Controller
         ]);
 
         if ($valid->fails()) {
-            $jsonError = response()->json($valid->errors()->all(), 400);
-            return response()->json($jsonError);
+            return response()->json($valid->errors()->all(), 400);
         }
 
         $data = request()->only('email', 'name', 'password');
@@ -71,20 +70,24 @@ class UserController extends Controller
 
         $valid = validator(request()->only('email', 'name', 'password'), [
             'name' => 'string|max:255',
-            'email' => 'string|email|max:255|unique:users,id,' . $user->id,
+            'email' => 'string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'string|min:6',
         ]);
 
         if ($valid->fails()) {
-            $jsonError = response()->json($valid->errors()->all(), 400);
-            return response()->json($jsonError);
+            return response()->json($valid->errors()->all(), 400);
         }
 
         $data = request()->only('email', 'name', 'password');
 
-        foreach ($data as $key => $value) {
-            $user->$key = $value;
-        }
+        if (isset($data['email']))
+            $user->email = $data['email'];
+
+        if (isset($data['name']))
+            $user->name = $data['name'];
+
+        if (isset($data['password']))
+            $user->password = bcrypt($data['password']);
 
         $user->save();
 
@@ -102,6 +105,6 @@ class UserController extends Controller
 
         $user->delete();
 
-        return response('', 200);
+        return response()->json(['User deleted.'], 200);
     }
 }
