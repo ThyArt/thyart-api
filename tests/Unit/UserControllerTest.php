@@ -50,7 +50,7 @@ class UserControllerTest extends TestCase
 
     public function testIndex()
     {
-        $secondUser = factory(User::class)->create(['name' => 'test', 'email' => "testing@example.com"]);
+        $secondUser = factory(User::class)->create();
 
         $this->json(
             'GET',
@@ -83,11 +83,11 @@ class UserControllerTest extends TestCase
 
     public function testIndexSearchByName()
     {
-        $secondUser = factory(User::class)->create(['name' => 'test', 'email' => "testing@example.com"]);
+        $secondUser = factory(User::class)->create();
         $this->json(
             'GET',
-            '/api/user?name='.$secondUser->name,
-            [],
+            '/api/user',
+            ['name' => $secondUser->name],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
@@ -100,11 +100,10 @@ class UserControllerTest extends TestCase
 
     public function testIndexSearchByNameUnValid()
     {
-        $secondUser = factory(User::class)->create(['name' => 'test', 'email' => "testing@example.com"]);
         $this->json(
             'GET',
-            '/api/user?name='.$secondUser->name.'iehohfeohdosho',
-            [],
+            '/api/user',
+            ['name' => 'Wrong Name'],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
@@ -115,11 +114,11 @@ class UserControllerTest extends TestCase
 
     public function testIndexSearchByEmail()
     {
-        $secondUser = factory(User::class)->create(['name' => 'test', 'email' => "testing@example.com"]);
+        $secondUser = factory(User::class)->create();
         $this->json(
             'GET',
-            '/api/user?email='.$secondUser->email,
-            [],
+            '/api/user',
+            ['email' => $secondUser->email],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
@@ -132,11 +131,11 @@ class UserControllerTest extends TestCase
 
     public function testIndexSearchByEmailUnValid()
     {
-        $secondUser = factory(User::class)->create(['name' => 'test', 'email' => "testing@example.com"]);
+        $secondUser = factory(User::class)->create();
         $this->json(
             'GET',
-            '/api/user?email='.$secondUser->name.'iehohfeohdosho',
-            [],
+            '/api/user',
+            ['email' => 'wrong.email@example.com'],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
@@ -147,11 +146,11 @@ class UserControllerTest extends TestCase
 
     public function testIndexSearchByAll()
     {
-        $secondUser = factory(User::class)->create(['name' => 'test', 'email' => "testing@example.com"]);
+        $secondUser = factory(User::class)->create();
         $this->json(
             'GET',
-            '/api/user?all='.$secondUser->name,
-            [],
+            '/api/user',
+            ['all' => $secondUser->name],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
@@ -164,11 +163,11 @@ class UserControllerTest extends TestCase
 
     public function testIndexSearchByAllUnValid()
     {
-        $secondUser = factory(User::class)->create(['name' => 'test', 'email' => "testing@example.com"]);
+        $secondUser = factory(User::class)->create();
         $this->json(
             'GET',
-            '/api/user?all='.$secondUser->name.'iehofhiphafhcpzfjpsahchffopihefohphfeohdosho',
-            [],
+            '/api/user',
+            ['all' => 'Wrong all'],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
@@ -179,21 +178,22 @@ class UserControllerTest extends TestCase
 
     public function testIndexSearchByMultipleFields()
     {
-        $secondUser = factory(User::class)->create(['name' => 'test', 'email' => "testing@example.com"]);
-        $thirdUser = factory(User::class)->create(['name' => 'Jean']);
-
+        $secondUser = factory(User::class)->create();
         $this->json(
             'GET',
-            '/api/user?all='.$secondUser->name.'&name='.$thirdUser->name,
-            [],
+            '/api/user',
+            [
+                'all' => $secondUser->name,
+                'name' => $this->user->name
+            ],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
             ])
             ->assertJson([
-                $secondUser->toArray(),
-                $thirdUser->toArray()
+                $this->user->toArray(),
+                $secondUser->toArray()
             ]);
     }
 

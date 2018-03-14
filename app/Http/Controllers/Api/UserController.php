@@ -20,8 +20,7 @@ class UserController extends Controller
     public function index()
     {
         $data = request()->only('name', 'email', 'all');
-        $user = User::query();
-        $user->when(isset($data['all']), function ($user) use ($data) {
+        $user = User::when(isset($data['all']), function ($user) use ($data) {
             return $user->where('name', 'like', '%'.$data['all'].'%')
                         ->orWhere('email', 'like', '%'.$data['all'].'%');
         })
