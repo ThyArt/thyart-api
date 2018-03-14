@@ -81,6 +81,122 @@ class UserControllerTest extends TestCase
             ->assertJson(['message' => 'Unauthenticated.']);
     }
 
+    public function testIndexSearchByName()
+    {
+        $secondUser = factory(User::class)->create();
+        $this->json(
+            'GET',
+            '/api/user',
+            ['name' => $secondUser->name],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])
+            ->assertJson([
+                $secondUser->toArray()
+            ]);
+    }
+
+    public function testIndexSearchByNameUnValid()
+    {
+        $this->json(
+            'GET',
+            '/api/user',
+            ['name' => 'Wrong Name'],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])
+            ->assertJson([]);
+    }
+
+    public function testIndexSearchByEmail()
+    {
+        $secondUser = factory(User::class)->create();
+        $this->json(
+            'GET',
+            '/api/user',
+            ['email' => $secondUser->email],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])
+            ->assertJson([
+                $secondUser->toArray()
+            ]);
+    }
+
+    public function testIndexSearchByEmailUnValid()
+    {
+        $secondUser = factory(User::class)->create();
+        $this->json(
+            'GET',
+            '/api/user',
+            ['email' => 'wrong.email@example.com'],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])
+            ->assertJson([]);
+    }
+
+    public function testIndexSearchByAll()
+    {
+        $secondUser = factory(User::class)->create();
+        $this->json(
+            'GET',
+            '/api/user',
+            ['all' => $secondUser->name],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])
+            ->assertJson([
+                $secondUser->toArray()
+            ]);
+    }
+
+    public function testIndexSearchByAllUnValid()
+    {
+        $secondUser = factory(User::class)->create();
+        $this->json(
+            'GET',
+            '/api/user',
+            ['all' => 'Wrong all'],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])
+            ->assertJson([]);
+    }
+
+    public function testIndexSearchByMultipleFields()
+    {
+        $secondUser = factory(User::class)->create();
+        $this->json(
+            'GET',
+            '/api/user',
+            [
+                'all' => $secondUser->name,
+                'name' => $this->user->name
+            ],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])
+            ->assertJson([
+                $this->user->toArray(),
+                $secondUser->toArray()
+            ]);
+    }
+
     public function testStoreWithNonExistentArguments()
     {
         $this->json(
