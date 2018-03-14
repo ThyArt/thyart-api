@@ -19,7 +19,19 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::all();
+        $data = request()->only('name', 'email', 'search');
+        $user = User::query();
+        $user->when((isset($data['name']) || isset($data['search'])), function ($user) use ($data) {
+            if (isset($data['search']))
+                return $user->where('name', 'like', '%' . $data['search'] . '%');
+            return $user->where('name', 'like', '%'.$data['name'].'%');
+        })
+            ->when((isset($data['email']) || isset($data['search'])), function ($user) use ($data) {
+                if (isset($data['search']))
+                    return $user->orWhere('email', 'like', '%' . $data['search'] . '%');
+            return $user->orWhere('email', 'like', '%' . $data['email'] . '%');
+        });
+        return $user->get();
     }
 
     /**

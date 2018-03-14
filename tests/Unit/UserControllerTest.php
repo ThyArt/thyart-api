@@ -81,6 +81,20 @@ class UserControllerTest extends TestCase
             ->assertJson(['message' => 'Unauthenticated.']);
     }
 
+    /*public function testIndexSearchByValidName()
+    {
+        $this->json(
+            'GET',
+            '/api/user',
+            [],
+            [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])
+            ->assertStatus(401)
+            ->assertJson(['message' => 'Unauthenticated.']);
+    }*/
+
     public function testStoreWithNonExistentArguments()
     {
         $this->json(
