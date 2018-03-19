@@ -6,6 +6,7 @@ use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Passport\ClientRepository;
 use Tests\TestCase;
+
 class UserControllerTest extends TestCase
 {
     protected $user;
@@ -61,9 +62,19 @@ class UserControllerTest extends TestCase
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
             ]
-        )->assertJson([
-            $this->user->toArray(),
-            $secondUser->toArray()
+        )->assertJsonFragment([
+            'data' => [
+                [
+                    'id' => $this->user->id,
+                    'name' => $this->user->name,
+                    'email' => $this->user->email,
+                ],
+                [
+                    'id' => $secondUser->id,
+                    'name' => $secondUser->name,
+                    'email' => $secondUser->email,
+                ]
+            ]
         ]);
     }
 
@@ -76,7 +87,8 @@ class UserControllerTest extends TestCase
             [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
-            ])
+            ]
+        )
             ->assertStatus(401)
             ->assertJson(['message' => 'Unauthenticated.']);
     }
@@ -92,9 +104,16 @@ class UserControllerTest extends TestCase
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
-            ])
+            ]
+        )
             ->assertJson([
-                $secondUser->toArray()
+                'data' => [
+                    [
+                        'id' => $secondUser->id,
+                        'name' => $secondUser->name,
+                        'email' => $secondUser->email,
+                    ]
+                ]
             ]);
     }
 
@@ -108,8 +127,9 @@ class UserControllerTest extends TestCase
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
-            ])
-            ->assertJson([]);
+            ]
+        )
+            ->assertJson(['data' => []]);
     }
 
     public function testIndexSearchByEmail()
@@ -123,15 +143,21 @@ class UserControllerTest extends TestCase
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
-            ])
+            ]
+        )
             ->assertJson([
-                $secondUser->toArray()
+                'data' => [
+                    [
+                        'id' => $secondUser->id,
+                        'name' => $secondUser->name,
+                        'email' => $secondUser->email,
+                    ]
+                ]
             ]);
     }
 
     public function testIndexSearchByEmailUnValid()
     {
-        $secondUser = factory(User::class)->create();
         $this->json(
             'GET',
             '/api/user',
@@ -140,8 +166,9 @@ class UserControllerTest extends TestCase
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
-            ])
-            ->assertJson([]);
+            ]
+        )
+            ->assertJson(['data' => []]);
     }
 
     public function testIndexSearchByAll()
@@ -155,15 +182,21 @@ class UserControllerTest extends TestCase
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
-            ])
+            ]
+        )
             ->assertJson([
-                $secondUser->toArray()
+                'data' => [
+                    [
+                        'id' => $secondUser->id,
+                        'name' => $secondUser->name,
+                        'email' => $secondUser->email,
+                    ]
+                ]
             ]);
     }
 
     public function testIndexSearchByAllUnValid()
     {
-        $secondUser = factory(User::class)->create();
         $this->json(
             'GET',
             '/api/user',
@@ -172,8 +205,9 @@ class UserControllerTest extends TestCase
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
-            ])
-            ->assertJson([]);
+            ]
+        )
+            ->assertJson(['data' => []]);
     }
 
     public function testIndexSearchByMultipleFields()
@@ -190,10 +224,21 @@ class UserControllerTest extends TestCase
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
-            ])
+            ]
+        )
             ->assertJson([
-                $this->user->toArray(),
-                $secondUser->toArray()
+                'data' => [
+                    [
+                        'id' => $this->user->id,
+                        'name' => $this->user->name,
+                        'email' => $this->user->email,
+                    ],
+                    [
+                        'id' => $secondUser->id,
+                        'name' => $secondUser->name,
+                        'email' => $secondUser->email,
+                    ]
+                ]
             ]);
     }
 
@@ -206,14 +251,16 @@ class UserControllerTest extends TestCase
             [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
-            ])
+            ]
+        )
             ->assertStatus(400)
             ->assertJson(
                 [
                     "The name field is required.",
                     "The email field is required.",
                     "The password field is required.",
-                ]);
+                ]
+            );
     }
 
     public function testStoreWithInvalidArguments()
@@ -229,14 +276,15 @@ class UserControllerTest extends TestCase
             [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
-            ])
+            ]
+        )
             ->assertStatus(400)
             ->assertJson([
-                    "The name may not be greater than 255 characters.",
-                    "The email must be a valid email address.",
-                    "The email may not be greater than 255 characters.",
-                    "The password must be at least 6 characters.",
-                ]);
+                "The name may not be greater than 255 characters.",
+                "The email must be a valid email address.",
+                "The email may not be greater than 255 characters.",
+                "The password must be at least 6 characters.",
+            ]);
     }
 
     public function testStoreWithExistingEmail()
@@ -252,7 +300,8 @@ class UserControllerTest extends TestCase
             [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
-            ])
+            ]
+        )
             ->assertStatus(400)
             ->assertJson([
                 "The email has already been taken.",
@@ -276,11 +325,14 @@ class UserControllerTest extends TestCase
             [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
-            ])
+            ]
+        )
             ->assertStatus(201)
-            ->assertJsonFragment([
-                "name" => $name,
-                "email" => $email,
+            ->assertJson([
+                "data" => [
+                    "name" => $name,
+                    "email" => $email,
+                ],
             ]);
 
         $this->assertDatabaseHas('users', ['name' => $name, 'email' => $email]);
@@ -296,9 +348,10 @@ class UserControllerTest extends TestCase
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $this->accessToken,
-            ])
+            ]
+        )
             ->assertStatus(404)
-            ->assertJsonFragment(['User not found.']);
+            ->assertJson(['User not found.']);
     }
 
     public function testShowWithValidId()
@@ -311,9 +364,16 @@ class UserControllerTest extends TestCase
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $this->accessToken,
-            ])
+            ]
+        )
             ->assertStatus(200)
-            ->assertJsonFragment($this->user->toArray());
+            ->assertJson([
+                'data' => [
+                    'id' => $this->user->id,
+                    'email' => $this->user->email,
+                    'name' => $this->user->name
+                ],
+            ]);
     }
 
     public function testShowUnauthenticated()
@@ -325,7 +385,8 @@ class UserControllerTest extends TestCase
             [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-            ])
+            ]
+        )
             ->assertStatus(401)
             ->assertJson(['message' => 'Unauthenticated.']);
     }
@@ -341,9 +402,16 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $this->accessToken,
 
-            ])
+            ]
+        )
             ->assertStatus(200)
-            ->assertJson($this->user->toArray());
+            ->assertJson([
+                'data' => [
+                    'id' => $this->user->id,
+                    'email' => $this->user->email,
+                    'name' => $this->user->name
+                ],
+            ]);
     }
 
     public function testUpdateWithInvalidArguments()
@@ -360,7 +428,8 @@ class UserControllerTest extends TestCase
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $this->accessToken,
-            ])
+            ]
+        )
             ->assertStatus(400)
             ->assertJson([
                 "The name may not be greater than 255 characters.",
@@ -384,7 +453,8 @@ class UserControllerTest extends TestCase
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $this->accessToken
-            ])
+            ]
+        )
             ->assertStatus(400)
             ->assertJson([
                 "The email has already been taken.",
@@ -409,12 +479,15 @@ class UserControllerTest extends TestCase
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $this->accessToken
-            ])
+            ]
+        )
             ->assertStatus(200)
-            ->assertJsonFragment([
-                'name' => $name,
-                'email' => $email,
-                'id' => $this->user->id,
+            ->assertJson([
+                'data' => [
+                    'name' => $name,
+                    'email' => $email,
+                    'id' => $this->user->id,
+                ]
             ]);
 
         $this->assertDatabaseHas('users', ['name' => $name, 'email' => $email]);
@@ -437,7 +510,8 @@ class UserControllerTest extends TestCase
             [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-            ])
+            ]
+        )
             ->assertStatus(401)
             ->assertJson(['message' => 'Unauthenticated.']);
     }
@@ -452,10 +526,11 @@ class UserControllerTest extends TestCase
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $this->accessToken
-            ])
+            ]
+        )
             ->assertStatus(200)
             ->assertJson([
-                "User deleted.",
+                'message' => 'User deleted.',
             ]);
     }
 
@@ -468,7 +543,8 @@ class UserControllerTest extends TestCase
             [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-            ])
+            ]
+        )
             ->assertStatus(401)
             ->assertJson(['message' => 'Unauthenticated.']);
     }
