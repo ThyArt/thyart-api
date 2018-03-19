@@ -351,7 +351,7 @@ class UserControllerTest extends TestCase
             ]
         )
             ->assertStatus(404)
-            ->assertJson(['User not found.']);
+            ->assertJson(['message' => 'User not found.']);
     }
 
     public function testShowWithValidId()
