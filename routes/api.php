@@ -28,3 +28,8 @@ Route::middleware('auth:api')->prefix('artist')->group(function () {
     Route::patch('/{artist}', 'Api\ArtistController@update');
     Route::delete('/{artist}', 'Api\ArtistController@destroy');
 });
+Route::post('customer', 'Api\CustomerController@store');
+Route::get('customer', 'Api\CustomerController@index');
+Route::get('customer/{customer}', 'Api\CustomerController@show');
+Route::patch('customer', 'Api\CustomerController@update');
+Route::delete('customer', 'Api\CustomerController@destroy');
