@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\UserResource;
 use App\User;
 use Illuminate\Routing\Controller;
 
@@ -9,100 +10,121 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api')->except('store');
+        $this->middleware('auth:api')->except(['store']);
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return User[]|\Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index()
     {
-        $data = request()->only('name', 'email', 'all');
-        $user = User::when(isset($data['all']), function ($user) use ($data) {
-            return $user->where('name', 'like', '%'.$data['all'].'%')
-                        ->orWhere('email', 'like', '%'.$data['all'].'%');
-        })
-            ->when(isset($data['name']), function ($user) use ($data) {
-            return $user->orWhere('name', 'like', '%'.$data['name'].'%');
-        })
-            ->when(isset($data['email']), function ($user) use ($data) {
-            return $user->orWhere('email', 'like', '%' . $data['email'] . '%');
-        });
-        return $user->get();
-    }
+        $data = request(['name', 'email', 'all', 'per_page']);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @return User|\Illuminate\Database\Eloquent\Model
-     */
-    public function store()
-    {
-        $valid = validator(request()->only('email', 'name', 'password'), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
+        $valid = validator($data, ['per_page' => 'integer']);
 
         if ($valid->fails()) {
             return response()->json($valid->errors()->all(), 400);
         }
 
-        $data = request()->only('email', 'name', 'password');
+        $user = User::when(isset($data['all']), function ($user) use ($data) {
+            return $user->where('name', 'like', '%'.$data['all'].'%')
+                ->orWhere('email', 'like', '%'.$data['all'].'%');
+        })
+            ->when(isset($data['name']), function ($user) use ($data) {
+                return $user->orWhere('name', 'like', '%'.$data['name'].'%');
+            })
+            ->when(isset($data['email']), function ($user) use ($data) {
+                return $user->orWhere('email', 'like', '%' . $data['email'] . '%');
+            });
 
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-        ]);
+        $per_page = 25;
+        if (isset($data['per_page'])) {
+            $per_page = min(1000, $data['per_page']);
+        }
+        return UserResource::collection($user->paginate($per_page));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return UserResource
+     */
+    public function store()
+    {
+        $data = request(['email', 'name', 'password']);
+        $valid = validator(
+            $data,
+            [
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:6',
+            ]
+        );
+
+        if ($valid->fails()) {
+            return response()->json($valid->errors()->all(), 400);
+        }
+
+        return new UserResource(User::create(
+            [
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => bcrypt($data['password']),
+            ]
+        ));
     }
 
     /**
      * Display the specified resource.
      *
      * @param  \App\User  $user
-     * @return User
+     * @return UserResource
      */
     public function show(User $user)
     {
-        return $user;
+        return new UserResource($user);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @return User
+     * @return UserResource
      */
     public function update()
     {
         $user = request()->user();
+        $data = request(['email', 'name', 'password']);
 
-        $valid = validator(request()->only('email', 'name', 'password'), [
-            'name' => 'string|max:255',
-            'email' => 'string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'string|min:6',
-        ]);
+        $valid = validator(
+            $data,
+            [
+                'name' => 'string|max:255',
+                'email' => 'string|email|max:255|unique:users,email,' . $user->id,
+                'password' => 'string|min:6',
+            ]
+        );
 
         if ($valid->fails()) {
             return response()->json($valid->errors()->all(), 400);
         }
 
-        $data = request()->only('email', 'name', 'password');
-
-        if (isset($data['email']))
+        if (isset($data['email'])) {
             $user->email = $data['email'];
+        }
 
-        if (isset($data['name']))
+        if (isset($data['name'])) {
             $user->name = $data['name'];
+        }
 
-        if (isset($data['password']))
+        if (isset($data['password'])) {
             $user->password = bcrypt($data['password']);
+        }
 
         $user->save();
 
-        return $user;
+        return new UserResource($user->refresh());
     }
 
     /**
@@ -116,6 +138,6 @@ class UserController extends Controller
 
         $user->delete();
 
-        return response()->json(['User deleted.'], 200);
+        return response()->json(['message' => 'User deleted.'], 200);
     }
 }

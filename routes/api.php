@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,12 +13,10 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post('user', 'Api\UserController@store');
-
-Route::get('user', 'Api\UserController@index');
-
-Route::get('user/{user}', 'Api\UserController@show');
-
-Route::patch('user', 'Api\UserController@update');
-
-Route::delete('user', 'Api\UserController@destroy');
+Route::prefix('user')->group(function () {
+    Route::post('', 'Api\UserController@store');
+    Route::get('', 'Api\UserController@index');
+    Route::get('/{user}', 'Api\UserController@show');
+    Route::patch('', 'Api\UserController@update');
+    Route::delete('', 'Api\UserController@destroy');
+});
