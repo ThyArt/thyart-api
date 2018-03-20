@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Resources\UserResource;
 use App\User;
 use Illuminate\Routing\Controller;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -14,7 +15,7 @@ class UserController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of the users.
      *
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
@@ -23,9 +24,8 @@ class UserController extends Controller
         $data = request(['name', 'email', 'all', 'per_page']);
 
         $valid = validator($data, ['per_page' => 'integer']);
-
         if ($valid->fails()) {
-            return response()->json($valid->errors()->all(), 400);
+            throw new ValidationException($valid);
         }
 
         $user = User::when(isset($data['all']), function ($user) use ($data) {
@@ -47,7 +47,7 @@ class UserController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created user in storage.
      *
      * @return UserResource
      */
@@ -62,9 +62,8 @@ class UserController extends Controller
                 'password' => 'required|string|min:6',
             ]
         );
-
         if ($valid->fails()) {
-            return response()->json($valid->errors()->all(), 400);
+            throw new ValidationException($valid);
         }
 
         return new UserResource(User::create(
@@ -77,7 +76,7 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified user.
      *
      * @param  \App\User  $user
      * @return UserResource
@@ -88,7 +87,7 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified user in storage.
      *
      * @return UserResource
      */
@@ -105,9 +104,8 @@ class UserController extends Controller
                 'password' => 'string|min:6',
             ]
         );
-
         if ($valid->fails()) {
-            return response()->json($valid->errors()->all(), 400);
+            throw new ValidationException($valid);
         }
 
         if (isset($data['email'])) {
@@ -128,7 +126,7 @@ class UserController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified user from storage.
      *
      * @return \Illuminate\Http\Response
      */

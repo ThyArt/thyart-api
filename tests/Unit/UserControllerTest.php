@@ -49,6 +49,14 @@ class UserControllerTest extends TestCase
         )->json()['access_token'];
     }
 
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        $this->user = null;
+        $this->accessToken = null;
+    }
+
     public function testIndex()
     {
         $secondUser = factory(User::class)->create();
@@ -62,20 +70,22 @@ class UserControllerTest extends TestCase
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
             ]
-        )->assertJsonFragment([
-            'data' => [
-                [
-                    'id' => $this->user->id,
-                    'name' => $this->user->name,
-                    'email' => $this->user->email,
-                ],
-                [
-                    'id' => $secondUser->id,
-                    'name' => $secondUser->name,
-                    'email' => $secondUser->email,
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    [
+                        'id' => $this->user->id,
+                        'name' => $this->user->name,
+                        'email' => $this->user->email,
+                    ],
+                    [
+                        'id' => $secondUser->id,
+                        'name' => $secondUser->name,
+                        'email' => $secondUser->email,
+                    ]
                 ]
-            ]
-        ]);
+            ]);
     }
 
     public function testIndexUnAuthenticated()
@@ -106,6 +116,7 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'application/json'
             ]
         )
+            ->assertStatus(200)
             ->assertJson([
                 'data' => [
                     [
@@ -129,6 +140,7 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'application/json'
             ]
         )
+            ->assertStatus(200)
             ->assertJson(['data' => []]);
     }
 
@@ -145,6 +157,7 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'application/json'
             ]
         )
+            ->assertStatus(200)
             ->assertJson([
                 'data' => [
                     [
@@ -168,6 +181,7 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'application/json'
             ]
         )
+            ->assertStatus(200)
             ->assertJson(['data' => []]);
     }
 
@@ -184,6 +198,7 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'application/json'
             ]
         )
+            ->assertStatus(200)
             ->assertJson([
                 'data' => [
                     [
@@ -207,6 +222,7 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'application/json'
             ]
         )
+            ->assertStatus(200)
             ->assertJson(['data' => []]);
     }
 
@@ -226,6 +242,7 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'application/json'
             ]
         )
+            ->assertStatus(200)
             ->assertJson([
                 'data' => [
                     [
@@ -256,9 +273,12 @@ class UserControllerTest extends TestCase
             ->assertStatus(400)
             ->assertJson(
                 [
-                    "The name field is required.",
-                    "The email field is required.",
-                    "The password field is required.",
+                    "error" => "validation_failed",
+                    "messages" => [
+                        "The name field is required.",
+                        "The email field is required.",
+                        "The password field is required."
+                    ]
                 ]
             );
     }
@@ -280,10 +300,13 @@ class UserControllerTest extends TestCase
         )
             ->assertStatus(400)
             ->assertJson([
-                "The name may not be greater than 255 characters.",
-                "The email must be a valid email address.",
-                "The email may not be greater than 255 characters.",
-                "The password must be at least 6 characters.",
+                "error" => "validation_failed",
+                "messages" => [
+                    "The name may not be greater than 255 characters.",
+                    "The email must be a valid email address.",
+                    "The email may not be greater than 255 characters.",
+                    "The password must be at least 6 characters.",
+                ]
             ]);
     }
 
@@ -304,7 +327,10 @@ class UserControllerTest extends TestCase
         )
             ->assertStatus(400)
             ->assertJson([
-                "The email has already been taken.",
+                "error" => "validation_failed",
+                "messages" => [
+                    "The email has already been taken.",
+                ]
             ]);
     }
 
@@ -351,7 +377,10 @@ class UserControllerTest extends TestCase
             ]
         )
             ->assertStatus(404)
-            ->assertJson(['User not found.']);
+            ->assertJson([
+                'error' => 'model_not_found',
+                'message' => 'User with such parameters does not exists.'
+            ]);
     }
 
     public function testShowWithValidId()
@@ -432,10 +461,13 @@ class UserControllerTest extends TestCase
         )
             ->assertStatus(400)
             ->assertJson([
-                "The name may not be greater than 255 characters.",
-                "The email must be a valid email address.",
-                "The email may not be greater than 255 characters.",
-                "The password must be at least 6 characters.",
+                "error" => "validation_failed",
+                "messages" => [
+                    "The name may not be greater than 255 characters.",
+                    "The email must be a valid email address.",
+                    "The email may not be greater than 255 characters.",
+                    "The password must be at least 6 characters.",
+                ]
             ]);
     }
 
@@ -457,7 +489,10 @@ class UserControllerTest extends TestCase
         )
             ->assertStatus(400)
             ->assertJson([
-                "The email has already been taken.",
+                "error" => "validation_failed",
+                "messages" => [
+                    "The email has already been taken.",
+                ]
             ]);
     }
 

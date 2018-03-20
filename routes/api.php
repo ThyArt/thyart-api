@@ -20,3 +20,11 @@ Route::prefix('user')->group(function () {
     Route::patch('', 'Api\UserController@update');
     Route::delete('', 'Api\UserController@destroy');
 });
+
+Route::middleware('auth:api')->prefix('artist')->group(function () {
+    Route::post('', 'Api\ArtistController@store');
+    Route::get('', 'Api\ArtistController@index');
+    Route::get('/{artist}', 'Api\ArtistController@show');
+    Route::patch('/{artist}', 'Api\ArtistController@update');
+    Route::delete('/{artist}', 'Api\ArtistController@destroy');
+});

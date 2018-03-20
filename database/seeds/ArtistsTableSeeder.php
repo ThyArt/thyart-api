@@ -1,8 +1,10 @@
 <?php
 
+use App\Artist;
+use App\User;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+class ArtistsTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,9 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-         $this->call([
-             UsersTableSeeder::class,
-             ArtistsTableSeeder::class
-         ]);
+        factory(Artist::class, 500)->create();
     }
 }
