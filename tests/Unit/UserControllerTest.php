@@ -49,6 +49,14 @@ class UserControllerTest extends TestCase
         )->json()['access_token'];
     }
 
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        $this->user = null;
+        $this->accessToken = null;
+    }
+
     public function testIndex()
     {
         $secondUser = factory(User::class)->create();
@@ -62,7 +70,9 @@ class UserControllerTest extends TestCase
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
             ]
-        )->assertJsonFragment([
+        )
+            ->assertStatus(200)
+            ->assertJson([
             'data' => [
                 [
                     'id' => $this->user->id,
@@ -106,6 +116,7 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'application/json'
             ]
         )
+            ->assertStatus(200)
             ->assertJson([
                 'data' => [
                     [
@@ -129,6 +140,7 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'application/json'
             ]
         )
+            ->assertStatus(200)
             ->assertJson(['data' => []]);
     }
 
@@ -145,6 +157,7 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'application/json'
             ]
         )
+            ->assertStatus(200)
             ->assertJson([
                 'data' => [
                     [
@@ -168,6 +181,7 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'application/json'
             ]
         )
+            ->assertStatus(200)
             ->assertJson(['data' => []]);
     }
 
@@ -184,6 +198,7 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'application/json'
             ]
         )
+            ->assertStatus(200)
             ->assertJson([
                 'data' => [
                     [
@@ -207,6 +222,7 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'application/json'
             ]
         )
+            ->assertStatus(200)
             ->assertJson(['data' => []]);
     }
 
@@ -226,6 +242,7 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'application/json'
             ]
         )
+            ->assertStatus(200)
             ->assertJson([
                 'data' => [
                     [

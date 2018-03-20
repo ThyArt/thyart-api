@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Artist extends Model
 {
-    protected $fillable = ['firstname', 'lastname', 'email', 'phone', 'address', 'city', 'country', 'user_id', /*todo remove*/];
+    protected $fillable = ['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'country'];
     public function user()
     {
         return $this->belongsTo(User::class);
