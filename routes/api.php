@@ -21,7 +21,7 @@ Route::prefix('user')->group(function () {
     Route::delete('', 'Api\UserController@destroy');
 });
 
-Route::prefix('artist')->group(function () {
+Route::middleware('auth:api')->prefix('artist')->group(function () {
     Route::post('', 'Api\ArtistController@store');
     Route::get('', 'Api\ArtistController@index');
     Route::get('/{artist}', 'Api\ArtistController@show');

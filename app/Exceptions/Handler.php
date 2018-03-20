@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\UnauthorizedException;
 
 class Handler extends ExceptionHandler
 {
@@ -51,7 +52,16 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         if ($exception instanceof ModelNotFoundException) {
-            return response()->json(['message' => (new \ReflectionClass($exception->getModel()))->getShortName() . ' not found.'], 404);
+            return response()->json([
+                'error' => 'model_not_found',
+                'message' => (new \ReflectionClass($exception->getModel()))->getShortName() . ' with such parameters does not exists.'
+            ], 404);
+        }
+        if ($exception instanceof UnauthorizedException) {
+            return response()->json([
+                'error' => 'unauthorized',
+                'message' => $exception->getMessage()
+            ], 403);
         }
 
         return parent::render($request, $exception);

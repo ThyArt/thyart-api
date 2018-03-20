@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Artist;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ArtistResource;
+use Illuminate\Validation\UnauthorizedException;
 
 class ArtistController extends Controller
 {
@@ -18,8 +19,8 @@ class ArtistController extends Controller
             return response()->json($valid->errors()->all(), 400);
         }
 
-        $artists = Artist
-            ::when(isset($data['firstname']), function ($customer) use ($data) {
+        $artists = request()->user()->artists()
+            ->when(isset($data['firstname']), function ($customer) use ($data) {
                 return $customer->where('firstname', 'like', '%' . $data['firstname'] . '%');
             })
             ->when(isset($data['lastname']), function ($customer) use ($data) {
@@ -66,8 +67,7 @@ class ArtistController extends Controller
             return response()->json($valid->errors()->all(), 400);
         }
 
-        return new ArtistResource(Artist::create([
-            'user_id' => 1,
+        return new ArtistResource(request()->user()->artists()->create([
             'firstname' => $data['firstname'],
             'lastname' => $data['lastname'],
             'email' => $data['email'],
@@ -80,11 +80,18 @@ class ArtistController extends Controller
 
     public function show(Artist $artist)
     {
+        if ($artist->user !== request()->user) {
+            throw new UnauthorizedException('The current user does not own this artist.');
+        }
         return new ArtistResource($artist);
     }
 
     public function update(Artist $artist)
     {
+        if ($artist->user !== request()->user) {
+            throw new UnauthorizedException('The current user does not own this artist.');
+        }
+
         $data = request(['firstname', 'lastname', 'email', 'phone', 'address', 'city', 'country']);
 
         $valid = validator($data, [
@@ -108,6 +115,10 @@ class ArtistController extends Controller
 
     public function destroy(Artist $artist)
     {
+        if (!$artist->user === request()->user) {
+            throw new UnauthorizedException('The current user does not own this artist.');
+        }
+
         $artist->delete();
 
         return response()->json(['message' => 'Artist deleted.'], 200);
