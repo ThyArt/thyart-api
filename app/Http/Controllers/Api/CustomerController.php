@@ -5,22 +5,31 @@ namespace App\Http\Controllers\Api;
 use App\Customer;
 use Illuminate\Routing\Controller;
 use App\Http\Resources\CustomerResource;
+use Illuminate\Validation\UnauthorizedException;
+use Illuminate\Validation\ValidationException;
 
 class CustomerController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api')->except(['store']);
-    }
-
+    /**
+     * Display a listing of the customers.
+     *
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
     public function index()
     {
-        $data = request(['email', 'phone', 'firstname', 'lastname', 'per_page', 'country', 'city', 'address']);
-        $customer = request()->user()->customers()->when(isset($data['firstname']), function ($customer) use ($data) {
-                return $customer->where('firstname', 'like', '%' . $data['firstname'] . '%');
-            })
-            ->when(isset($data['lastname']), function ($customer) use ($data) {
-                return $customer->where('lastname', 'like', '%' . $data['lastname'] . '%');
+        $data = request(['email', 'phone', 'first_name', 'last_name', 'per_page', 'country', 'city', 'address']);
+
+        $valid = validator($data, ['per_page' => 'integer']);
+
+        if ($valid->fails()) {
+            throw new ValidationException($valid);
+        }
+
+        $customer = request()->user()->customers()->when(isset($data['first_name']), function ($customer) use ($data) {
+            return $customer->where('first_name', 'like', '%' . $data['first_name'] . '%');
+        })
+            ->when(isset($data['last_name']), function ($customer) use ($data) {
+                return $customer->where('last_name', 'like', '%' . $data['last_name'] . '%');
             })
             ->when(isset($data['email']), function ($customer) use ($data) {
                 return $customer->where('email', 'like', '%' . $data['email'] . '%');
@@ -29,7 +38,7 @@ class CustomerController extends Controller
                 return $customer->where('phone', 'like', '%' . $data['phone'] . '%');
             })
             ->when(isset($data['address']), function ($customer) use ($data) {
-                return $customer->where('address', 'like', '%' . $data['country'] . '%');
+                return $customer->where('address', 'like', '%' . $data['address'] . '%');
             })
             ->when(isset($data['country']), function ($customer) use ($data) {
                 return $customer->where('country', 'like', '%' . $data['country'] . '%');
@@ -40,101 +49,102 @@ class CustomerController extends Controller
 
         $per_page = 25;
         if (isset($data['per_page'])) {
-            $per_page = min(1000, $data['per_page']);
+            $per_page = min(1000, intval($data['per_page']));
         }
+
         return CustomerResource::collection($customer->paginate($per_page));
     }
 
+    /**
+     * Store a newly created customer in storage.
+     *
+     * @return CustomerResource
+     */
     public function store()
     {
-        $data = request(['email', 'firstname', 'lastname', 'phone', 'country', 'city']);
+        $data = request(['email', 'first_name', 'last_name', 'phone', 'country', 'city', 'address']);
+
         $valid = validator(
             $data,
             [
-                'firstname' => 'required|string|max:255',
-                'lastnamename' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255',
-                'phone' => 'phone',
-                'address' => 'string|max:255',
-                'country' => 'string|max:255',
-                'city' => 'string|max:255',
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'email' => 'required|email|string|max:255',
+                'phone' => 'required|phone:FR',
+                'address' => 'required|string|max:255',
+                'city' => 'required|string|max:255',
+                'country' => 'required|string|max:255',
             ]
         );
 
         if ($valid->fails()) {
-            return response()->json($valid->errors()->all(), 400);
+            throw new ValidationException($valid);
         }
 
-        return new CustomerResource(Customer::create(
-            [
-                'user_id' => request()->user()->id(),
-                'firstname' => $data['firstname'],
-                'lastname' => $data['lastname'],
-                'email' => $data['email'],
-                'phone' => $data['phone'],
-                'address' => $data['address'],
-                'country' => $data['country'],
-                'city' => $data['city'],
-            ]
-        ));
+        return new CustomerResource(request()->user()->customers()->create($data));
+        ;
     }
 
+    /**
+     * Display the specified user.
+     *
+     * @param Customer $customer
+     *
+     * @return CustomerResource
+     */
     public function show(Customer $customer)
     {
-        if ($customer->user_id != request()->user()->id)
-            return response()->json(['message' => 'Customer not found.'], 404);
+        if ($customer->user_id != request()->user()->id) {
+            throw new UnauthorizedException('The current user does not own this customer.');
+        }
         return new CustomerResource($customer);
     }
 
+    /**
+     * Update the specified customer in storage.
+     *
+     * @param Customer $customer
+     * @return CustomerResource
+     */
     public function update(Customer $customer)
     {
-        $data = request(['email', 'firstname', 'lastname', 'phone', 'country', 'city']);
-        $valid = validator(
-            $data,
-            [
-                'firstname' => 'string|max:255',
-                'lastnamename' => 'string|max:255',
-                'email' => 'string|email|max:255',
-                'phone' => 'phone',
-                'address' => 'string|max:255',
-                'country' => 'string|max:255',
-                'city' => 'string|max:255',
-            ]
-        );
+        if ($customer->user_id !== request()->user()->id) {
+            throw new UnauthorizedException('The current user does not own this customer.');
+        }
+
+        $data = request(['email', 'first_name', 'last_name', 'phone', 'country', 'city', 'address']);
+
+        $valid = validator($data, [
+            'first_name' => 'string|max:255',
+            'last_name' => 'string|max:255',
+            'email' => 'string|email|max:255',
+            'phone' => 'phone:FR',
+            'address' => 'string|max:255',
+            'city' => 'string|max:255',
+            'country' => 'string|max:255',
+        ]);
 
         if ($valid->fails()) {
-            return response()->json($valid->errors()->all(), 400);
+            throw new ValidationException($valid);
         }
 
-        if (isset($data['firstname'])) {
-            $customer->firstname = $data['firstname'];
-        }
-        if (isset($data['lastname'])) {
-            $customer->lastname = $data['lastname'];
-        }
-        if (isset($data['email'])) {
-            $customer->email = $data['email'];
-        }
-        if (isset($data['phone'])) {
-            $customer->phone = $data['phone'];
-        }
-        if (isset($data['address'])) {
-            $customer->address = $data['address'];
-        }
-        if (isset($data['country'])) {
-            $customer->country = $data['country'];
-        }
-        if (isset($data['address'])) {
-            $customer->city = $data['city'];
-        }
-
-        $customer->save();
+        $customer->update($data);
 
         return new CustomerResource($customer->refresh());
     }
 
+    /**
+     * Remove the specified customer from storage.
+     *
+     * @param Customer $customer
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(Customer $customer)
     {
+        if ($customer->user_id != request()->user()->id) {
+            throw new UnauthorizedException('The current user does not own this customer.');
+        }
+
         $customer->delete();
 
         return response()->json(['message' => 'Customer deleted.'], 200);

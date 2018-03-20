@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
  * App\Customer
  *
  * @property int $id
- * @property string $firstname
- * @property string $lastname
+ * @property string $first_name
+ * @property string $last_name
  * @property string $phone
  * @property string $email
  * @property \Carbon\Carbon|null $created_at
@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
 class Customer extends Model
 {
     protected $fillable = [
-        'firstname', 'lastname', 'phone', 'email', 'address', 'country', 'city'
+        'first_name', 'last_name', 'phone', 'email', 'address', 'country', 'city'
     ];
 
     protected $hidden = [
