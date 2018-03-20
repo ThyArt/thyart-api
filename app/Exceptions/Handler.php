@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\UnauthorizedException;
+use Illuminate\Validation\ValidationException;
 
 class Handler extends ExceptionHandler
 {
@@ -56,12 +57,16 @@ class Handler extends ExceptionHandler
                 'error' => 'model_not_found',
                 'message' => (new \ReflectionClass($exception->getModel()))->getShortName() . ' with such parameters does not exists.'
             ], 404);
-        }
-        if ($exception instanceof UnauthorizedException) {
+        } elseif ($exception instanceof UnauthorizedException) {
             return response()->json([
                 'error' => 'unauthorized',
                 'message' => $exception->getMessage()
             ], 403);
+        } elseif ($exception instanceof ValidationException) {
+            return response()->json([
+                'error' => 'validation_failed',
+                'messages' => $exception->validator->errors()->all()
+            ], 400);
         }
 
         return parent::render($request, $exception);

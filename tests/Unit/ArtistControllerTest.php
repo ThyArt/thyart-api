@@ -503,13 +503,16 @@ class ArtistControllerTest extends TestCase
             ->assertStatus(400)
             ->assertJson(
                 [
-                    "The first name field is required.",
-                    "The last name field is required.",
-                    "The email field is required.",
-                    "The phone field is required.",
-                    "The address field is required.",
-                    "The city field is required.",
-                    "The country field is required.",
+                    "error" => "validation_failed",
+                    "messages" => [
+                        "The first name field is required.",
+                        "The last name field is required.",
+                        "The email field is required.",
+                        "The phone field is required.",
+                        "The address field is required.",
+                        "The city field is required.",
+                        "The country field is required.",
+                    ]
                 ]
 
             );
@@ -537,14 +540,17 @@ class ArtistControllerTest extends TestCase
         )
             ->assertStatus(400)
             ->assertJson([
-                "The first name may not be greater than 255 characters.",
-                "The last name may not be greater than 255 characters.",
-                "The email must be a valid email address.",
-                "The email may not be greater than 255 characters.",
-                "The phone field contains an invalid number.",
-                "The address may not be greater than 255 characters.",
-                "The city may not be greater than 255 characters.",
-                "The country may not be greater than 255 characters."
+                "error" => "validation_failed",
+                "messages" => [
+                    "The first name may not be greater than 255 characters.",
+                    "The last name may not be greater than 255 characters.",
+                    "The email must be a valid email address.",
+                    "The email may not be greater than 255 characters.",
+                    "The phone field contains an invalid number.",
+                    "The address may not be greater than 255 characters.",
+                    "The city may not be greater than 255 characters.",
+                    "The country may not be greater than 255 characters."
+                ]
             ]);
     }
 
@@ -747,14 +753,17 @@ class ArtistControllerTest extends TestCase
         )
             ->assertStatus(400)
             ->assertJson([
-                "The first name may not be greater than 255 characters.",
-                "The last name may not be greater than 255 characters.",
-                "The email must be a valid email address.",
-                "The email may not be greater than 255 characters.",
-                "The phone field contains an invalid number.",
-                "The address may not be greater than 255 characters.",
-                "The city may not be greater than 255 characters.",
-                "The country may not be greater than 255 characters."
+                "error" => "validation_failed",
+                "messages" => [
+                    "The first name may not be greater than 255 characters.",
+                    "The last name may not be greater than 255 characters.",
+                    "The email must be a valid email address.",
+                    "The email may not be greater than 255 characters.",
+                    "The phone field contains an invalid number.",
+                    "The address may not be greater than 255 characters.",
+                    "The city may not be greater than 255 characters.",
+                    "The country may not be greater than 255 characters."
+                ]
             ]);
     }
 

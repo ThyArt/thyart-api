@@ -6,9 +6,15 @@ use App\Artist;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ArtistResource;
 use Illuminate\Validation\UnauthorizedException;
+use Illuminate\Validation\ValidationException;
 
 class ArtistController extends Controller
 {
+    /**
+     * Display a listing of the users.
+     *
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
     public function index()
     {
         $data = request(['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'country', 'per_page']);
@@ -16,7 +22,7 @@ class ArtistController extends Controller
         $valid = validator($data, ['per_page' => 'integer']);
 
         if ($valid->fails()) {
-            return response()->json($valid->errors()->all(), 400);
+            throw new ValidationException($valid);
         }
 
         $artists = request()->user()->artists()
@@ -49,6 +55,11 @@ class ArtistController extends Controller
         return ArtistResource::collection($artists->paginate($per_page));
     }
 
+    /**
+     * Store a newly created user in storage.
+     *
+     * @return ArtistResource
+     */
     public function store()
     {
         $data = request(['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'country']);
@@ -64,12 +75,19 @@ class ArtistController extends Controller
         ]);
 
         if ($valid->fails()) {
-            return response()->json($valid->errors()->all(), 400);
+            throw new ValidationException($valid);
         }
 
         return new ArtistResource(request()->user()->artists()->create($data));
     }
 
+    /**
+     * Display the specified user.
+     *
+     * @param Artist $artise
+     *
+     * @return ArtistResource
+     */
     public function show(Artist $artist)
     {
         if ($artist->user->id !== request()->user()->id) {
@@ -78,6 +96,12 @@ class ArtistController extends Controller
         return new ArtistResource($artist);
     }
 
+    /**
+     * Update the specified user in storage.
+     *
+     * @param Artist $artist
+     * @return ArtistResource
+     */
     public function update(Artist $artist)
     {
         if ($artist->user->id !== request()->user()->id) {
@@ -97,7 +121,7 @@ class ArtistController extends Controller
         ]);
 
         if ($valid->fails()) {
-            return response()->json($valid->errors()->all(), 400);
+            throw new ValidationException($valid);
         }
 
         $artist->update($data);
@@ -105,6 +129,12 @@ class ArtistController extends Controller
         return new ArtistResource($artist->refresh());
     }
 
+    /**
+     * Remove the specified user from storage.
+     *
+     * @param Artist $artist
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(Artist $artist)
     {
         if ($artist->user->id !== request()->user()->id) {
