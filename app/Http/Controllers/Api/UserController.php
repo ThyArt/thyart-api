@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Requests\User\UserIndex;
-use App\Http\Requests\User\UserStore;
-use App\Http\Requests\User\UserUpdate;
+use App\Http\Requests\User\UserIndexRequest;
+use App\Http\Requests\User\UserStoreRequest;
+use App\Http\Requests\User\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\User;
 use Illuminate\Routing\Controller;
@@ -20,16 +20,16 @@ class UserController extends Controller
     /**
      * Display a listing of the users.
      *
-     * @param UserIndex $request
+     * @param UserIndexRequest $request
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index(UserIndex $request)
+    public function index(UserIndexRequest $request)
     {
         $data = $request->only(['name', 'email', 'per_page']);
 
         $user = User
             ::when(isset($data['name']), function ($user) use ($data) {
-                return $user->orWhere('name', 'like', '%'.$data['name'].'%');
+                return $user->orWhere('name', 'like', '%'. $data['name'] . '%');
             })
             ->when(isset($data['email']), function ($user) use ($data) {
                 return $user->orWhere('email', 'like', '%' . $data['email'] . '%');
@@ -45,10 +45,10 @@ class UserController extends Controller
     /**
      * Store a newly created user in storage.
      *
-     * @param UserStore $request
+     * @param UserStoreRequest $request
      * @return UserResource
      */
-    public function store(UserStore $request)
+    public function store(UserStoreRequest $request)
     {
         return new UserResource(User::create($request->only(['email', 'name', 'password'])));
     }
@@ -67,11 +67,11 @@ class UserController extends Controller
     /**
      * Update the specified user in storage.
      *
-     * @param UserUpdate $request
+     * @param UserUpdateRequest $request
      * @return UserResource
      * @throws ValidationException
      */
-    public function update(UserUpdate $request)
+    public function update(UserUpdateRequest $request)
     {
         $user = $request->user();
         $data = $request->only(['email', 'name', 'password']);
