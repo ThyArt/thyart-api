@@ -185,47 +185,6 @@ class UserControllerTest extends TestCase
             ->assertJson(['data' => []]);
     }
 
-    public function testIndexSearchByAll()
-    {
-        $secondUser = factory(User::class)->create();
-        $this->json(
-            'GET',
-            '/api/user',
-            ['all' => $secondUser->name],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(200)
-            ->assertJson([
-                'data' => [
-                    [
-                        'id' => $secondUser->id,
-                        'name' => $secondUser->name,
-                        'email' => $secondUser->email,
-                    ]
-                ]
-            ]);
-    }
-
-    public function testIndexSearchByAllUnValid()
-    {
-        $this->json(
-            'GET',
-            '/api/user',
-            ['all' => 'Wrong all'],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(200)
-            ->assertJson(['data' => []]);
-    }
-
     public function testIndexSearchByMultipleFields()
     {
         $secondUser = factory(User::class)->create();
@@ -233,8 +192,8 @@ class UserControllerTest extends TestCase
             'GET',
             '/api/user',
             [
-                'all' => $secondUser->name,
-                'name' => $this->user->name
+                'name' => $this->user->name,
+                'email' => $secondUser->email
             ],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,

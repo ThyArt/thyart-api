@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\User\UserIndex;
+use App\Http\Requests\User\UserStore;
+use App\Http\Requests\User\UserUpdate;
 use App\Http\Resources\UserResource;
 use App\User;
 use Illuminate\Routing\Controller;
@@ -17,22 +20,15 @@ class UserController extends Controller
     /**
      * Display a listing of the users.
      *
+     * @param UserIndex $request
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index()
+    public function index(UserIndex $request)
     {
-        $data = request(['name', 'email', 'all', 'per_page']);
+        $data = $request->only(['name', 'email', 'per_page']);
 
-        $valid = validator($data, ['per_page' => 'integer']);
-        if ($valid->fails()) {
-            throw new ValidationException($valid);
-        }
-
-        $user = User::when(isset($data['all']), function ($user) use ($data) {
-            return $user->where('name', 'like', '%'.$data['all'].'%')
-                ->orWhere('email', 'like', '%'.$data['all'].'%');
-        })
-            ->when(isset($data['name']), function ($user) use ($data) {
+        $user = User
+            ::when(isset($data['name']), function ($user) use ($data) {
                 return $user->orWhere('name', 'like', '%'.$data['name'].'%');
             })
             ->when(isset($data['email']), function ($user) use ($data) {
@@ -49,30 +45,12 @@ class UserController extends Controller
     /**
      * Store a newly created user in storage.
      *
+     * @param UserStore $request
      * @return UserResource
      */
-    public function store()
+    public function store(UserStore $request)
     {
-        $data = request(['email', 'name', 'password']);
-        $valid = validator(
-            $data,
-            [
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:6',
-            ]
-        );
-        if ($valid->fails()) {
-            throw new ValidationException($valid);
-        }
-
-        return new UserResource(User::create(
-            [
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => bcrypt($data['password']),
-            ]
-        ));
+        return new UserResource(User::create($request->only(['email', 'name', 'password'])));
     }
 
     /**
@@ -89,24 +67,14 @@ class UserController extends Controller
     /**
      * Update the specified user in storage.
      *
+     * @param UserUpdate $request
      * @return UserResource
+     * @throws ValidationException
      */
-    public function update()
+    public function update(UserUpdate $request)
     {
-        $user = request()->user();
-        $data = request(['email', 'name', 'password']);
-
-        $valid = validator(
-            $data,
-            [
-                'name' => 'string|max:255',
-                'email' => 'string|email|max:255|unique:users,email,' . $user->id,
-                'password' => 'string|min:6',
-            ]
-        );
-        if ($valid->fails()) {
-            throw new ValidationException($valid);
-        }
+        $user = $request->user();
+        $data = $request->only(['email', 'name', 'password']);
 
         if (isset($data['email'])) {
             $user->email = $data['email'];
