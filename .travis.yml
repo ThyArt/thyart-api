@@ -1,0 +1,17 @@
+language: php
+
+php:
+  - 7.2
+
+before_script:
+  - cp .env.travis .env
+  - mysql -e 'CREATE DATABASE thyart_travis;'
+  - composer self-update
+  - composer install --no-interaction --dev
+  - composer dump-autoload
+
+script:
+  - php artisan key:generate
+  - php artisan migrate:refresh
+  - php artisan passport:keys
+  - vendor/bin/phpunit
