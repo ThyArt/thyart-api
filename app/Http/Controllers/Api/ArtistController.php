@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Artist;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Artist\ArtistIndexRequest;
+use App\Http\Requests\Artist\ArtistStoreRequest;
+use App\Http\Requests\Artist\ArtistUpdateRequest;
 use App\Http\Resources\ArtistResource;
 use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Validation\ValidationException;
@@ -13,19 +16,14 @@ class ArtistController extends Controller
     /**
      * Display a listing of the users.
      *
+     * @param ArtistIndexRequest $request
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index()
+    public function index(ArtistIndexRequest $request)
     {
-        $data = request(['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'country', 'per_page']);
+        $data = $request->only(['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'country', 'per_page']);
 
-        $valid = validator($data, ['per_page' => 'integer']);
-
-        if ($valid->fails()) {
-            throw new ValidationException($valid);
-        }
-
-        $artists = request()->user()->artists()
+        $artists = $request->user()->artists()
             ->when(isset($data['first_name']), function ($customer) use ($data) {
                 return $customer->where('first_name', 'like', '%' . $data['first_name'] . '%');
             })
@@ -58,33 +56,23 @@ class ArtistController extends Controller
     /**
      * Store a newly created user in storage.
      *
+     * @param ArtistStoreRequest $request
      * @return ArtistResource
      */
-    public function store()
+    public function store(ArtistStoreRequest $request)
     {
-        $data = request(['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'country']);
-
-        $valid = validator($data, [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|string|max:255',
-            'phone' => 'required|phone:FR',
-            'address' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'country' => 'required|string|max:255'
-        ]);
-
-        if ($valid->fails()) {
-            throw new ValidationException($valid);
-        }
-
-        return new ArtistResource(request()->user()->artists()->create($data));
+        return new ArtistResource(
+            $request
+                ->user()
+                ->artists()
+                ->create(request(['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'country']))
+        );
     }
 
     /**
      * Display the specified user.
      *
-     * @param Artist $artise
+     * @param Artist $artist
      *
      * @return ArtistResource
      */
@@ -99,32 +87,17 @@ class ArtistController extends Controller
     /**
      * Update the specified user in storage.
      *
+     * @param ArtistUpdateRequest $request
      * @param Artist $artist
      * @return ArtistResource
      */
-    public function update(Artist $artist)
+    public function update(ArtistUpdateRequest $request, Artist $artist)
     {
-        if ($artist->user->id !== request()->user()->id) {
+        if ($artist->user->id !== $request->user()->id) {
             throw new UnauthorizedException('The current user does not own this artist.');
         }
 
-        $data = request(['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'country']);
-
-        $valid = validator($data, [
-            'first_name' => 'string|max:255',
-            'last_name' => 'string|max:255',
-            'email' => 'string|email|max:255',
-            'phone' => 'phone:FR',
-            'address' => 'string|max:255',
-            'city' => 'string|max:255',
-            'country' => 'string|max:255'
-        ]);
-
-        if ($valid->fails()) {
-            throw new ValidationException($valid);
-        }
-
-        $artist->update($data);
+        $artist->update($request->only(['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'country']));
 
         return new ArtistResource($artist->refresh());
     }
@@ -134,6 +107,7 @@ class ArtistController extends Controller
      *
      * @param Artist $artist
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function destroy(Artist $artist)
     {

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Artist;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserUpdate extends FormRequest
+class ArtistUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,13 @@ class UserUpdate extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string|max:255',
-            'email' => 'string|email|max:255|unique:users,email,' . $this->user()->id,
-            'password' => 'string|min:6',
+            'first_name' => 'string|max:255',
+            'last_name' => 'string|max:255',
+            'email' => 'string|email|max:255',
+            'phone' => 'phone:FR',
+            'address' => 'string|max:255',
+            'city' => 'string|max:255',
+            'country' => 'string|max:255'
         ];
     }
 }

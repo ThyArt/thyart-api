@@ -4,7 +4,7 @@ namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserIndex extends FormRequest
+class UserUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,9 @@ class UserIndex extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string',
-            'email' => 'string',
-            'per_page' => 'integer'
+            'name' => 'string|max:255',
+            'email' => 'string|email|max:255|unique:users,email,' . $this->user()->id,
+            'password' => 'string|min:6',
         ];
     }
 }
