@@ -3,29 +3,27 @@
 namespace App\Http\Controllers\Api;
 
 use App\Customer;
+use App\Http\Requests\Customer\CustomerIndexRequest;
+use App\Http\Requests\Customer\CustomerUpdateRequest;
+use App\Http\Requests\Customer\CustomerStoreRequest;
 use Illuminate\Routing\Controller;
 use App\Http\Resources\CustomerResource;
 use Illuminate\Validation\UnauthorizedException;
-use Illuminate\Validation\ValidationException;
 
 class CustomerController extends Controller
 {
     /**
      * Display a listing of the customers.
      *
+     * @param CustomerIndexRequest $request
+     *
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index()
+    public function index(CustomerIndexRequest $request)
     {
-        $data = request(['email', 'phone', 'first_name', 'last_name', 'per_page', 'country', 'city', 'address']);
+        $data = $request->only(['email', 'phone', 'first_name', 'last_name', 'per_page', 'country', 'city', 'address']);
 
-        $valid = validator($data, ['per_page' => 'integer']);
-
-        if ($valid->fails()) {
-            throw new ValidationException($valid);
-        }
-
-        $customer = request()->user()->customers()->when(isset($data['first_name']), function ($customer) use ($data) {
+        $customer = $request->user()->customers()->when(isset($data['first_name']), function ($customer) use ($data) {
             return $customer->where('first_name', 'like', '%' . $data['first_name'] . '%');
         })
             ->when(isset($data['last_name']), function ($customer) use ($data) {
@@ -58,31 +56,17 @@ class CustomerController extends Controller
     /**
      * Store a newly created customer in storage.
      *
+     * @param CustomerStoreRequest $request
+     *
      * @return CustomerResource
      */
-    public function store()
+    public function store(CustomerStoreRequest $request)
     {
-        $data = request(['email', 'first_name', 'last_name', 'phone', 'country', 'city', 'address']);
-
-        $valid = validator(
-            $data,
-            [
-                'first_name' => 'required|string|max:255',
-                'last_name' => 'required|string|max:255',
-                'email' => 'required|email|string|max:255',
-                'phone' => 'required|phone:FR',
-                'address' => 'required|string|max:255',
-                'city' => 'required|string|max:255',
-                'country' => 'required|string|max:255',
-            ]
+        return new CustomerResource(
+            $request->user()->customers()->create(
+                $request->only(['email', 'first_name', 'last_name', 'phone', 'country', 'city', 'address'])
+            )
         );
-
-        if ($valid->fails()) {
-            throw new ValidationException($valid);
-        }
-
-        return new CustomerResource(request()->user()->customers()->create($data));
-        ;
     }
 
     /**
@@ -103,30 +87,18 @@ class CustomerController extends Controller
     /**
      * Update the specified customer in storage.
      *
+     * @param CustomerUpdateRequest $request
      * @param Customer $customer
+     *
      * @return CustomerResource
      */
-    public function update(Customer $customer)
+    public function update(CustomerUpdateRequest $request, Customer $customer)
     {
-        if ($customer->user_id !== request()->user()->id) {
+        if ($customer->user_id !== $request->user()->id) {
             throw new UnauthorizedException('The current user does not own this customer.');
         }
 
-        $data = request(['email', 'first_name', 'last_name', 'phone', 'country', 'city', 'address']);
-
-        $valid = validator($data, [
-            'first_name' => 'string|max:255',
-            'last_name' => 'string|max:255',
-            'email' => 'string|email|max:255',
-            'phone' => 'phone:FR',
-            'address' => 'string|max:255',
-            'city' => 'string|max:255',
-            'country' => 'string|max:255',
-        ]);
-
-        if ($valid->fails()) {
-            throw new ValidationException($valid);
-        }
+        $data = $request->only(['email', 'first_name', 'last_name', 'phone', 'country', 'city', 'address']);
 
         $customer->update($data);
 
@@ -137,6 +109,7 @@ class CustomerController extends Controller
      * Remove the specified customer from storage.
      *
      * @param Customer $customer
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Customer $customer)
