@@ -50,7 +50,15 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request)
     {
-        return new UserResource(User::create($request->only(['email', 'name', 'password'])));
+        $data = $request->only(['name', 'email', 'password']);
+
+        $user = User::newModelInstance();
+        $user->password = bcrypt($data['password']);
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+
+        $user->save();
+        return new UserResource($user);
     }
 
     /**
