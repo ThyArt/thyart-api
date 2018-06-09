@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/ping', 'Api\PingController@ping');
+
 Route::prefix('user')->group(function () {
     Route::post('', 'Api\UserController@store');
     Route::get('', 'Api\UserController@index');
