@@ -1,0 +1,51 @@
+version: 0.2
+
+#env:
+  #variables:
+     # key: "value"
+     # key: "value"
+  #parameter-store:
+     # key: "value"
+     # key: "value"
+
+phases:
+  #install:
+    #commands:
+      # - command
+      # - command
+  #pre_build:
+    #commands:
+      # - command
+      # - command
+  build:
+    commands:
+      - composer install --no-interaction --prefer-dist
+      # - command
+  #post_build:
+    #commands:
+      # - command
+      # - command
+artifacts:
+  files:
+    - artisan
+    - composer.json
+    - composer.lock
+    - phpunit.xml
+    - server.php
+    - ebextensions/**/*
+    - app/**/*
+    - bootstrap/**/*
+    - config/**/*
+    - database/**/*
+    - public/**/*
+    - resources/**/*
+    - routes/**/*
+    - storage/**/*
+    - tests/**/*
+    - vendor/**/*
+    # - location
+  #discard-paths: yes
+  #base-directory: location
+#cache:
+  #paths:
+    # - paths
