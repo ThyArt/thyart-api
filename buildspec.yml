@@ -9,9 +9,10 @@ version: 0.2
      # key: "value"
 
 phases:
-  #install:
-    #commands:
-      # - command
+  install:
+    commands:
+      - service mysql start
+      - mysql -u root -e "CREATE database php"
       # - command
   #pre_build:
     #commands:
@@ -21,9 +22,9 @@ phases:
     commands:
       - composer install --no-interaction --prefer-dist
       # - command
-  #post_build:
-    #commands:
-      # - command
+  post_build:
+    commands:
+       - service mysql stop
       # - command
 artifacts:
   files:
@@ -32,7 +33,7 @@ artifacts:
     - composer.lock
     - phpunit.xml
     - server.php
-    - ebextensions/**/*
+    - .ebextensions/**/*
     - app/**/*
     - bootstrap/**/*
     - config/**/*
