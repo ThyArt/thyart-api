@@ -13,3 +13,6 @@ RUN apt-get update \
   && docker-php-ext-install pdo pdo_mysql zip \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN service mysql start \
+  && mysql -u root -e "use mysql; update user set plugin='' where User='root'; flush privileges;"

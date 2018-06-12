@@ -1,31 +1,24 @@
 version: 0.2
 
-#env:
-  #variables:
-     # key: "value"
-     # key: "value"
-  #parameter-store:
-     # key: "value"
-     # key: "value"
-
 phases:
   install:
     commands:
       - service mysql start
-      - mysql -u root -e "CREATE database php"
-      # - command
-  #pre_build:
-    #commands:
-      # - command
-      # - command
+      - mysql -u root -e "CREATE DATABASE thyart_codebuild;"
+  pre_build:
+    commands:
+       - cp .env.codebuild .env
   build:
     commands:
       - composer install --no-interaction --prefer-dist
-      # - command
+      - php artisan key:generate
+      - php artisan migrate:refresh
+      - php artisan passport:keys
+      - ./vendor/bin/phpunit
   post_build:
     commands:
        - service mysql stop
-      # - command
+
 artifacts:
   files:
     - artisan
@@ -44,9 +37,3 @@ artifacts:
     - storage/**/*
     - tests/**/*
     - vendor/**/*
-    # - location
-  #discard-paths: yes
-  #base-directory: location
-#cache:
-  #paths:
-    # - paths
