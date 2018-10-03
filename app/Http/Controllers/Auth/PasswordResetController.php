@@ -24,7 +24,7 @@ class PasswordResetController extends Controller
      */
     public function create(PasswordResetCreateRequest $request)
     {
-        $data = $request->only(['email']);
+        $data = $request->only(['email', 'endpoint']);
         $user = User::where('email', $data['email'])->firstOrFail();
 
         $passwordReset = PasswordReset::updateOrCreate(
@@ -35,7 +35,7 @@ class PasswordResetController extends Controller
             ]
         );
         $user->notify(
-            new PasswordResetRequest($passwordReset->token)
+            new PasswordResetRequest($passwordReset->token, $data['endpoint'])
         );
         return response()->json([
             'message' => 'An email has been sent to the user email'

@@ -12,15 +12,17 @@ class PasswordResetRequest extends Notification
     use Queueable;
 
     protected $token;
+    protected $endpoint;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($token)
+    public function __construct($token, $endpoint)
     {
         $this->token = $token;
+        $this->endpoint = $endpoint;
     }
 
     /**
@@ -42,10 +44,9 @@ class PasswordResetRequest extends Notification
      */
     public function toMail($notifiable)
     {
-        $url = url('/api/password/find/'.$this->token);
         return (new MailMessage)
             ->line('You are receiving this email because we        received a password reset request for your account.')
-            ->action('Reset Password', url($url))
+            ->action('Reset Password', $this->endpoint . '?token=' . $this->token)
             ->line('If you did not request a password reset, no further action is required.');
     }
 

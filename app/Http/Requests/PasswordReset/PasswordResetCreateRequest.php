@@ -25,6 +25,7 @@ class PasswordResetCreateRequest extends FormRequest
     {
         return [
             'email' => 'required|string|email',
+            'endpoint' => 'required|string'
         ];
     }
 }
