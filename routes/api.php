@@ -15,26 +15,32 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', 'Api\PingController@ping');
 
-Route::prefix('user')->group(function () {
-    Route::post('', 'Api\UserController@store');
-    Route::get('', 'Api\UserController@index');
-    Route::get('/{user}', 'Api\UserController@show');
-    Route::patch('', 'Api\UserController@update');
-    Route::delete('', 'Api\UserController@destroy');
+Route::group(["namespace" => 'Api', 'prefix' => 'user'], function () {
+    Route::post('', 'UserController@store');
+    Route::get('', 'UserController@index');
+    Route::get('/{user}', 'UserController@show');
+    Route::patch('', 'UserController@update');
+    Route::delete('', 'UserController@destroy');
 });
 
-Route::middleware('auth:api')->prefix('artist')->group(function () {
-    Route::post('', 'Api\ArtistController@store');
-    Route::get('', 'Api\ArtistController@index');
-    Route::get('/{artist}', 'Api\ArtistController@show');
-    Route::patch('/{artist}', 'Api\ArtistController@update');
-    Route::delete('/{artist}', 'Api\ArtistController@destroy');
+Route::group(["namespace" => 'Api', 'prefix' => 'artist'], function () {
+    Route::post('', 'ArtistController@store');
+    Route::get('', 'ArtistController@index');
+    Route::get('/{artist}', 'ArtistController@show');
+    Route::patch('/{artist}', 'ArtistController@update');
+    Route::delete('/{artist}', 'ArtistController@destroy');
 });
 
-Route::middleware('auth:api')->prefix('customer')->group(function() {
-    Route::post('', 'Api\CustomerController@store');
-    Route::get('', 'Api\CustomerController@index');
-    Route::get('/{customer}', 'Api\CustomerController@show');
-    Route::patch('/{customer}', 'Api\CustomerController@update');
-    Route::delete('/{customer}', 'Api\CustomerController@destroy');
+Route::group(["namespace" => 'Api', 'prefix' => 'customer'], function () {
+    Route::post('', 'CustomerController@store');
+    Route::get('', 'CustomerController@index');
+    Route::get('/{customer}', 'CustomerController@show');
+    Route::patch('/{customer}', 'CustomerController@update');
+    Route::delete('/{customer}', 'CustomerController@destroy');
+});
+
+Route::group(["namespace" => 'Auth', 'prefix' => 'password'], function () {
+    Route::post('create', 'PasswordResetController@create');
+    Route::get('find/{token}', 'PasswordResetController@find');
+    Route::post('reset', 'PasswordResetController@reset');
 });

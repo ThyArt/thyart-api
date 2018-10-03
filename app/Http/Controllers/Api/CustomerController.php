@@ -23,9 +23,10 @@ class CustomerController extends Controller
     {
         $data = $request->only(['email', 'phone', 'first_name', 'last_name', 'per_page', 'country', 'city', 'address']);
 
-        $customer = $request->user()->customers()->when(isset($data['first_name']), function ($customer) use ($data) {
-            return $customer->where('first_name', 'like', '%' . $data['first_name'] . '%');
-        })
+        $customer = $request->user()->customers()
+            ->when(isset($data['first_name']), function ($customer) use ($data) {
+                return $customer->where('first_name', 'like', '%' . $data['first_name'] . '%');
+            })
             ->when(isset($data['last_name']), function ($customer) use ($data) {
                 return $customer->where('last_name', 'like', '%' . $data['last_name'] . '%');
             })
