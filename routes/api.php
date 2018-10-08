@@ -23,7 +23,7 @@ Route::group(["namespace" => 'Api', 'prefix' => 'user'], function () {
     Route::delete('', 'UserController@destroy');
 });
 
-Route::group(["namespace" => 'Api', 'prefix' => 'artist'], function () {
+Route::group(["namespace" => 'Api', 'prefix' => 'artist', 'middleware' => 'auth:api'], function () {
     Route::post('', 'ArtistController@store');
     Route::get('', 'ArtistController@index');
     Route::get('/{artist}', 'ArtistController@show');
@@ -31,7 +31,7 @@ Route::group(["namespace" => 'Api', 'prefix' => 'artist'], function () {
     Route::delete('/{artist}', 'ArtistController@destroy');
 });
 
-Route::group(["namespace" => 'Api', 'prefix' => 'customer'], function () {
+Route::group(["namespace" => 'Api', 'prefix' => 'customer', 'middleware' => 'auth:api'], function () {
     Route::post('', 'CustomerController@store');
     Route::get('', 'CustomerController@index');
     Route::get('/{customer}', 'CustomerController@show');
