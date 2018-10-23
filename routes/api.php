@@ -18,6 +18,7 @@ Route::get('/ping', 'Api\PingController@ping');
 Route::group(["namespace" => 'Api', 'prefix' => 'user'], function () {
     Route::post('', 'UserController@store');
     Route::get('', 'UserController@index');
+    Route::get('/self', 'UserController@showByToken');
     Route::get('/{user}', 'UserController@show');
     Route::patch('', 'UserController@update');
     Route::delete('', 'UserController@destroy');

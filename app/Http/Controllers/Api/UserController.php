@@ -73,6 +73,16 @@ class UserController extends Controller
     }
 
     /**
+     * Display the specified user by auth token.
+     *
+     * @return UserResource
+     */
+    public function showByToken()
+    {
+        return new UserResource(request()->user());
+    }
+
+    /**
      * Update the specified user in storage.
      *
      * @param UserUpdateRequest $request
