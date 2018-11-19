@@ -35,20 +35,30 @@ define to_logs
 	@$(2) >> $(1)storage/logs/makefile.log
 endef
 
-all: copy_environment_files build_containers initiate_composer_dependencies initate_project_keys
-database: initiate_dev_database initiate_testing_database
+all: print_header copy_environment_files build_containers initiate_composer_dependencies initate_project_keys
+database: print_header initiate_dev_database initiate_testing_database
 
-clean: delete_containers delete_envrionment_files
-fclean: clean delete_laradock_database_folder delete_laradock_images
+clean: print_header delete_containers delete_envrionment_files
+fclean: print_header delete_containers delete_envrionment_files delete_laradock_database_folder delete_laradock_images
 
-start: start_containers
-stop: stop_containers
+start: print_header start_containers
+stop: print_header stop_containers
 
-tests: run_tests
+tests: print_header run_tests
 
-re: fclean all
+re: print_header delete_containers delete_envrionment_files delete_laradock_database_folder delete_laradock_images \
+	copy_environment_files build_containers initiate_composer_dependencies initate_project_keys
 
-workspace: enter_workspace_container
+workspace: print_header enter_workspace_container
+
+print_header:
+	@echo "$(GREEN)\
+  _____ _              _         _        _    ____ ___ \n\
+ |_   _| |__  _   _   / \   _ __| |_     / \  |  _ \_ _|\n\
+   | | | '_ \| | | | / _ \ | '__| __|   / _ \ | |_) | | \n\
+   | | | | | | |_| |/ ___ \| |  | |_   / ___ \|  __/| | \n\
+   |_| |_| |_|\__, /_/   \_\_|   \__| /_/   \_\_|  |___|\n\
+              |___/                                     $(WHITE)"
 
 start_containers:
 	@$(call print_output,WHITE,starting containers $(LARADOCK_CONTAINERS))
@@ -140,4 +150,4 @@ run_tests:
 enter_workspace_container:
 	$(call docker_compose,exec workspace bash)
 
-.PHONY: all clean fclean start stop re tests workspace start_containers stop_containers build_containers delete_containers delete_laradock_database_folder delete_laradock_images copy_environment_file delete_envrionment_files initiate_composer_dependencies initate_project_keys initiate_dev_database initiate_testing_database, run_tests enter_workspace_container
+.PHONY: all clean fclean start stop re tests workspace print_header start_containers stop_containers build_containers delete_containers delete_laradock_database_folder delete_laradock_images copy_environment_file delete_envrionment_files initiate_composer_dependencies initate_project_keys initiate_dev_database initiate_testing_database, run_tests enter_workspace_container
