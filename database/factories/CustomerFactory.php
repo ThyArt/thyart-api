@@ -9,7 +9,7 @@ $factory->define(App\Customer::class, function (Faker $faker) {
         'user_id' => User::all()->random()->id,
         'first_name' => $faker->firstName,
         'last_name' => $faker->lastName,
-        'phone' => PhoneNumber::mobileNumber(),
+        'phone' => $faker->phoneNumber,
         'email' => $faker->email,
         'address' => $faker->streetAddress,
         'country' => $faker->country,
