@@ -1,27 +1,27 @@
-ENVIRONMENT_FILE=.env
-ENVIRONMENT_FILE_EXAMPLE=.env.example
+ENVIRONMENT_FILE=					.env
+ENVIRONMENT_FILE_EXAMPLE=			.env.example
 
-ENVIRONMENT_TESTING_FILE=.env.testing
-ENVIRONMENT_TESTING_FILE_EXAMPLE=.env.testing.example
+ENVIRONMENT_TESTING_FILE=			.env.testing
+ENVIRONMENT_TESTING_FILE_EXAMPLE=	.env.testing.example
 
-LARADOCK_ENVIRONMENT_FILE=thyart-api-docker/.env
-LARADOCK_ENVIRONMENT_FILE_EXAMPLE=.env.laradock.example
+LARADOCK_ENVIRONMENT_FILE=			thyart-api-docker/.env
+LARADOCK_ENVIRONMENT_FILE_EXAMPLE=	.env.laradock.example
 
-LARADOCK_MYSQL_SCRIPT_FILE=thyart-api-docker/mysql/docker-entrypoint-initdb.d/createdb.sql
-LARADOCK_MYSQL_SCRIPT_FILE_EXAMPLE=createdb.sql.example
+LARADOCK_MYSQL_SCRIPT_FILE=			thyart-api-docker/mysql/docker-entrypoint-initdb.d/createdb.sql
+LARADOCK_MYSQL_SCRIPT_FILE_EXAMPLE=	createdb.sql.example
 
-LARADOCK_CONTAINERS=	workspace \
-						mysql     \
-						nginx
+LARADOCK_CONTAINERS=				workspace \
+									mysql     \
+									nginx
 
-LARADOCK_IMAGES=	laradock_nginx \
-					laradock_php-fpm \
-					laradock_mysql \
-					laradock_workspace
+LARADOCK_IMAGES=					laradock_nginx     \
+									laradock_php-fpm   \
+									laradock_mysql     \
+									laradock_workspace
 
-GREEN=\033[0;32m
-RED=\033[0;31m
-WHITE=\033[0m
+GREEN=								\033[0;32m
+RED=								\033[0;31m
+WHITE=								\033[0m
 
 define print_output
 	@printf "${${1}}[ThyArt API %s] %s\n${WHITE}" "$(shell date +"%D %T")" "$(2)"
@@ -35,21 +35,26 @@ define to_logs
 	@$(2) >> $(1)storage/logs/makefile.log
 endef
 
-all: print_header copy_environment_files build_containers initiate_composer_dependencies initate_project_keys
-database: print_header initiate_dev_database initiate_testing_database
+all: 		print_header copy_environment_files build_containers initiate_composer_dependencies initate_project_keys
 
-clean: print_header delete_containers delete_envrionment_files
-fclean: print_header delete_containers delete_envrionment_files delete_laradock_database_folder delete_laradock_images
+database:	print_header initiate_dev_database initiate_testing_database
 
-start: print_header start_containers
-stop: print_header stop_containers
+clean:		print_header delete_containers delete_envrionment_files
 
-tests: print_header run_tests
+fclean:		print_header delete_containers delete_envrionment_files delete_laradock_database_folder	\
+			delete_laradock_images
 
-re: print_header delete_containers delete_envrionment_files delete_laradock_database_folder delete_laradock_images \
-	copy_environment_files build_containers initiate_composer_dependencies initate_project_keys
+start:		print_header start_containers
 
-workspace: print_header enter_workspace_container
+stop:		print_header stop_containers
+
+tests:		print_header run_tests
+
+re:			print_header delete_containers delete_envrionment_files delete_laradock_database_folder	      \
+			delete_laradock_images copy_environment_files build_containers initiate_composer_dependencies \
+			initate_project_keys
+
+workspace:	print_header enter_workspace_container
 
 print_header:
 	@echo "$(GREEN)\
@@ -150,4 +155,7 @@ run_tests:
 enter_workspace_container:
 	$(call docker_compose,exec workspace bash)
 
-.PHONY: all clean fclean start stop re tests workspace print_header start_containers stop_containers build_containers delete_containers delete_laradock_database_folder delete_laradock_images copy_environment_file delete_envrionment_files initiate_composer_dependencies initate_project_keys initiate_dev_database initiate_testing_database, run_tests enter_workspace_container
+.PHONY:		all clean fclean start stop re tests workspace print_header start_containers stop_containers       \
+			build_containers delete_containers delete_laradock_database_folder delete_laradock_images          \
+			copy_environment_file delete_envrionment_files initiate_composer_dependencies initate_project_keys \
+			initiate_dev_database initiate_testing_database run_tests enter_workspace_container
