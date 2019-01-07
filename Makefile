@@ -12,7 +12,8 @@ LARADOCK_MYSQL_SCRIPT_FILE_EXAMPLE=	createdb.sql.example
 
 LARADOCK_CONTAINERS=				workspace \
 									mysql     \
-									nginx
+									nginx	  \
+									phpmyadmin
 
 LARADOCK_IMAGES=					laradock_nginx     \
 									laradock_php-fpm   \
