@@ -40,6 +40,14 @@ Route::group(["namespace" => 'Api', 'prefix' => 'customer', 'middleware' => 'aut
     Route::delete('/{customer}', 'CustomerController@destroy');
 });
 
+Route::group(["namespace" => 'Api', 'prefix' => 'artwork', 'middleware' => 'auth:api'], function () {
+    Route::post('/{artist}', 'ArtworkController@store');
+    Route::get('', 'ArtworkController@index');
+    Route::get('/{artwork}', 'ArtworkController@show');
+    Route::patch('/{artwork}', 'ArtworkController@update');
+    route::delete('/{artwork}', 'ArtworkController@destroy');
+});
+
 Route::group(["namespace" => 'Auth', 'prefix' => 'password'], function () {
     Route::post('create', 'PasswordResetController@create');
 });

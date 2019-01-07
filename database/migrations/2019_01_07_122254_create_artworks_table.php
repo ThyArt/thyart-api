@@ -26,7 +26,6 @@ class CreateArtworksTable extends Migration
 
             $table->unsignedInteger('artist_id');
             $table->foreign('artist_id')->references('id')->on('artists')->onDelete('cascade');
-
         });
     }
 

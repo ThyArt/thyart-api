@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Artist;
 use App\Artwork;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Artwork\ArtworkIndexRequest;
 use App\Http\Requests\Artwork\ArtworkStoreRequest;
 use App\Http\Requests\Artwork\ArtworkUpdateRequest;
@@ -91,8 +92,8 @@ class ArtworkController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Artwork  $artwork
+     * @param ArtworkUpdateRequest $request
+     * @param  \App\Artwork $artwork
      * @return ArtworkResource
      */
     public function update(ArtworkUpdateRequest $request, Artwork $artwork)
@@ -104,7 +105,6 @@ class ArtworkController extends Controller
         $artwork->update($request->only(['name', 'price', 'state', 'ref']));
 
         return new ArtworkResource($artwork->refresh());
-
     }
 
     /**
