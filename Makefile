@@ -119,41 +119,41 @@ delete_envrionment_files:
 
 initiate_composer_dependencies:
 	@$(call print_output,WHITE,installing composer project dependencies)
-	@$(call to_logs,../,$(call docker_compose,exec workspace composer install))
+	@$(call to_logs,../,$(call docker_compose,exec -u laradock workspace composer install))
 	@$(call print_output,GREEN,composer project dependencies installed)
 
 initate_project_keys:
 	@$(call print_output,WHITE,generating project encryption key)
-	@$(call to_logs,../,$(call docker_compose,exec workspace php artisan key:generate))
+	@$(call to_logs,../,$(call docker_compose,exec -u laradock workspace php artisan key:generate))
 	@$(call print_output,GREEN,project encryption key generated)
 
 	@$(call print_output,WHITE,generating testing encryption key)
-	@$(call to_logs,../,$(call docker_compose,exec workspace php artisan key:generate --env=testing))
+	@$(call to_logs,../,$(call docker_compose,exec -u laradock workspace php artisan key:generate --env=testing))
 	@$(call print_output,GREEN,testing encryption key generated)
 
 initiate_dev_database:
 	@$(call print_output,WHITE,migrating development database)
-	@$(call to_logs,../,$(call docker_compose,exec workspace php artisan migrate))
+	@$(call to_logs,../,$(call docker_compose,exec -u laradock workspace php artisan migrate))
 	@$(call print_output,GREEN,development database migrated)
 
 	@$(call print_output,WHITE,generating laravel passport clients)
-	@$(call to_logs,../,$(call docker_compose,exec workspace php artisan passport:install))
+	@$(call to_logs,../,$(call docker_compose,exec -u laradock workspace php artisan passport:install))
 	@$(call print_output,GREEN,laravel passport clients generated)
 
 initiate_testing_database:
 	@$(call print_output,WHITE,migrating testing database)
-	@$(call to_logs,../,$(call docker_compose,exec workspace php artisan migrate --env=testing))
+	@$(call to_logs,../,$(call docker_compose,exec -u laradock workspace php artisan migrate --env=testing))
 	@$(call print_output,GREEN,testing database migrated)
 
 	@$(call print_output,WHITE,executing seeders on testing environment)
-	@$(call to_logs,../,$(call docker_compose,exec workspace php artisan db:seed --env=testing))
+	@$(call to_logs,../,$(call docker_compose,exec -u laradock workspace php artisan db:seed --env=testing))
 	@$(call print_output,GREEN,seeders executed on testing environment)
 
 run_tests:
-	$(call docker_compose,exec workspace ./vendor/bin/phpunit)
+	$(call docker_compose,exec -u laradock workspace ./vendor/bin/phpunit)
 
 enter_workspace_container:
-	$(call docker_compose,exec workspace bash)
+	$(call docker_compose,exec -u laradock workspace bash)
 
 .PHONY:		all clean fclean start stop re tests workspace print_header start_containers stop_containers       \
 			build_containers delete_containers delete_laradock_database_folder delete_laradock_images          \
