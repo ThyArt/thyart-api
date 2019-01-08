@@ -24,6 +24,14 @@ Route::group(["namespace" => 'Api', 'prefix' => 'user'], function () {
     Route::delete('', 'UserController@destroy');
 });
 
+Route::group(["namespace" => 'Api', 'prefix' => 'gallery', 'middleware' => 'auth:api'], function () {
+    Route::post('', 'GalleryController@store');
+    Route::get('', 'GalleryController@index');
+    Route::get('/{gallery}', 'GalleryController@show');
+    Route::patch('/{gallery}', 'GalleryController@update');
+    Route::delete('/{gallery}', 'GalleryController@destroy');
+});
+
 Route::group(["namespace" => 'Api', 'prefix' => 'artist', 'middleware' => 'auth:api'], function () {
     Route::post('', 'ArtistController@store');
     Route::get('', 'ArtistController@index');
