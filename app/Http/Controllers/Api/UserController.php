@@ -25,14 +25,23 @@ class UserController extends Controller
      */
     public function index(UserIndexRequest $request)
     {
-        $data = $request->only(['name', 'email', 'per_page']);
+        $data = $request->only(['firstname', 'lastname', 'name', 'email', 'role', 'per_page']);
 
         $user = User
-            ::when(isset($data['name']), function ($user) use ($data) {
+            ::when(isset($data['firstname']), function ($user) use ($data) {
+                return $user->orWhere('firstname', 'like', '%'. $data['firstname'] . '%');
+            })
+            ->when(isset($data['lastname']), function ($user) use ($data) {
+                return $user->orWhere('lastname', 'like', '%'. $data['lastname'] . '%');
+            })
+            ->when(isset($data['name']), function ($user) use ($data) {
                 return $user->orWhere('name', 'like', '%'. $data['name'] . '%');
             })
             ->when(isset($data['email']), function ($user) use ($data) {
                 return $user->orWhere('email', 'like', '%' . $data['email'] . '%');
+            })
+            ->when(isset($data['role']), function ($user) use ($data) {
+                return $user->orWhere('role', 'like', $data['role']);
             });
 
         $per_page = 25;
@@ -50,12 +59,15 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request)
     {
-        $data = $request->only(['name', 'email', 'password']);
+        $data = $request->only(['firstname', 'lastname', 'name', 'email', 'password']);
 
         $user = User::newModelInstance();
         $user->password = bcrypt($data['password']);
+        $user->firstname = $data['firstname'];
+        $user->lastname = $data['lastname'];
         $user->name = $data['name'];
         $user->email = $data['email'];
+        $user->role = 'admin';
 
         $user->save();
         return new UserResource($user);
@@ -92,14 +104,27 @@ class UserController extends Controller
     public function update(UserUpdateRequest $request)
     {
         $user = $request->user();
-        $data = $request->only(['email', 'name', 'password']);
+        $data = $request->only(['firstname', 'lastname', 'name', 'email', 'role', 'password']);
+
+
+        if (isset($data['firstname'])) {
+            $user->firstname = $data['firstname'];
+        }
+
+        if (isset($data['lastname'])) {
+            $user->lastname = $data['lastname'];
+        }
+
+        if (isset($data['name'])) {
+            $user->name = $data['name'];
+        }
 
         if (isset($data['email'])) {
             $user->email = $data['email'];
         }
 
-        if (isset($data['name'])) {
-            $user->name = $data['name'];
+        if (isset($data['role'])) {
+            $user->role = $data['role'];
         }
 
         if (isset($data['password'])) {

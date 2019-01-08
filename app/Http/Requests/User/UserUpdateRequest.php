@@ -25,6 +25,9 @@ class UserUpdateRequest extends FormRequest
     {
         return [
             'name' => 'string|max:255',
+            'firstname' => 'string|max:255',
+            'lastname' => 'string|max:255',
+            'role' => 'string|max:255',
             'email' => 'string|email|max:255|unique:users,email,' . $this->user()->id,
             'password' => 'string|min:6',
         ];

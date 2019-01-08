@@ -25,6 +25,9 @@ class UserIndexRequest extends FormRequest
     {
         return [
             'name' => 'string|max:255',
+            'firstname' => 'string|max:255',
+            'lastname' => 'string|max:255',
+            'role' => 'string|max:255',
             'email' => 'string|max:255',
             'per_page' => 'integer'
         ];
