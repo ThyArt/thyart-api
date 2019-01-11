@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Artwork\ArtworkIndexRequest;
 use App\Http\Requests\Artwork\ArtworkStoreRequest;
 use App\Http\Requests\Artwork\ArtworkUpdateRequest;
+use App\Http\Requests\Artwork\ImageStoreRequest;
 use App\Http\Resources\ArtworkResource;
 use Illuminate\Http\Request;
 use Illuminate\Validation\UnauthorizedException;
@@ -65,11 +66,32 @@ class ArtworkController extends Controller
         $artist = Artist::findOrFail($request->get('artist_id'));
         $artwork->artist()->associate($artist);
         return new ArtworkResource(
-        $request
-            ->user()
-            ->artworks()
-            ->save($artwork)
+            $request
+                ->user()
+                ->artworks()
+                ->save($artwork)
         );
+    }
+
+    /**
+     * Store an image in storage.
+     *
+     * @param ArtworkStoreRequest $request
+     * @param Artwork $artwork
+     * @return ArtworkResource
+     */
+
+    public function storeImage(ImageStoreRequest $request, Artwork $artwork)
+    {
+        //dd(request());
+        if ($artwork->user->id !== $request->user()->id) {
+            throw new UnauthorizedException('The current user does not own this artwork.');
+        }
+        //dd($request->only('image'));
+        $artwork->addMediaFromRequest('images')->toMediaCollection('images');
+        $artwork->save();
+        //return $artwork->getMedia();
+        return new ArtworkResource($artwork->refresh());
     }
 
     /**
