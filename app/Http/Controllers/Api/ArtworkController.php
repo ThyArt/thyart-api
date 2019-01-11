@@ -23,7 +23,6 @@ class ArtworkController extends Controller
     public function index(ArtworkIndexRequest $request)
     {
         $data = $request->only(['name', 'price_min', 'price_max', 'state', 'ref', 'artist_id']);
-
         $artworks = $request->user()->artworks()
             ->when(isset($data['name']), function ($artwork) use ($data) {
                 return $artwork->where('name', 'like', '%' . $data['name'] . '%');
@@ -59,12 +58,12 @@ class ArtworkController extends Controller
      * @param Artist $artist
      * @return ArtworkResource
      */
-    public function store(ArtworkStoreRequest $request, Artist $artist)
+    public function store(ArtworkStoreRequest $request)
     {
         $data = $request->only(['name', 'price', 'state', 'ref']);
         $artwork = new Artwork($data);
+        $artist = Artist::findOrFail($request->get('artist_id'));
         $artwork->artist()->associate($artist);
-
         return new ArtworkResource(
         $request
             ->user()
@@ -101,8 +100,13 @@ class ArtworkController extends Controller
         if ($artwork->user->id !== request()->user()->id) {
             throw new UnauthorizedException('The current user does not own this artwork.');
         }
-
-        $artwork->update($request->only(['name', 'price', 'state', 'ref']));
+        $artist_id = $request->get('artist_id');
+        if (isset($artist_id)) {
+            $artist = Artist::findOrFail($artist_id);
+            $artwork->artist()->associate($artist);
+        }
+        $artwork->fill($request->only(['name', 'price', 'state', 'ref']));
+        $artwork->save();
 
         return new ArtworkResource($artwork->refresh());
     }

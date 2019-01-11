@@ -4,6 +4,7 @@ namespace App\Http\Requests\Artwork;
 
 use App\Artwork;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ArtworkIndexRequest extends FormRequest
 {

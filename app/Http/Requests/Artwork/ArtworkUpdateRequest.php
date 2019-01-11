@@ -4,6 +4,7 @@ namespace App\Http\Requests\Artwork;
 
 use App\Artwork;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ArtworkUpdateRequest extends FormRequest
 {
@@ -34,6 +35,7 @@ class ArtworkUpdateRequest extends FormRequest
                 Artwork::STATE_INCOMING,
                 Artwork::STATE_SOLD
             ])],
+            'artist_id' => 'numeric',
         ];
     }
 }
