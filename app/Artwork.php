@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
-class Artwork extends Model
+class Artwork extends Model implements HasMedia
 {
+    use HasMediaTrait;
     const STATE_INCOMING = 'incoming';
     const STATE_SOLD = 'sold';
     const STATE_EXPOSED = 'exposed';

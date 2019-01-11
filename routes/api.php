@@ -41,11 +41,14 @@ Route::group(["namespace" => 'Api', 'prefix' => 'customer', 'middleware' => 'aut
 });
 
 Route::group(["namespace" => 'Api', 'prefix' => 'artwork', 'middleware' => 'auth:api'], function () {
-    Route::post('/{artist}', 'ArtworkController@store');
+    Route::post('', 'ArtworkController@store');
     Route::get('', 'ArtworkController@index');
     Route::get('/{artwork}', 'ArtworkController@show');
     Route::patch('/{artwork}', 'ArtworkController@update');
     route::delete('/{artwork}', 'ArtworkController@destroy');
+
+    Route::post('/{artwork}/image', 'ArtworkController@storeImage');
+    Route::delete('/{artwork}/image/{media}', 'ArtworkController@destroyImage');
 });
 
 Route::group(["namespace" => 'Auth', 'prefix' => 'password'], function () {
