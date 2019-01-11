@@ -17,8 +17,12 @@ phases:
       - ./vendor/bin/phpunit
   post_build:
     commands:
-       - aws s3 cp s3://thyart-environment-files/dev/dev-environment .env
-       - service mysql stop
+      - rm .env
+      - aws configure set aws_access_key_id $ACCESS_KEY_ID
+      - aws configure set aws_secret_access_key $SECRET_ACCESS_KEY
+      - aws configure set default.region eu-west-1
+      - aws s3 cp s3://thyart-environment-files/dev/dev-environment .env
+      - service mysql stop
 
 artifacts:
   files:
