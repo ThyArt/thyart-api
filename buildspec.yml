@@ -17,10 +17,12 @@ phases:
       - ./vendor/bin/phpunit
   post_build:
     commands:
+       - aws s3 cp s3://thyart-environment-files/dev/dev-environment .env
        - service mysql stop
 
 artifacts:
   files:
+    - .env
     - artisan
     - composer.json
     - composer.lock
