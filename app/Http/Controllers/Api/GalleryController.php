@@ -110,5 +110,7 @@ class GalleryController extends Controller
     {
         $gallery->delete();
 
+        return response()->json(['message' => 'Gallery deleted.'], 200);
+
     }
 }

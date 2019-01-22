@@ -242,7 +242,7 @@ class GalleryControllerTest extends TestCase
             ->assertJson(['data' => []]);
     }
 
-    /*public function testIndexSearchByMultipleFields()
+    public function testIndexSearchByMultipleFields()
     {
         $firstGallery = factory(Gallery::class)->create();
         $secondGallery = factory(Gallery::class)->create();
@@ -250,8 +250,8 @@ class GalleryControllerTest extends TestCase
             'GET',
             '/api/gallery',
             [
-                'name' => $secondGallery->name,
-                'address' => $secondGallery->address,
+                'name' => $firstGallery->name,
+                'address' => $firstGallery->address,
                 'phone' => $firstGallery->phone
             ],
             [
@@ -262,22 +262,9 @@ class GalleryControllerTest extends TestCase
         )
             ->assertStatus(200)
             ->assertJson([
-                'data' => [
-                    [
-                        'id' => $firstGallery->id,
-                        'name' => $firstGallery->name,
-                        'address' => $firstGallery->address,
-                        'phone' => $firstGallery->phone,
-                    ],
-                    [
-                        'id' => $secondGallery->id,
-                        'name' => $secondGallery->name,
-                        'address' => $secondGallery->address,
-                        'phone' => $secondGallery->phone,
-                    ]
-                ]
+                'data' => 'pute'
             ]);
-    }*/
+    }
 
     //--------------------------
     //
@@ -465,4 +452,149 @@ class GalleryControllerTest extends TestCase
     // TEST UPDATE
     //
     //--------------------------
+    
+    public function testUpdateWithNonExistentArguments()
+    {
+        $gallery = factory(Gallery::class)->create();
+        $this->json(
+            'PATCH',
+            '/api/gallery/' . $gallery->id,
+            [],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'id' => $gallery->id,
+                    'name' => $gallery->name,
+                    'address' => $gallery->address,
+                    'phone' => $gallery->phone
+                ],
+            ]);
+    }
+
+    public function testUpdateWithInvalidArguments()
+    {
+        $gallery = factory(Gallery::class)->create();
+        $this->json(
+            'PATCH',
+            '/api/gallery/' . $gallery->id,
+            [
+                'name' => str_random(256),
+                'address' => str_random(256),
+                'phone' => str_random(256)
+            ],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ]
+        )
+            ->assertStatus(400)
+            ->assertJson([
+                "error" => "validation_failed",
+                "messages" => [
+                    "The name may not be greater than 255 characters.",
+                    "The address may not be greater than 255 characters.",
+                    "The phone may not be greater than 255 characters."
+                ]
+            ]);
+    }
+
+    //TODO : Test with existing number or address
+
+    public function testUpdateWithValidArguments()
+    {
+        $name = 'testName';
+        $address = 'testAddress';
+        $phone = 'testPhone';
+        $gallery = factory(Gallery::class)->create();
+        $this->json(
+            'PATCH',
+            '/api/gallery/' . $gallery->id,
+            [
+                'name' => $name,
+                'address' => $address,
+                'phone' => $phone
+            ],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'id' => $gallery->id,
+                    'name' => $name,
+                    'address' => $address,
+                    'phone' => $phone,
+                ]
+            ]);
+    }
+
+    public function testUpdateUnauthenticated()
+    {
+        $name = 'testName';
+        $address = 'testAddress';
+        $phone = 'testPhone';
+        $gallery = factory(Gallery::class)->create();
+        $this->json(
+            'PATCH',
+            '/api/gallery/' . $gallery->id,
+            [
+                'name' => $name,
+                'address' => $address,
+                'phone' => $phone
+            ],
+            [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ]
+        )
+            ->assertStatus(401)
+            ->assertJson(['message' => 'Unauthenticated.']);
+    }
+
+    public function testDestroy()
+    {
+        $gallery = factory(Gallery::class)->create();
+        $this->json(
+            'DELETE',
+            '/api/gallery/' . $gallery->id,
+            [],
+            [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $this->accessToken
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'message' => 'Gallery deleted.',
+            ]);
+    }
+
+    public function testDestroyUnauthenticated()
+    {
+        $gallery = factory(Gallery::class)->create();
+        $this->json(
+            'DELETE',
+            '/api/gallery/' . $gallery->id,
+            [],
+            [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ]
+        )
+            ->assertStatus(401)
+            ->assertJson([
+                'message' => 'Unauthenticated.',
+            ]);
+    }
 }
