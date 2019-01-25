@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Spatie\MediaLibrary\MediaCollection\MediaCollection;
+
 
 class ArtworkResource extends JsonResource
 {

@@ -10,8 +10,10 @@ use App\Http\Requests\Artwork\ArtworkStoreRequest;
 use App\Http\Requests\Artwork\ArtworkUpdateRequest;
 use App\Http\Requests\Artwork\ImageStoreRequest;
 use App\Http\Resources\ArtworkResource;
+use http\Exception\UnexpectedValueException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\UnauthorizedException;
+use Spatie\MediaLibrary\Exceptions\MediaCannotBeDeleted;
 
 class ArtworkController extends Controller
 {
@@ -65,6 +67,14 @@ class ArtworkController extends Controller
         $artwork = new Artwork($data);
         $artist = Artist::findOrFail($request->get('artist_id'));
         $artwork->artist()->associate($artist);
+
+        /**
+         *  We search for media in the request and save them in the artwork's media collection
+         */
+
+        if (($request->file('images')) != null)
+            $artwork->addMedia($request->file('images')[0])->toMediaCollection('images');
+
         return new ArtworkResource(
             $request
                 ->user()
@@ -83,15 +93,30 @@ class ArtworkController extends Controller
 
     public function storeImage(ImageStoreRequest $request, Artwork $artwork)
     {
-        //dd(request());
         if ($artwork->user->id !== $request->user()->id) {
             throw new UnauthorizedException('The current user does not own this artwork.');
         }
-        //dd($request->only('image'));
-        $artwork->addMediaFromRequest('images')->toMediaCollection('images');
+
+        $artwork->addMedia($request->file('images')[0])->toMediaCollection('images');
         $artwork->save();
-        //return $artwork->getMedia();
+
         return new ArtworkResource($artwork->refresh());
+    }
+
+    public function destroyImage(Artwork $artwork, $media)
+    {
+        if ($artwork->user->id !== request()->user()->id) {
+            throw new UnauthorizedException('The current user does not own this artwork.');
+        }
+
+        try {
+            $artwork->deleteMedia($media);
+        }
+        catch (MediaCannotBeDeleted $e) {
+            throw new UnexpectedValueException('Media not found in collection');
+        }
+
+            return response()->json(['message' => 'Image deleted.'], 200);
     }
 
     /**
