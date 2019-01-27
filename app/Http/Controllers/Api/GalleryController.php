@@ -23,13 +23,13 @@ class GalleryController extends Controller
 
         $gallery = Gallery
             ::when(isset($data['name']), function ($gallery) use ($data) {
-                return $gallery->where('name', 'like', '%' . $data['name'] . '%');
+                return $gallery->orWhere('name', 'like', '%' . $data['name'] . '%');
             })
             ->when(isset($data['address']), function ($gallery) use ($data) {
-                return $gallery->where('address', 'like', '%' . $data['address'] . '%');
+                return $gallery->orWhere('address', 'like', '%' . $data['address'] . '%');
             })
             ->when(isset($data['phone']), function ($gallery) use ($data) {
-                return $gallery->where('phone', 'like', '%' . $data['phone'] . '%');
+                return $gallery->orWhere('phone', 'like', '%' . $data['phone'] . '%');
             });
 
         $per_page = 25;

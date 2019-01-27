@@ -252,7 +252,7 @@ class GalleryControllerTest extends TestCase
             [
                 'name' => $firstGallery->name,
                 'address' => $firstGallery->address,
-                'phone' => $firstGallery->phone
+                'phone' => $secondGallery->phone
             ],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
@@ -262,7 +262,20 @@ class GalleryControllerTest extends TestCase
         )
             ->assertStatus(200)
             ->assertJson([
-                'data' => 'pute'
+                'data' => [
+                    [
+                        'id' => $firstGallery->id,
+                        'name' => $firstGallery->name,
+                        'address' => $firstGallery->address,
+                        'phone' => $firstGallery->phone,
+                    ],
+                    [
+                        'id' => $secondGallery->id,
+                        'name' => $secondGallery->name,
+                        'address' => $secondGallery->address,
+                        'phone' => $secondGallery->phone,
+                    ]
+                ]
             ]);
     }
 
