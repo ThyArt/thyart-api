@@ -36,7 +36,6 @@ class ArtworkIndexRequest extends FormRequest
                Artwork::STATE_INCOMING,
                Artwork::STATE_SOLD
             ])],
-            'artist_id' => 'integer',
             'per_page' => 'integer'
         ];
     }

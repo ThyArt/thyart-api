@@ -21,7 +21,6 @@ class ArtworkResource extends JsonResource
             'price' => $this->price,
             'ref' => $this->ref,
             'state' => $this->state,
-            'artist_id' => $this->artist->id,
             'images' => MediaResource::collection($this->getMedia('images'))
         ];
     }

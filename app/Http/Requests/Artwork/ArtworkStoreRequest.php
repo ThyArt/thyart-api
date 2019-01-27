@@ -35,7 +35,6 @@ class ArtworkStoreRequest extends FormRequest
                 Artwork::STATE_INCOMING,
                 Artwork::STATE_SOLD
             ])],
-            'artist_id' => 'required|numeric',
             'images' => 'array',
         ];
     }

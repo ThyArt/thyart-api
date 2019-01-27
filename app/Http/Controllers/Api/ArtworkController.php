@@ -41,9 +41,6 @@ class ArtworkController extends Controller
             })
             ->when(isset($data['ref']), function ($artwork) use ($data) {
                 return $artwork->where('ref', 'like', $data['ref']);
-            })
-            ->when(isset($data['artist_id']), function ($artwork) use ($data) {
-                return $artwork->where('artist_id', '==', $data['artist_id']);
             });
 
         $per_page = 25;
@@ -65,8 +62,6 @@ class ArtworkController extends Controller
     {
         $data = $request->only(['name', 'price', 'state', 'ref']);
         $artwork = new Artwork($data);
-        $artist = Artist::findOrFail($request->get('artist_id'));
-        $artwork->artist()->associate($artist);
 
         /**
          *  We search for media in the request and save them in the artwork's media collection
@@ -146,11 +141,6 @@ class ArtworkController extends Controller
     {
         if ($artwork->user->id !== request()->user()->id) {
             throw new UnauthorizedException('The current user does not own this artwork.');
-        }
-        $artist_id = $request->get('artist_id');
-        if (isset($artist_id)) {
-            $artist = Artist::findOrFail($artist_id);
-            $artwork->artist()->associate($artist);
         }
         $artwork->fill($request->only(['name', 'price', 'state', 'ref']));
         $artwork->save();
