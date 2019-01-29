@@ -10,7 +10,6 @@ use App\Http\Requests\Artwork\ArtworkStoreRequest;
 use App\Http\Requests\Artwork\ArtworkUpdateRequest;
 use App\Http\Requests\Artwork\ImageStoreRequest;
 use App\Http\Resources\ArtworkResource;
-use http\Exception\UnexpectedValueException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\UnauthorizedException;
 use Spatie\MediaLibrary\Exceptions\MediaCannotBeDeleted;
@@ -108,7 +107,7 @@ class ArtworkController extends Controller
             $artwork->deleteMedia($media);
         }
         catch (MediaCannotBeDeleted $e) {
-            throw new UnexpectedValueException('Media not found in collection');
+            throw new UnauthorizedException('Media not found in collection');
         }
 
             return response()->json(['message' => 'Image deleted.'], 200);
