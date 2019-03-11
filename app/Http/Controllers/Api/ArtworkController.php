@@ -66,8 +66,9 @@ class ArtworkController extends Controller
          *  We search for media in the request and save them in the artwork's media collection
          */
 
-        if (($request->file('images')) != null)
+        if (($request->file('images')) != null) {
             $artwork->addMedia($request->file('images')[0])->toMediaCollection('images');
+        }
 
         return new ArtworkResource(
             $request
@@ -105,12 +106,11 @@ class ArtworkController extends Controller
 
         try {
             $artwork->deleteMedia($media);
-        }
-        catch (MediaCannotBeDeleted $e) {
+        } catch (MediaCannotBeDeleted $e) {
             throw new UnauthorizedException('Media not found in collection');
         }
 
-            return response()->json(['message' => 'Image deleted.'], 200);
+        return response()->json(['message' => 'Image deleted.'], 200);
     }
 
     /**

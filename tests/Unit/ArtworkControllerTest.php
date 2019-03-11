@@ -37,7 +37,6 @@ class ArtworkControllerTest extends TestCase
 
         for ($i = 0; $i < sizeof($this->artworks); ++$i) {
             $this->artworks[$i]->images = [];
-
         }
         $client = $this->clientRepository->create($this->user->id, 'Testing', 'http://localhost', false, true);
 
@@ -316,7 +315,6 @@ class ArtworkControllerTest extends TestCase
                 ]
 
             );
-
     }
 
     public function testStoreWithInvalidArguments()
@@ -377,7 +375,7 @@ class ArtworkControllerTest extends TestCase
                     'state' => Artwork::STATE_INCOMING,
                 ]
             ]);
-        print("CREATED");  
+        print("CREATED");
         $this->assertDatabaseHas('artworks', [
             'name' => $name,
             'price' => $price,
