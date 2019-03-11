@@ -24,7 +24,7 @@ class ArtworkController extends Controller
      */
     public function index(ArtworkIndexRequest $request)
     {
-        $data = $request->only(['name', 'price_min', 'price_max', 'state', 'ref', 'artist_id']);
+        $data = $request->only(['name', 'price_min', 'price_max', 'state', 'ref']);
         $artworks = $request->user()->artworks()
             ->when(isset($data['name']), function ($artwork) use ($data) {
                 return $artwork->where('name', 'like', '%' . $data['name'] . '%');

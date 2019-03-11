@@ -58,7 +58,7 @@ class ArtistControllerTest extends TestCase
         parent::tearDown();
 
         $this->user = null;
-        $this->artist = null;
+        $this->artists = null;
         $this->accessToken = null;
     }
 
