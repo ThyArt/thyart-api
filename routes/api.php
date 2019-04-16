@@ -66,13 +66,6 @@ Route::group(["namespace" => 'Api', 'prefix' => 'artwork', 'middleware' => 'auth
     Route::delete('/{artwork}/image/{media}', 'ArtworkController@destroyImage');
 });
 
-Route::group(["namespace" => 'Api', 'prefix' => 'order', 'middleware' => 'auth:api'], function () {
-    Route::post('', 'OrderController@store');
-    Route::get('', 'OrderController@index');
-    Route::get('/{order}', 'OrderController@show');
-    Route::delete('/{order}', 'OrderController@destroy');
-});
-
 Route::group(["namespace" => 'Auth', 'prefix' => 'password'], function () {
     Route::post('create', 'PasswordResetController@create');
 });
