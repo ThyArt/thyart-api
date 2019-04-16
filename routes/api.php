@@ -48,6 +48,13 @@ Route::group(["namespace" => 'Api', 'prefix' => 'customer', 'middleware' => 'aut
     Route::delete('/{customer}', 'CustomerController@destroy');
 });
 
+Route::group(["namespace" => 'Api', 'prefix' => 'order'], function () {
+    Route::post('', 'OrderController@store');
+    Route::get('', 'OrderController@index');
+    Route::get('/{order}', 'OrderController@show');
+    Route::delete('/{order}', 'OrderController@destroy');
+});
+
 Route::group(["namespace" => 'Api', 'prefix' => 'artwork', 'middleware' => 'auth:api'], function () {
     Route::post('', 'ArtworkController@store');
     Route::get('', 'ArtworkController@index');
