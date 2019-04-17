@@ -27,7 +27,7 @@ class ArtworkStoreRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
+            'price' => 'required|numeric|min:0',
             'ref' => 'required|string|max:255',
             'state' => ['required','string', Rule::in([
                 Artwork::STATE_EXPOSED,

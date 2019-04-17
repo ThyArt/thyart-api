@@ -54,7 +54,6 @@ class ArtworkController extends Controller
      * Store a newly created resource in storage.
      *
      * @param ArtworkStoreRequest $request
-     * @param Artist $artist
      * @return ArtworkResource
      */
     public function store(ArtworkStoreRequest $request)
@@ -121,7 +120,7 @@ class ArtworkController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Artwork  $artwork
+     * @param  $artwork
      * @return ArtworkResource
      */
 
@@ -138,7 +137,7 @@ class ArtworkController extends Controller
      * Update the specified resource in storage.
      *
      * @param ArtworkUpdateRequest $request
-     * @param  \App\Artwork $artwork
+     * @param  $artwork
      * @return ArtworkResource
      */
     public function update(ArtworkUpdateRequest $request, Artwork $artwork)
@@ -155,7 +154,7 @@ class ArtworkController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Artwork $artwork
+     * @param  $artwork
      * @return \Illuminate\Http\Response
      * @throws \Exception
      */

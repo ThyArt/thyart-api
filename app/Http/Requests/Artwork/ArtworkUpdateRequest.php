@@ -27,7 +27,7 @@ class ArtworkUpdateRequest extends FormRequest
     {
         return [
             'name' => 'string|max:255',
-            'price' => 'numeric',
+            'price' => 'numeric|min:0',
             'ref' => 'string|max:255',
             'state' => ['string', Rule::in([
                 Artwork::STATE_EXPOSED,

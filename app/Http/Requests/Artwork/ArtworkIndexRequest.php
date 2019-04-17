@@ -27,7 +27,7 @@ class ArtworkIndexRequest extends FormRequest
     {
         return [
             'name' => 'string|max:255',
-            'price_min' => 'numeric',
+            'price_min' => 'numeric|min:0',
             'price_max' => 'numeric',
             'ref' => 'string|max:255',
             'state' => ['string', Rule::in([
