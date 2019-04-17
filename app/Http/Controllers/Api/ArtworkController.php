@@ -68,6 +68,7 @@ class ArtworkController extends Controller
 
         if (($request->file('images')) != null) {
             $artwork->addMedia($request->file('images')[0])->toMediaCollection('images');
+            $artwork->save();
         }
 
         return new ArtworkResource(
@@ -92,9 +93,13 @@ class ArtworkController extends Controller
             throw new UnauthorizedException('The current user does not own this artwork.');
         }
 
-        $artwork->addMedia($request->file('images')[0])->toMediaCollection('images');
-        $artwork->save();
+        foreach ($request->file('images') as $file) {
+            //dd($file);
+            $artwork->addMedia($file)->toMediaCollection('images');
+            $artwork->save();
+        }
 
+        //dd($artwork->refresh()->getMedia());
         return new ArtworkResource($artwork->refresh());
     }
 

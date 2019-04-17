@@ -718,16 +718,16 @@ class ArtistControllerTest extends TestCase
             ->assertStatus(200)
             ->assertJson(
                 [
-                'data' => [
-                    'id' => $this->artists[0]->id,
-                    'first_name' => $this->artists[0]->first_name,
-                    'last_name' => $this->artists[0]->last_name,
-                    'phone' => $this->artists[0]->phone,
-                    'email' => $this->artists[0]->email,
-                    'address' => $this->artists[0]->address,
-                    'city' => $this->artists[0]->city,
-                    'country' => $this->artists[0]->country
-                ]]
+                    'data' => [
+                        'id' => $this->artists[0]->id,
+                        'first_name' => $this->artists[0]->first_name,
+                        'last_name' => $this->artists[0]->last_name,
+                        'phone' => $this->artists[0]->phone,
+                        'email' => $this->artists[0]->email,
+                        'address' => $this->artists[0]->address,
+                        'city' => $this->artists[0]->city,
+                        'country' => $this->artists[0]->country
+                    ]]
             );
     }
 
