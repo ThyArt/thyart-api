@@ -48,7 +48,7 @@ Route::group(["namespace" => 'Api', 'prefix' => 'customer', 'middleware' => 'aut
     Route::delete('/{customer}', 'CustomerController@destroy');
 });
 
-Route::group(["namespace" => 'Api', 'prefix' => 'order'], function () {
+Route::group(["namespace" => 'Api', 'prefix' => 'order', 'middleware' => 'auth:api'], function () {
     Route::post('', 'OrderController@store');
     Route::get('', 'OrderController@index');
     Route::get('/{order}', 'OrderController@show');

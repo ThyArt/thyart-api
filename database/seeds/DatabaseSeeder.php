@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             ArtistsTableSeeder::class,
             CustomersTableSeeder::class,
             ArtworkTableSeeder::class
+            OrdersTableSeeder::class
          ]);
     }
 }
