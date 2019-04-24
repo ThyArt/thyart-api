@@ -522,7 +522,7 @@ class ArtworkControllerTest extends TestCase
     public function testStoreImage()
     {
         $images = [
-            UploadedFile::fake()->image('/home/alexis/Pictures/godwin.png')
+            UploadedFile::fake()->image(Image::image())
         ];
         $this->json(
             'POST',
