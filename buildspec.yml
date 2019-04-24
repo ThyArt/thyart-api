@@ -1,22 +1,27 @@
 version: 0.2
 
 phases:
-  install:
-    commands:
-      - service mysql start
-      - mysql -u root -e "CREATE DATABASE thyart_codebuild;"
   pre_build:
     commands:
-       - cp .env.codebuild .env
+      - cp .env.codebuild .env
+      - echo "DB_CONNECTION=mysql" >> .env
+      - echo "DB_HOST=$DB_ENDPOINT" >> .env
+      - echo "DB_PORT=$DB_PORT" >> .env
+      - echo "DB_DATABASE=$DB_NAME" >> .env
+      - echo "DB_USERNAME=$DB_USERNAME" >> .env
+      - echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+
   build:
     commands:
       - composer install --no-interaction --prefer-dist
       - php artisan key:generate
       - php artisan migrate:refresh
       - php artisan passport:keys
-      - ./vendor/bin/phpunit
+      - phpunit
+
   post_build:
     commands:
+      - composer --no-dev update
       - rm .env
       - aws configure set aws_access_key_id $ACCESS_KEY_ID
       - aws configure set aws_secret_access_key $SECRET_ACCESS_KEY
@@ -24,7 +29,6 @@ phases:
       - aws s3 cp s3://thyart-environment-files/dev/dev-environment .env
       - aws s3 cp s3://thyart-environment-files/dev/oauth-private.key storage/oauth-private.key
       - aws s3 cp s3://thyart-environment-files/dev/oauth-public.key storage/oauth-public.key
-      - service mysql stop
 
 artifacts:
   files:
