@@ -4,7 +4,6 @@ phases:
   pre_build:
     commands:
       - cp .env.codebuild .env
-      - echo "DB_CONNECTION=mysql" >> .env
       - echo "DB_HOST=$DB_ENDPOINT" >> .env
       - echo "DB_PORT=$DB_PORT" >> .env
       - echo "DB_DATABASE=$DB_NAME" >> .env
