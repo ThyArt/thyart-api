@@ -42,11 +42,17 @@ class AwsDeploy extends Command
         Artisan::call('migrate', ['--force' => true]);
 
         if (!Client::where('password_client', true)->exists()) {
-            Artisan::call('passport:client', [
-                '--no-interaction' => true,
-                '--password' => true,
-                '--name' => 'ThyArt Password Grant Client'
+            $client = (new Client)->forceFill([
+                'user_id' => null,
+                'name' => 'ThyArt Password Grant Client',
+                'secret' => $_SERVER['PASSPORT_CLIENT_PASSWORD'],
+                'redirect' => 'http://localhost',
+                'personal_access_client' => false,
+                'password_client' => true,
+                'revoked' => false
             ]);
+
+            $client->save();
         }
     }
 }
