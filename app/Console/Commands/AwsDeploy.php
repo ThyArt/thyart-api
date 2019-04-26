@@ -45,7 +45,7 @@ class AwsDeploy extends Command
             $client = (new Client)->forceFill([
                 'user_id' => null,
                 'name' => 'ThyArt Password Grant Client',
-                'secret' => $_SERVER['PASSPORT_CLIENT_PASSWORD'],
+                'secret' => $_SERVER['PASSPORT_CLIENT_SECRET'],
                 'redirect' => 'http://localhost',
                 'personal_access_client' => false,
                 'password_client' => true,
