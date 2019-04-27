@@ -76,13 +76,20 @@ class UserControllerTest extends TestCase
                 'data' => [
                     [
                         'id' => $this->user->id,
+                        'firstname' => $this->user->firstname,
+                        'lastname' => $this->user->lastname,
                         'name' => $this->user->name,
                         'email' => $this->user->email,
+                        'role' => $this->user->role,
                     ],
                     [
                         'id' => $secondUser->id,
+                        'firstname' => $secondUser->firstname,
+                        'lastname' => $secondUser->lastname,
                         'name' => $secondUser->name,
                         'email' => $secondUser->email,
+                        'role' => $secondUser->role,
+
                     ]
                 ]
             ]);
@@ -102,6 +109,90 @@ class UserControllerTest extends TestCase
             ->assertStatus(401)
             ->assertJson(['message' => 'Unauthenticated.']);
     }
+
+    public function testIndexSearchByFirstname()
+    {
+        $secondUser = factory(User::class)->create();
+        $this->json(
+            'GET',
+            '/api/user',
+            ['firstname' => $secondUser->firstname],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    [
+                        'id' => $secondUser->id,
+                        'firstname' => $secondUser->firstname,
+                        'email' => $secondUser->email,
+                    ]
+                ]
+            ]);
+    }
+
+    public function testIndexSearchByFirstnameUnValid()
+    {
+        $this->json(
+            'GET',
+            '/api/user',
+            ['firstname' => 'Wrong Firstname'],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson(['data' => []]);
+    }
+
+    public function testIndexSearchByLastname()
+    {
+        $secondUser = factory(User::class)->create();
+        $this->json(
+            'GET',
+            '/api/user',
+            ['lastname' => $secondUser->lastname],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    [
+                        'id' => $secondUser->id,
+                        'lastname' => $secondUser->lastname,
+                        'email' => $secondUser->email,
+                    ]
+                ]
+            ]);
+    }
+
+    public function testIndexSearchByLastnameUnValid()
+    {
+        $this->json(
+            'GET',
+            '/api/user',
+            ['lastname' => 'Wrong lastname'],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson(['data' => []]);
+    }
+
+
 
     public function testIndexSearchByName()
     {
@@ -185,6 +276,59 @@ class UserControllerTest extends TestCase
             ->assertJson(['data' => []]);
     }
 
+    public function testIndexSearchByRole()
+    {
+        $secondUser = factory(User::class)->create();
+        $this->json(
+            'GET',
+            '/api/user',
+            ['role' => $secondUser->role],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    [
+                        'id' => $this->user->id,
+                        'firstname' => $this->user->firstname,
+                        'lastname' => $this->user->lastname,
+                        'name' => $this->user->name,
+                        'role' => $this->user->role,
+                        'email' => $this->user->email,
+                    ],
+                    [
+                        'id' => $secondUser->id,
+                        'firstname' => $secondUser->firstname,
+                        'lastname' => $secondUser->lastname,
+                        'name' => $secondUser->name,
+                        'role' => $secondUser->role,
+                        'email' => $secondUser->email,
+                    ]
+                ]
+            ]);
+    }
+
+    public function testIndexSearchByRoleUnValid()
+    {
+        $this->json(
+            'GET',
+            '/api/user',
+            ['role' => 'Wrong role'],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson(['data' => []]);
+    }
+
+
     public function testIndexSearchByMultipleFields()
     {
         $secondUser = factory(User::class)->create();
@@ -192,8 +336,11 @@ class UserControllerTest extends TestCase
             'GET',
             '/api/user',
             [
+                'firstname' => $this->user->firstname,
+                'lastname' => $this->user->lastname,
                 'name' => $this->user->name,
-                'email' => $secondUser->email
+                'email' => $secondUser->email,
+                'role' => $secondUser->role
             ],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
@@ -235,6 +382,8 @@ class UserControllerTest extends TestCase
                     "error" => "validation_failed",
                     "messages" => [
                         "The name field is required.",
+                        "The firstname field is required.",
+                        "The lastname field is required.",
                         "The email field is required.",
                         "The password field is required."
                     ]
@@ -248,6 +397,8 @@ class UserControllerTest extends TestCase
             'POST',
             '/api/user',
             [
+                'firstname' => str_random(256),
+                'lastname' => str_random(256),
                 'name' => str_random(256),
                 'email' => str_random(256),
                 'password' => str_random(4)
@@ -262,6 +413,8 @@ class UserControllerTest extends TestCase
                 "error" => "validation_failed",
                 "messages" => [
                     "The name may not be greater than 255 characters.",
+                    "The firstname may not be greater than 255 characters.",
+                    "The lastname may not be greater than 255 characters.",
                     "The email must be a valid email address.",
                     "The email may not be greater than 255 characters.",
                     "The password must be at least 6 characters.",
@@ -275,6 +428,8 @@ class UserControllerTest extends TestCase
             'POST',
             '/api/user',
             [
+                'firstname' => str_random(10),
+                'lastname' => str_random(10),
                 'name' => str_random(10),
                 'email' => $this->user->email,
                 'password' => str_random(6)
@@ -295,6 +450,8 @@ class UserControllerTest extends TestCase
 
     public function testStoreWithValidArguments()
     {
+        $firstname = 'TestFirstname';
+        $lastname = 'TestLastname';
         $name = 'TestName';
         $email = 'test@example.com';
         $password = 'TestPassword';
@@ -303,6 +460,8 @@ class UserControllerTest extends TestCase
             'POST',
             '/api/user',
             [
+                'firstname' => $firstname,
+                'lastname' => $lastname,
                 'name' => $name,
                 'email' => $email,
                 'password' => $password
@@ -314,9 +473,12 @@ class UserControllerTest extends TestCase
         )
             ->assertStatus(201)
             ->assertJson([
-                "data" => [
-                    "name" => $name,
-                    "email" => $email,
+                'data' => [
+                    'firstname' => $firstname,
+                    'lastname' => $lastname,
+                    'name' => $name,
+                    'email' => $email,
+                    'role' => 'admin'
                 ],
             ]);
 
@@ -358,8 +520,11 @@ class UserControllerTest extends TestCase
             ->assertJson([
                 'data' => [
                     'id' => $this->user->id,
+                    'firstname' => $this->user->firstname,
+                    'lastname' => $this->user->lastname,
+                    'name' => $this->user->name,
                     'email' => $this->user->email,
-                    'name' => $this->user->name
+                    'role' => $this->user->role
                 ],
             ]);
     }
@@ -396,8 +561,11 @@ class UserControllerTest extends TestCase
             ->assertJson([
                 'data' => [
                     'id' => $this->user->id,
+                    'firstname' => $this->user->firstname,
+                    'lastname' => $this->user->lastname,
+                    'name' => $this->user->name,
                     'email' => $this->user->email,
-                    'name' => $this->user->name
+                    'role' => $this->user->role
                 ],
             ]);
     }
@@ -408,8 +576,11 @@ class UserControllerTest extends TestCase
             'PATCH',
             '/api/user',
             [
+                'firstname' => str_random(256),
+                'lastname' => str_random(256),
                 'name' => str_random(256),
                 'email' => str_random(256),
+                'role' => str_random(256),
                 'password' => str_random(4)
             ],
             [
@@ -423,6 +594,9 @@ class UserControllerTest extends TestCase
                 "error" => "validation_failed",
                 "messages" => [
                     "The name may not be greater than 255 characters.",
+                    "The firstname may not be greater than 255 characters.",
+                    "The lastname may not be greater than 255 characters.",
+                    "The role may not be greater than 255 characters.",
                     "The email must be a valid email address.",
                     "The email may not be greater than 255 characters.",
                     "The password must be at least 6 characters.",
@@ -457,16 +631,22 @@ class UserControllerTest extends TestCase
 
     public function testUpdateWithValidArguments()
     {
+        $firstname = 'TestFirstname';
+        $lastname = 'TestLastname';
         $name = 'TestName';
         $email = 'test@example.com';
+        $role = 'test';
         $password = 'TestPassword';
 
         $this->json(
             'PATCH',
             '/api/user',
             [
+                'firstname' => $firstname,
+                'lastname' => $lastname,
                 'name' => $name,
                 'email' => $email,
+                'role' => $role,
                 'password' => $password
             ],
             [
@@ -478,9 +658,12 @@ class UserControllerTest extends TestCase
             ->assertStatus(200)
             ->assertJson([
                 'data' => [
-                    'name' => $name,
-                    'email' => $email,
                     'id' => $this->user->id,
+                    'firstname' => $firstname,
+                    'lastname' => $lastname,
+                    'name' => $name,
+                    'role' => $role,
+                    'email' => $email,
                 ]
             ]);
 

@@ -10,8 +10,11 @@ use Laravel\Passport\HasApiTokens;
  * App\User
  *
  * @property int $id
+ * @property string $firstname
+ * @property string $lastname
  * @property string $name
  * @property string $email
+ * @property string $role
  * @property string $password
  * @property string|null $remember_token
  * @property \Carbon\Carbon|null $created_at
@@ -22,7 +25,10 @@ use Laravel\Passport\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmail($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereFirstname($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereLastname($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereRole($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User wherePassword($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereUpdatedAt($value)
@@ -38,7 +44,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'firstname', 'lastname', 'name', 'email', 'role', 'password',
     ];
 
     /**
@@ -58,5 +64,10 @@ class User extends Authenticatable
     public function customers()
     {
         return $this->hasMany(Customer::class);
+    }
+
+    public function artworks()
+    {
+        return $this->hasMany(Artwork::class);
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\PasswordReset;
+namespace App\Http\Requests\Artwork;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PasswordResetRequest extends FormRequest
+class ImageStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,7 @@ class PasswordResetRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|string|email',
-            'password' => 'required|string|confirmed',
-            'token' => 'required|string'
+            'images' => 'array',
         ];
     }
 }

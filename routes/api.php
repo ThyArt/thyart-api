@@ -18,6 +18,7 @@ Route::get('/ping', 'Api\PingController@ping');
 Route::group(["namespace" => 'Api', 'prefix' => 'user'], function () {
     Route::post('', 'UserController@store');
     Route::get('', 'UserController@index');
+    Route::get('/self', 'UserController@showByToken');
     Route::get('/{user}', 'UserController@show');
     Route::patch('', 'UserController@update');
     Route::delete('', 'UserController@destroy');
@@ -39,8 +40,17 @@ Route::group(["namespace" => 'Api', 'prefix' => 'customer', 'middleware' => 'aut
     Route::delete('/{customer}', 'CustomerController@destroy');
 });
 
+Route::group(["namespace" => 'Api', 'prefix' => 'artwork', 'middleware' => 'auth:api'], function () {
+    Route::post('', 'ArtworkController@store');
+    Route::get('', 'ArtworkController@index');
+    Route::get('/{artwork}', 'ArtworkController@show');
+    Route::patch('/{artwork}', 'ArtworkController@update');
+    route::delete('/{artwork}', 'ArtworkController@destroy');
+
+    Route::post('/{artwork}/image', 'ArtworkController@storeImage');
+    Route::delete('/{artwork}/image/{media}', 'ArtworkController@destroyImage');
+});
+
 Route::group(["namespace" => 'Auth', 'prefix' => 'password'], function () {
     Route::post('create', 'PasswordResetController@create');
-    Route::get('find/{token}', 'PasswordResetController@find');
-    Route::post('reset', 'PasswordResetController@reset');
 });
