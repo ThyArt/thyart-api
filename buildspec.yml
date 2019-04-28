@@ -24,9 +24,9 @@ phases:
       - aws configure set aws_access_key_id $ACCESS_KEY_ID
       - aws configure set aws_secret_access_key $SECRET_ACCESS_KEY
       - aws configure set default.region eu-west-1
-      - aws s3 cp s3://thyart-environment-files/dev/dev-environment .env
-      - aws s3 cp s3://thyart-environment-files/dev/oauth-private.key storage/oauth-private.key
-      - aws s3 cp s3://thyart-environment-files/dev/oauth-public.key storage/oauth-public.key
+      - aws s3 cp s3://thyart-environment-files/$DEPLOYMENT_ENVIRONMENT/.env .env
+      - aws s3 cp s3://thyart-environment-files/$DEPLOYMENT_ENVIRONMENT/oauth-private.key storage/oauth-private.key
+      - aws s3 cp s3://thyart-environment-files/$DEPLOYMENT_ENVIRONMENT/oauth-public.key storage/oauth-public.key
 
 artifacts:
   files:
