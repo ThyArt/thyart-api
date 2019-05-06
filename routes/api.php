@@ -75,3 +75,7 @@ Route::group(["namespace" => 'Api', 'prefix' => 'order', 'middleware' => 'auth:a
 Route::group(["namespace" => 'Auth', 'prefix' => 'password'], function () {
     Route::post('create', 'PasswordResetController@create');
 });
+
+Route::group(["namespace" => 'Api', 'prefix' => 'stat', 'middleware' => 'auth:api'], function () {
+    Route::get('/{user}', 'StatController@process');
+});
