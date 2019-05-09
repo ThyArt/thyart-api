@@ -64,7 +64,8 @@ Route::group(["namespace" => 'Api', 'prefix' => 'artwork', 'middleware' => 'auth
 
     Route::post('/{artwork}/image', 'ArtworkController@storeImage');
     Route::delete('/{artwork}/image/{media}', 'ArtworkController@destroyImage');
-}
+});
+
 Route::group(["namespace" => 'Api', 'prefix' => 'order', 'middleware' => 'auth:api'], function () {
     Route::post('', 'OrderController@store');
     Route::get('', 'OrderController@index');
