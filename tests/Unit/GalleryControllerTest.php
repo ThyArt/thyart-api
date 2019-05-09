@@ -25,7 +25,7 @@ class GalleryControllerTest extends TestCase
         $this->userPassword = 'UserControllerTest';
     }
 
-     protected function setUp()
+    protected function setUp()
     {
         parent::setUp();
 

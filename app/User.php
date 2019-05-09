@@ -56,6 +56,11 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    public function galleries()
+    {
+        return $this->hasMany(Gallery::class);
+    }
+
     public function artists()
     {
         return $this->hasMany(Artist::class);
