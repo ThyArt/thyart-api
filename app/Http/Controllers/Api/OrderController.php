@@ -18,11 +18,17 @@ class OrderController extends Controller
 
     public function index(OrderIndexRequest $request)
     {
-        $data = $request->only(['price', 'per_page']);
+        $data = $request->only(['customer_id', 'artwork_id', 'date', 'per_page']);
 
         $order = $request->user()->orders()
-            ->when(isset($data['price']), function ($order) use ($data) {
-                return $order->where('price', 'like', '%' . $data['price'] . '%');
+            ->when(isset($data['customer_id']), function ($order) use ($data) {
+                return $order->where('customer_id', 'like', '%' . $data['customer_id'] . '%');
+            })
+            ->when(isset($data['artwork_id']), function ($order) use ($data) {
+                return $order->where('artwork_id', 'like', '%' . $data['artwork_id'] . '%');
+            })
+            ->when(isset($data['date']), function ($order) use ($data) {
+                return $order->where('date', 'like', '%' . $data['date'] . '%');
             });
 
         $per_page = 25;
