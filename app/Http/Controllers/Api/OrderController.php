@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Order;
+use App\Customer;
+use App\Artwork;
+use App\User;
+use Auth;
 use App\Http\Requests\Order\OrderIndexRequest;
 use App\Http\Requests\Order\OrderStoreRequest;
 use Illuminate\Routing\Controller;
@@ -31,9 +35,25 @@ class OrderController extends Controller
 
     public function store(OrderStoreRequest $request)
     {
+        $data = $request->only(['email', 'first_name', 'last_name', 'phone', 'address', 'country', 'city', 'artwork_id', 'date']);
+        $customer = Customer::firstOrNew(['email' => $data['email']],
+                    ['first_name' => $data['first_name'],
+                    'last_name' => $data['last_name'],
+                    'phone' => $data['phone'],
+                    'address' => $data['address'],
+                    'country' => $data['country'],
+                    'city' => $data['city']]);
+
+        $request->user()->customers()->save($customer);
+        $artowrk = Artwork::where('id', '=', $data['artwork_id'])->firstOrFail();
+
         return new OrderResource(
-            $request->user()->orders()->create($request->only(['price']))
-        );
+            $request->user()->orders()->create([
+                'customer_id' => $customer->id,
+                'artwork_id' => $data['artwork_id'],
+                'date' => $data['date']
+            ]));
+
     }
 
 

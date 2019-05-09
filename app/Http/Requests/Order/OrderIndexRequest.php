@@ -24,7 +24,9 @@ class OrderIndexRequest extends FormRequest
     public function rules()
     {
         return [
-            'price' => 'string|max:255',
+            'customer_id' => 'integer',
+            'artwork_id' => 'integer',
+            'date' => 'string|max:255',
             'per_page' => 'integer'
         ];
     }

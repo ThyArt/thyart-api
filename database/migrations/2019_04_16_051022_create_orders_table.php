@@ -16,7 +16,9 @@ class CreateOrdersTable extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
-            $table->string('price');
+            $table->integer('customer_id')->unsigned();
+            $table->integer('artwork_id')->unsigned();
+            $table->string('date');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

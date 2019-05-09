@@ -24,7 +24,15 @@ class OrderStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'price' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|string|max:255',
+            'phone' => 'required|phone:FR',
+            'address' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+            'artwork_id' => 'required|integer',
+            'date' => 'required|string|max:255',        
         ];
     }
 }
