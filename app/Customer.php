@@ -22,6 +22,20 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer wherePhone($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int $user_id
+ * @property string $address
+ * @property string $country
+ * @property string $city
+ * @property-read \App\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereCountry($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereFirstName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereLastName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereUserId($value)
  */
 class Customer extends Model
 {

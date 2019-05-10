@@ -18,11 +18,10 @@ class CreateOrdersTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->integer('customer_id')->unsigned();
             $table->integer('artwork_id')->unsigned();
-            $table->string('date');
+            $table->date('date');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-
         });
     }
 

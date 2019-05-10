@@ -18,7 +18,7 @@ class OrderResource extends JsonResource
             'id' => $this->id,
             'customer_id' => $this->customer_id,
             'artwork_id' => $this->artwork_id,
-            'date' => $this->date
-        ];    
+            'date' => $this->date->format('Y-m-d')
+        ];
     }
 }

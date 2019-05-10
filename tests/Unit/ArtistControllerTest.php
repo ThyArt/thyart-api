@@ -4,7 +4,6 @@ namespace Tests\Unit;
 
 use App\Artist;
 use App\User;
-use Faker\Provider\fr_FR\PhoneNumber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Passport\ClientRepository;
 use Tests\TestCase;

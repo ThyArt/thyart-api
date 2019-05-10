@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\ArtworkNotAvailableException;
 use App\Order;
 use App\Customer;
 use App\Artwork;
@@ -9,13 +10,13 @@ use App\User;
 use Auth;
 use App\Http\Requests\Order\OrderIndexRequest;
 use App\Http\Requests\Order\OrderStoreRequest;
+use Carbon\Carbon;
 use Illuminate\Routing\Controller;
 use App\Http\Resources\OrderResource;
 use Illuminate\Validation\UnauthorizedException;
 
 class OrderController extends Controller
 {
-
     public function index(OrderIndexRequest $request)
     {
         $data = $request->only(['customer_id', 'artwork_id', 'date', 'per_page']);
@@ -39,27 +40,42 @@ class OrderController extends Controller
     }
 
 
+    /**
+     * @param OrderStoreRequest $request
+     * @return OrderResource
+     * @throws ArtworkNotAvailableException
+     */
     public function store(OrderStoreRequest $request)
     {
+        $user = $request->user();
+
         $data = $request->only(['email', 'first_name', 'last_name', 'phone', 'address', 'country', 'city', 'artwork_id', 'date']);
-        $customer = Customer::firstOrNew(['email' => $data['email']],
-                    ['first_name' => $data['first_name'],
+        $customer = $user->customers()->firstOrNew(
+            ['email' => $data['email']],
+            ['first_name' => $data['first_name'],
                     'last_name' => $data['last_name'],
                     'phone' => $data['phone'],
                     'address' => $data['address'],
                     'country' => $data['country'],
-                    'city' => $data['city']]);
+                    'city' => $data['city']]
+        );
 
-        $request->user()->customers()->save($customer);
-        $artowrk = Artwork::where('id', '=', $data['artwork_id'])->firstOrFail();
+        $artwork =  $user->artworks()->findOrFail($data['artwork_id']);
+
+        if (!$artwork->isAvailableForSold()) {
+            throw new ArtworkNotAvailableException($artwork);
+        }
+
+        $artwork->state = Artwork::STATE_SOLD;
+        $artwork->save();
 
         return new OrderResource(
             $request->user()->orders()->create([
                 'customer_id' => $customer->id,
-                'artwork_id' => $data['artwork_id'],
-                'date' => $data['date']
-            ]));
-
+                'artwork_id' => $artwork->id,
+                'date' => Carbon::createFromFormat('Y-m-d', $data['date'])
+            ])
+        );
     }
 
 
@@ -80,4 +96,5 @@ class OrderController extends Controller
         $order->delete();
 
         return response()->json(['message' => 'Order deleted.'], 200);
-    }}
+    }
+}

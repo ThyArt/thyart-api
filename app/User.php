@@ -33,6 +33,14 @@ use Laravel\Passport\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Artist[] $artists
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Artwork[] $artworks
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Customer[] $customers
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Gallery[] $galleries
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Order[] $orders
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User query()
  */
 class User extends Authenticatable
 {

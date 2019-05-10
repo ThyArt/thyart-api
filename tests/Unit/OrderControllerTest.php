@@ -2,21 +2,24 @@
 
 namespace Tests\Unit;
 
+use App\Artwork;
+use App\Customer;
 use App\Order;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Passport\ClientRepository;
 use Tests\TestCase;
-
+use Faker\Provider\DateTime as FakeDate;
 
 class OrderControllerTest extends TestCase
 {
-
-	private $clientRepository;
+    private $clientRepository;
     private $userPassword;
     private $user;
     private $accessToken;
-    private $orders;
+    private $customer;
+    private $artwork;
+    private $order;
 
     use RefreshDatabase;
 
@@ -32,7 +35,14 @@ class OrderControllerTest extends TestCase
         parent::setUp();
 
         $this->user = factory(User::class)->create(['password' => bcrypt($this->userPassword)]);
-        $this->orders = factory(Order::class)->create(['user_id' => $this->user->id]);
+        $this->customer = factory(Customer::class)->create(['user_id' => $this->user->id]);
+        $this->artwork = factory(Artwork::class)->create(['user_id' => $this->user->id, 'state' => Artwork::STATE_IN_STOCK]);
+
+        $this->order = factory(Order::class)->create([
+            'user_id' => $this->user->id,
+            'customer_id' => $this->customer->id,
+            'artwork_id' => $this->artwork->id
+        ]);
 
         $client = $this->clientRepository->create($this->user->id, 'Testing', 'http://localhost', false, true);
 
@@ -58,14 +68,12 @@ class OrderControllerTest extends TestCase
     {
         parent::tearDown();
 
-        $this->user = null;
-        $this->orders = null;
-        $this->accessToken = null;
+        unset($this->user);
+        unset($this->order);
+        unset($this->accessToken);
+        unset($this->customer);
+        unset($this->artwork);
     }
-
-    //--------
-    // Index
-    //--------
 
     public function testIndex()
     {
@@ -83,8 +91,10 @@ class OrderControllerTest extends TestCase
             ->assertJson([
                 'data' => [
                     [
-                        'id' => $this->orders->id,
-                        'price' => $this->orders->price
+                        'id' => $this->order->id,
+                        'customer_id' => $this->customer->id,
+                        'artwork_id' => $this->artwork->id,
+                        'date' => $this->order->date->format('Y-m-d'),
                     ]
                 ]
             ]);
@@ -105,52 +115,7 @@ class OrderControllerTest extends TestCase
             ->assertJson(['message' => 'Unauthenticated.']);
     }
 
-    public function testIndexSearchByPrice()
-    {
-        $this->json(
-            'GET',
-            '/api/order',
-            ['price' => $this->orders->price],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(200)
-            ->assertJson([
-                'data' => [
-                    [
-                        'id' => $this->orders->id,
-                        'price' => $this->orders->price
-                    ]
-                ]
-            ]);
-    }
-
-    public function testIndexSearchByNonValidFirstName()
-    {
-        $this->json(
-            'GET',
-            '/api/order',
-            ['price' => 'Wrong Price'],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(200)
-            ->assertJson([
-                'data' => []
-            ]);
-    }
-
-    //----------------
-    //STORE
-    // --------------
-
-       public function testStoreWithNonExistentArguments()
+    public function testStoreWithNonExistentArguments()
     {
         $this->json(
             'POST',
@@ -167,7 +132,15 @@ class OrderControllerTest extends TestCase
                 [
                     "error" => "validation_failed",
                     "messages" => [
-                        "The price field is required.",
+                        "The first name field is required.",
+                        "The last name field is required.",
+                        "The email field is required.",
+                        "The phone field is required.",
+                        "The address field is required.",
+                        "The city field is required.",
+                        "The country field is required.",
+                        "The artwork id field is required.",
+                        "The date field is required."
                     ]
                 ]
 
@@ -180,7 +153,15 @@ class OrderControllerTest extends TestCase
             'POST',
             '/api/order',
             [
-                'price' => str_random(256),
+                'first_name' => str_random(256),
+                'last_name' => str_random(256),
+                'email' => str_random(256),
+                'phone' => str_random(256),
+                'address' => str_random(256),
+                'city' => str_random(256),
+                'country' => str_random(256),
+                'artwork_id' => str_random(256),
+                'date' => str_random(256)
             ],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
@@ -192,20 +173,37 @@ class OrderControllerTest extends TestCase
             ->assertJson([
                 "error" => "validation_failed",
                 "messages" => [
-                    "The price may not be greater than 255 characters.",
+                    "The first name may not be greater than 255 characters.",
+                    "The last name may not be greater than 255 characters.",
+                    "The email must be a valid email address.",
+                    "The email may not be greater than 255 characters.",
+                    "The phone field contains an invalid number.",
+                    "The address may not be greater than 255 characters.",
+                    "The city may not be greater than 255 characters.",
+                    "The country may not be greater than 255 characters.",
+                    "The artwork id must be an integer.",
+                    "The date is not a valid date."
                 ]
             ]);
     }
 
     public function testStoreWithValidArguments()
     {
-        $price = 'firstName';
-
+        $this->artwork = factory(Artwork::class)->create(['user_id' => $this->user->id]);
+        $date = FakeDate::date();
         $this->json(
             'POST',
             '/api/order',
             [
-                'price' => $price
+                'first_name' => $this->customer->first_name,
+                'last_name' => $this->customer->last_name,
+                'email' => $this->customer->email,
+                'phone' => $this->customer->phone,
+                'address' => $this->customer->address,
+                'city' => $this->customer->city,
+                'country' => $this->customer->country,
+                'artwork_id' => $this->artwork->id,
+                'date' => $date,
             ],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
@@ -216,7 +214,9 @@ class OrderControllerTest extends TestCase
             ->assertStatus(201)
             ->assertJson([
                 "data" => [
-                    'price' => $price
+                    'customer_id' => $this->customer->id,
+                    'artwork_id' => $this->artwork->id,
+                    'date' => $date,
                 ],
             ]);
     }
@@ -241,7 +241,7 @@ class OrderControllerTest extends TestCase
     // -----------
 
 
-        public function testDeleteWithInvalidId()
+    public function testDeleteWithInvalidId()
     {
         $this->json(
             'DELETE',
@@ -264,7 +264,7 @@ class OrderControllerTest extends TestCase
     {
         $this->json(
             'DELETE',
-            '/api/order/' . $this->orders->id,
+            '/api/order/' . $this->order->id,
             [],
             [
                 'Accept' => 'application/json',
@@ -282,7 +282,7 @@ class OrderControllerTest extends TestCase
     {
         $this->json(
             'DELETE',
-            '/api/order/' . $this->orders->id,
+            '/api/order/' . $this->order->id,
             [],
             [
                 'Accept' => 'application/json',

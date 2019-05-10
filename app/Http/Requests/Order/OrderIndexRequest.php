@@ -26,7 +26,7 @@ class OrderIndexRequest extends FormRequest
         return [
             'customer_id' => 'integer',
             'artwork_id' => 'integer',
-            'date' => 'string|max:255',
+            'date' => 'date',
             'per_page' => 'integer'
         ];
     }

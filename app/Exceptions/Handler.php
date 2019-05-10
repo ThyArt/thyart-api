@@ -67,6 +67,11 @@ class Handler extends ExceptionHandler
                 'error' => 'validation_failed',
                 'messages' => $exception->validator->errors()->all()
             ], 400);
+        } elseif ($exception instanceof ArtworkNotAvailableException) {
+            return response()->json([
+               'error' => 'artwork_not_available',
+               'message' => $exception->getMessage()
+            ]);
         }
 
         return parent::render($request, $exception);

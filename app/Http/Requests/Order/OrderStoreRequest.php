@@ -32,7 +32,7 @@ class OrderStoreRequest extends FormRequest
             'city' => 'required|string|max:255',
             'country' => 'required|string|max:255',
             'artwork_id' => 'required|integer',
-            'date' => 'required|string|max:255',        
+            'date' => 'required|date',
         ];
     }
 }
