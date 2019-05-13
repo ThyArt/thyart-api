@@ -61,7 +61,7 @@ class OrderController extends Controller
         );
 
         $artwork =  $user->artworks()->findOrFail($data['artwork_id']);
-
+        $customer->save();
         if (!$artwork->isAvailableForSold()) {
             throw new ArtworkNotAvailableException($artwork);
         }
