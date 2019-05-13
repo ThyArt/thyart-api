@@ -20,5 +20,16 @@ class OrderResource extends JsonResource
             'artwork_id' => $this->artwork_id,
             'date' => $this->date->format('Y-m-d')
         ];
+    }    
+
+    public function with($request)
+    {
+        return [
+            'id' => $this->id,
+            'customer_id' => $this->customer_id,
+            'artwork_id' => $this->artwork_id
+        ];
     }
+
+
 }

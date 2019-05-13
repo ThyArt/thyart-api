@@ -36,6 +36,10 @@ class OrderController extends Controller
         if (isset($data['per_page'])) {
             $per_page = min(1000, intval($data['per_page']));
         }
+        if (empty($data))
+        {
+            
+        }
         return OrderResource::collection($order->paginate($per_page));
     }
 
