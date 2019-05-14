@@ -13,6 +13,7 @@ use App\Http\Requests\Order\OrderStoreRequest;
 use Carbon\Carbon;
 use Illuminate\Routing\Controller;
 use App\Http\Resources\OrderResource;
+use App\Http\Resources\OrderDetailResource;
 use Illuminate\Validation\UnauthorizedException;
 
 class OrderController extends Controller
@@ -84,7 +85,7 @@ class OrderController extends Controller
         if ($order->user->id !== request()->user()->id) {
             throw new UnauthorizedException('The current user does not own this order.');
         }
-        return new OrderResource($order);
+        return new OrderDetailResource($order);
     }
 
     public function destroy(Order $order)
