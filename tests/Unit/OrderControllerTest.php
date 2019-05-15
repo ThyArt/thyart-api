@@ -79,6 +79,12 @@ class OrderControllerTest extends TestCase
         unset($this->artwork);
     }
 
+    ////////////////
+    //
+    //    INDEX
+    //
+    ////////////////
+
     public function testIndex()
     {
         $this->json(
@@ -118,6 +124,141 @@ class OrderControllerTest extends TestCase
             ->assertStatus(401)
             ->assertJson(['message' => 'Unauthenticated.']);
     }
+
+    public function testIndexSearchByValidCustomer_id()
+    {
+        $this->json(
+            'GET',
+            '/api/order',
+            ['customer_id' => $this->order->customer_id],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    [
+                        'id' => $this->order->id,
+                        'customer_id' => $this->customer->id,
+                        'artwork_id' => $this->artwork->id,
+                        'date' => $this->order->date->format('Y-m-d'),
+                    ]
+                ]
+            ]);
+    }
+
+    public function testIndexSearchByNonValidCustomer_id()
+    {
+        $this->json(
+            'GET',
+            '/api/order',
+            ['customer_id' => '9999'],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => []
+            ]);
+    }
+
+    public function testIndexSearchByValidArtwork_id()
+    {
+        $this->json(
+            'GET',
+            '/api/order',
+            ['artwork_id' => $this->order->artwork_id],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    [
+                        'id' => $this->order->id,
+                        'customer_id' => $this->customer->id,
+                        'artwork_id' => $this->artwork->id,
+                        'date' => $this->order->date->format('Y-m-d'),
+                    ]
+                ]
+            ]);
+    }
+
+    public function testIndexSearchByNonValidArtwork_id()
+    {
+        $this->json(
+            'GET',
+            '/api/order',
+            ['artwork_id' => '9999'],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => []
+            ]);
+    }
+
+    public function testIndexSearchByValidDate()
+    {
+        $this->json(
+            'GET',
+            '/api/order',
+            ['date' => $this->order->date->format('Y-m-d')],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    [
+                        'id' => $this->order->id,
+                        'customer_id' => $this->customer->id,
+                        'artwork_id' => $this->artwork->id,
+                        'date' => $this->order->date->format('Y-m-d'),
+                    ]
+                ]
+            ]);
+    }
+
+    public function testIndexSearchByNonValidDate()
+    {
+        $this->json(
+            'GET',
+            '/api/order',
+            ['date' => '1001-01-01'],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => []
+            ]);
+    }
+
+    ////////////////
+    //
+    //    STORE
+    //
+    ////////////////
 
     public function testStoreWithNonExistentArguments()
     {
@@ -240,9 +381,85 @@ class OrderControllerTest extends TestCase
             ->assertJson(['message' => 'Unauthenticated.']);
     }
 
-    //------------
-    // DELETE
-    // -----------
+    ////////////////
+    //
+    //    SHOW
+    //
+    ////////////////
+
+        public function testShowWithInvalidId()
+    {
+        $this->json(
+            'GET',
+            '/api/order/99999',
+            [],
+            [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $this->accessToken,
+            ]
+        )
+            ->assertStatus(404)
+            ->assertJson([
+                'error' => 'model_not_found',
+                'message' => 'Order with such parameters does not exists.'
+            ]);
+    }
+
+    public function testShowWithValidId()
+    {
+        $this->json(
+            'GET',
+            '/api/order/' . $this->order->id,
+            [],
+            [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $this->accessToken,
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                        'id' => $this->order->id,
+                        'customer_id' => $this->customer->id,
+                        'customer_first_name' => $this->customer->first_name,
+                        'customer_last_name' => $this->customer->last_name,
+                        'customer_phone' => $this->customer->phone,
+                        'customer_email' => $this->customer->email,
+                        'customer_address' => $this->customer->address,
+                        'customer_city' => $this->customer->city,
+                        'customer_country' => $this->customer->country,
+                        'artwork_id' => $this->artwork->id,
+                        'artwork_name' => $this->artwork->name,
+                        'artwork_price' => $this->artwork->price,
+                        'artwork_ref' => $this->artwork->ref,
+                        'artwork_state' => $this->artwork->state,
+                        'artwork_images' => $this->artwork->images,
+                ]
+            ]);
+    }
+
+    public function testShowUnauthenticated()
+    {
+        $this->json(
+            'GET',
+            '/api/order/' . $this->order->id,
+            [],
+            [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ]
+        )
+            ->assertStatus(401)
+            ->assertJson(['message' => 'Unauthenticated.']);
+    }
+
+    ////////////////
+    //
+    //    DELETE
+    //
+    ////////////////
 
 
     public function testDeleteWithInvalidId()
