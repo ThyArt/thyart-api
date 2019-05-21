@@ -7,6 +7,7 @@ use App\Customer;
 use App\Order;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Laravel\Passport\ClientRepository;
 use Tests\TestCase;
 use Faker\Provider\DateTime as FakeDate;
@@ -33,6 +34,9 @@ class OrderControllerTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
+        $this->withoutMiddleware(
+            ThrottleRequests::class
+        );
 
         $this->user = factory(User::class)->create(['password' => bcrypt($this->userPassword)]);
         $this->customer = factory(Customer::class)->create(['user_id' => $this->user->id]);

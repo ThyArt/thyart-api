@@ -2,6 +2,9 @@
 
 namespace Tests\Unit;
 
+use App\Http\Resources\MediaResource;
+use Illuminate\Routing\Middleware\ThrottleRequests;
+use Spatie\MediaLibrary\Models\Media;
 use Tests\TestCase;
 use App\Artwork;
 use App\User;
@@ -16,7 +19,7 @@ class ArtworkControllerTest extends TestCase
     private $userPassword;
     private $user;
     private $accessToken;
-    private $artworks;
+    private $artwork;
 
     use RefreshDatabase;
 
@@ -30,9 +33,12 @@ class ArtworkControllerTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
+        $this->withoutMiddleware(
+            ThrottleRequests::class
+        );
 
         $this->user = factory(User::class)->create(['password' => bcrypt($this->userPassword)]);
-        $this->artworks = factory(Artwork::class, 1)->create(['user_id' => $this->user->id]);
+        $this->artwork = factory(Artwork::class)->create(['user_id' => $this->user->id]);
 
         $client = $this->clientRepository->create($this->user->id, 'Testing', 'http://localhost', false, true);
 
@@ -59,7 +65,7 @@ class ArtworkControllerTest extends TestCase
         parent::tearDown();
 
         $this->user = null;
-        $this->artworks = null;
+        $this->artwork = null;
         $this->accessToken = null;
     }
 
@@ -79,12 +85,12 @@ class ArtworkControllerTest extends TestCase
             ->assertJson([
                 'data' => [
                     [
-                        'id' => $this->artworks[0]->id,
-                        'name' => $this->artworks[0]->name,
-                        'price' => $this->artworks[0]->price,
-                        'ref' => $this->artworks[0]->ref,
-                        'state' => $this->artworks[0]->state,
-                        'images' => $this->artworks[0]->images,
+                        'id' => $this->artwork->id,
+                        'name' => $this->artwork->name,
+                        'price' => $this->artwork->price,
+                        'ref' => $this->artwork->ref,
+                        'state' => $this->artwork->state,
+                        'images' => $this->artwork->images,
                     ],
                 ]
             ]);
@@ -110,7 +116,7 @@ class ArtworkControllerTest extends TestCase
         $this->json(
             'GET',
             '/api/artwork',
-            ['name' => $this->artworks[0]->name],
+            ['name' => $this->artwork->name],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
@@ -121,12 +127,12 @@ class ArtworkControllerTest extends TestCase
             ->assertJson([
                 'data' => [
                     [
-                        'id' => $this->artworks[0]->id,
-                        'name' => $this->artworks[0]->name,
-                        'price' => $this->artworks[0]->price,
-                        'ref' => $this->artworks[0]->ref,
-                        'state' => $this->artworks[0]->state,
-                        'images' => $this->artworks[0]->images,
+                        'id' => $this->artwork->id,
+                        'name' => $this->artwork->name,
+                        'price' => $this->artwork->price,
+                        'ref' => $this->artwork->ref,
+                        'state' => $this->artwork->state,
+                        'images' => $this->artwork->images,
                     ],
                 ]
             ]);
@@ -155,7 +161,7 @@ class ArtworkControllerTest extends TestCase
         $this->json(
             'GET',
             '/api/artwork',
-            ['price_min' => $this->artworks[0]->price, 'price_max' => $this->artworks[0]->price],
+            ['price_min' => $this->artwork->price, 'price_max' => $this->artwork->price],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
@@ -166,12 +172,12 @@ class ArtworkControllerTest extends TestCase
             ->assertJson([
                 'data' => [
                     [
-                        'id' => $this->artworks[0]->id,
-                        'name' => $this->artworks[0]->name,
-                        'price' => $this->artworks[0]->price,
-                        'ref' => $this->artworks[0]->ref,
-                        'state' => $this->artworks[0]->state,
-                        'images' => $this->artworks[0]->images,
+                        'id' => $this->artwork->id,
+                        'name' => $this->artwork->name,
+                        'price' => $this->artwork->price,
+                        'ref' => $this->artwork->ref,
+                        'state' => $this->artwork->state,
+                        'images' => $this->artwork->images,
                     ],
                 ]
             ]);
@@ -200,7 +206,7 @@ class ArtworkControllerTest extends TestCase
         $this->json(
             'GET',
             '/api/artwork',
-            ['ref' => $this->artworks[0]->ref],
+            ['ref' => $this->artwork->ref],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
@@ -211,12 +217,12 @@ class ArtworkControllerTest extends TestCase
             ->assertJson([
                 'data' => [
                     [
-                        'id' => $this->artworks[0]->id,
-                        'name' => $this->artworks[0]->name,
-                        'price' => $this->artworks[0]->price,
-                        'ref' => $this->artworks[0]->ref,
-                        'state' => $this->artworks[0]->state,
-                        'images' => $this->artworks[0]->images,
+                        'id' => $this->artwork->id,
+                        'name' => $this->artwork->name,
+                        'price' => $this->artwork->price,
+                        'ref' => $this->artwork->ref,
+                        'state' => $this->artwork->state,
+                        'images' => $this->artwork->images,
                     ],
                 ]
             ]);
@@ -245,7 +251,7 @@ class ArtworkControllerTest extends TestCase
         $this->json(
             'GET',
             '/api/artwork',
-            ['state' => $this->artworks[0]->state],
+            ['state' => $this->artwork->state],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
@@ -256,12 +262,12 @@ class ArtworkControllerTest extends TestCase
             ->assertJson([
                 'data' => [
                     [
-                        'id' => $this->artworks[0]->id,
-                        'name' => $this->artworks[0]->name,
-                        'price' => $this->artworks[0]->price,
-                        'ref' => $this->artworks[0]->ref,
-                        'state' => $this->artworks[0]->state,
-                        'images' => $this->artworks[0]->images,
+                        'id' => $this->artwork->id,
+                        'name' => $this->artwork->name,
+                        'price' => $this->artwork->price,
+                        'ref' => $this->artwork->ref,
+                        'state' => $this->artwork->state,
+                        'images' => $this->artwork->images,
                     ],
                 ]
             ]);
@@ -346,6 +352,10 @@ class ArtworkControllerTest extends TestCase
         $name = str_random(128);
         $price = 145678;
         $ref = str_random(128);
+        $images = [
+            UploadedFile::fake()->image(Image::image()),
+            UploadedFile::fake()->image(Image::image()),
+        ];
 
         $this->json(
             'POST',
@@ -355,6 +365,7 @@ class ArtworkControllerTest extends TestCase
                 'price' => $price,
                 'ref' => $ref,
                 'state' => Artwork::STATE_INCOMING,
+                'images' => $images
             ],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
@@ -369,7 +380,6 @@ class ArtworkControllerTest extends TestCase
                     'price' => $price,
                     'ref' => $ref,
                     'state' => Artwork::STATE_INCOMING,
-                    'images' => []
                 ]
             ]);
         $this->assertDatabaseHas('artworks', [
@@ -378,6 +388,12 @@ class ArtworkControllerTest extends TestCase
             'state' => Artwork::STATE_INCOMING,
             'ref' => $ref
         ]);
+
+        $mediaResources = MediaResource::collection($this->artwork->getMedia('images'))->toArray(null);
+
+        foreach ($mediaResources as $mediaResource) {
+            $this->assertEquals(array_keys($mediaResource), ['id', 'url', 'name', 'file_name']);
+        }
     }
 
     public function testStore_Invalid_State()
@@ -423,7 +439,7 @@ class ArtworkControllerTest extends TestCase
     {
         $this->json(
             'GET',
-            '/api/artwork/' . $this->artworks[0]->id,
+            '/api/artwork/' . $this->artwork->id,
             [],
             [
                 'Accept' => 'application/json',
@@ -434,9 +450,9 @@ class ArtworkControllerTest extends TestCase
             ->assertStatus(200)
             ->assertJson([
                 'data' => [
-                    'name' => $this->artworks[0]->name,
-                    'price' => $this->artworks[0]->price,
-                    'ref' => $this->artworks[0]->ref,
+                    'name' => $this->artwork->name,
+                    'price' => $this->artwork->price,
+                    'ref' => $this->artwork->ref,
                     'state' => Artwork::STATE_IN_STOCK,
                     'images' => []
                 ]
@@ -462,7 +478,7 @@ class ArtworkControllerTest extends TestCase
     {
         $this->json(
             'GET',
-            '/api/artwork/' . $this->artworks[0]->id,
+            '/api/artwork/' . $this->artwork->id,
             [],
             [
                 'Accept' => 'application/json',
@@ -499,7 +515,7 @@ class ArtworkControllerTest extends TestCase
     {
         $this->json(
             'PATCH',
-            '/api/artwork/' . $this->artworks[0]->id,
+            '/api/artwork/' . $this->artwork->id,
             [],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
@@ -510,9 +526,9 @@ class ArtworkControllerTest extends TestCase
             ->assertStatus(200)
             ->assertJson([
                 'data' => [
-                    'name' => $this->artworks[0]->name,
-                    'price' => $this->artworks[0]->price,
-                    'ref' => $this->artworks[0]->ref,
+                    'name' => $this->artwork->name,
+                    'price' => $this->artwork->price,
+                    'ref' => $this->artwork->ref,
                     'state' => Artwork::STATE_IN_STOCK,
                     'images' => []
                 ]
@@ -522,11 +538,14 @@ class ArtworkControllerTest extends TestCase
     public function testStoreImage()
     {
         $images = [
-            UploadedFile::fake()->image(Image::image())
+            UploadedFile::fake()->image(Image::image()),
+            UploadedFile::fake()->image(Image::image()),
         ];
+
+
         $this->json(
             'POST',
-            '/api/artwork/' . $this->artworks[0]->id . '/image',
+            '/api/artwork/' . $this->artwork->id . '/image',
             [
                 'images' => $images
             ],
@@ -539,12 +558,18 @@ class ArtworkControllerTest extends TestCase
             ->assertStatus(200)
             ->assertJson([
                 'data' => [
-                    'name' => $this->artworks[0]->name,
-                    'price' => $this->artworks[0]->price,
-                    'ref' => $this->artworks[0]->ref,
+                    'name' => $this->artwork->name,
+                    'price' => $this->artwork->price,
+                    'ref' => $this->artwork->ref,
                     'state' => Artwork::STATE_IN_STOCK,
-                    'images' => []
                 ]
-            ]);
+            ])
+            ->getContent();
+
+        $mediaResources = MediaResource::collection($this->artwork->getMedia('images'))->toArray(null);
+
+        foreach ($mediaResources as $mediaResource) {
+            $this->assertEquals(array_keys($mediaResource), ['id', 'url', 'name', 'file_name']);
+        }
     }
 }

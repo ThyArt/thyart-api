@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\User;
 use App\Gallery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Laravel\Passport\ClientRepository;
 use Tests\TestCase;
 
@@ -28,6 +29,9 @@ class GalleryControllerTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
+        $this->withoutMiddleware(
+            ThrottleRequests::class
+        );
 
         $this->user = factory(User::class)->create(['password' => bcrypt($this->userPassword)]);
         $client = $this->clientRepository->create($this->user->id, 'Testing', 'http://localhost', false, true);

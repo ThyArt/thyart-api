@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Artist;
 use App\Artwork;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Artwork\ArtworkIndexRequest;
@@ -10,7 +9,7 @@ use App\Http\Requests\Artwork\ArtworkStoreRequest;
 use App\Http\Requests\Artwork\ArtworkUpdateRequest;
 use App\Http\Requests\Artwork\ImageStoreRequest;
 use App\Http\Resources\ArtworkResource;
-use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Validation\UnauthorizedException;
 use Spatie\MediaLibrary\Exceptions\MediaCannotBeDeleted;
 
@@ -66,8 +65,9 @@ class ArtworkController extends Controller
          */
 
         if (($request->file('images')) != null) {
-            $artwork->addMedia($request->file('images')[0])->toMediaCollection('images');
-            $artwork->save();
+            foreach ($request->file('images') as $file) {
+                $artwork->storeImage($file);
+            }
         }
 
         return new ArtworkResource(
@@ -81,7 +81,7 @@ class ArtworkController extends Controller
     /**
      * Store an image in storage.
      *
-     * @param ArtworkStoreRequest $request
+     * @param ImageStoreRequest $request
      * @param Artwork $artwork
      * @return ArtworkResource
      */
@@ -93,12 +93,11 @@ class ArtworkController extends Controller
         }
 
         foreach ($request->file('images') as $file) {
-            //dd($file);
-            $artwork->addMedia($file)->toMediaCollection('images');
-            $artwork->save();
+            $artwork->storeImage($file);
         }
 
-        //dd($artwork->refresh()->getMedia());
+        $artwork->save();
+
         return new ArtworkResource($artwork->refresh());
     }
 
@@ -155,7 +154,7 @@ class ArtworkController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  $artwork
-     * @return \Illuminate\Http\Response
+     * @return Response
      * @throws \Exception
      */
     public function destroy(Artwork $artwork)

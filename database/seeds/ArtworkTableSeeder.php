@@ -13,7 +13,7 @@ class ArtworkTableSeeder extends Seeder
     public function run()
     {
         factory(App\Artwork::class, 100)->create()->each(function ($artwork) {
-            $artwork->addMedia(Image::image())->toMediaCollection('images');
+            $artwork->storeImage(Image::image());
         });
     }
 }

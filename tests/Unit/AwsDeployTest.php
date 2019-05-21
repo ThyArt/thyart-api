@@ -1,9 +1,10 @@
 <?php
 
-namespace Tests;
+namespace Tests\Unit;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Passport\Client;
+use Tests\TestCase;
 
 class AwsDeployTest extends TestCase
 {
