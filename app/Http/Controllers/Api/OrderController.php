@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Exceptions\ArtworkNotAvailableException;
 use App\Order;
-use App\Customer;
 use App\Artwork;
-use App\User;
-use Auth;
 use App\Http\Requests\Order\OrderIndexRequest;
 use App\Http\Requests\Order\OrderStoreRequest;
 use Carbon\Carbon;
@@ -51,6 +48,12 @@ class OrderController extends Controller
         $user = $request->user();
 
         $data = $request->only(['email', 'first_name', 'last_name', 'phone', 'address', 'country', 'city', 'artwork_id', 'date']);
+
+        $artwork =  $user->artworks()->findOrFail($data['artwork_id']);
+        if ($artwork->order) {
+            abort(400, "An Order with this artwork already exists.");
+        }
+
         $customer = $user->customers()->firstOrNew(
             ['email' => $data['email']],
             ['first_name' => $data['first_name'],
@@ -61,11 +64,7 @@ class OrderController extends Controller
                     'city' => $data['city']]
         );
 
-        $artwork =  $user->artworks()->findOrFail($data['artwork_id']);
         $customer->save();
-        if (!$artwork->isAvailableForSold()) {
-            throw new ArtworkNotAvailableException($artwork);
-        }
 
         $artwork->state = Artwork::STATE_SOLD;
         $artwork->save();
@@ -93,6 +92,9 @@ class OrderController extends Controller
         if ($order->user_id != request()->user()->id) {
             throw new UnauthorizedException('The current user does not own this order.');
         }
+
+        $order->artwork->state = Artwork::STATE_IN_STOCK;
+        $order->artwork->save();
 
         $order->delete();
 

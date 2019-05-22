@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -67,11 +68,11 @@ class Handler extends ExceptionHandler
                 'error' => 'validation_failed',
                 'messages' => $exception->validator->errors()->all()
             ], 400);
-        } elseif ($exception instanceof ArtworkNotAvailableException) {
+        } elseif ($exception instanceof HttpException) {
             return response()->json([
-               'error' => 'artwork_not_available',
-               'message' => $exception->getMessage()
-            ]);
+                'error' => 'http_error',
+                'message' => $exception->getMessage()
+            ], $exception->getStatusCode());
         }
 
         return parent::render($request, $exception);

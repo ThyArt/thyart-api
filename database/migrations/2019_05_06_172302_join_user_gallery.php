@@ -26,6 +26,9 @@ class JoinUserGallery extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('galleries', function (Blueprint $table) {
+            $table->dropForeign('galleries_user_id_foreign');
+            $table->dropColumn('user_id');
+        });
     }
 }

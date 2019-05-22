@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\MediaLibrary\Models\Media;
@@ -35,6 +36,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Artwork whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Artwork whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\Order $order
  */
 class Artwork extends Model implements HasMedia
 {
@@ -77,6 +79,14 @@ class Artwork extends Model implements HasMedia
     public function artist()
     {
         return $this->belongsTo(Artist::class);
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function order()
+    {
+        return $this->hasOne(Order::class);
     }
 
     /**

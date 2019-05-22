@@ -4,6 +4,9 @@ namespace Tests\Unit;
 
 use App\Artwork;
 use App\Customer;
+use App\Http\Resources\ArtworkResource;
+use App\Http\Resources\CustomerResource;
+use App\Http\Resources\MediaResource;
 use App\Order;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -40,7 +43,7 @@ class OrderControllerTest extends TestCase
 
         $this->user = factory(User::class)->create(['password' => bcrypt($this->userPassword)]);
         $this->customer = factory(Customer::class)->create(['user_id' => $this->user->id]);
-        $this->artwork = factory(Artwork::class)->create(['user_id' => $this->user->id, 'state' => Artwork::STATE_IN_STOCK]);
+        $this->artwork = factory(Artwork::class)->create(['user_id' => $this->user->id, 'state' => Artwork::STATE_SOLD]);
 
         $this->order = factory(Order::class)->create([
             'user_id' => $this->user->id,
@@ -48,7 +51,13 @@ class OrderControllerTest extends TestCase
             'artwork_id' => $this->artwork->id
         ]);
 
-        $client = $this->clientRepository->create($this->user->id, 'Testing', 'http://localhost', false, true);
+        $client = $this->clientRepository->create(
+            $this->user->id,
+            'Testing',
+            'http://localhost',
+            false,
+            true
+        );
 
         $this->accessToken = $this->json(
             'POST',
@@ -334,7 +343,8 @@ class OrderControllerTest extends TestCase
 
     public function testStoreWithValidArguments()
     {
-        $this->artwork = factory(Artwork::class)->create(['user_id' => $this->user->id]);
+        $this->artwork = factory(Artwork::class)->create(['user_id' => $this->user->id, 'state' => Artwork::STATE_IN_STOCK]);
+
         $date = FakeDate::date();
         $this->json(
             'POST',
@@ -364,6 +374,85 @@ class OrderControllerTest extends TestCase
                     'date' => $date,
                 ],
             ]);
+
+        $this->assertEquals($this->artwork->refresh()->state, Artwork::STATE_SOLD);
+    }
+
+    public function testStoreWithNonExistentCustomer()
+    {
+        $this->artwork = factory(Artwork::class)->create(['user_id' => $this->user->id, 'state' => Artwork::STATE_IN_STOCK]);
+        $this->customer = factory(Customer::class)->make(['user_id' => $this->user->id]);
+
+        $date = FakeDate::date();
+        $this->json(
+            'POST',
+            '/api/order',
+            [
+                'first_name' => $this->customer->first_name,
+                'last_name' => $this->customer->last_name,
+                'email' => $this->customer->email,
+                'phone' => $this->customer->phone,
+                'address' => $this->customer->address,
+                'city' => $this->customer->city,
+                'country' => $this->customer->country,
+                'artwork_id' => $this->artwork->id,
+                'date' => $date,
+            ],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(201)
+            ->assertJson([
+                "data" => [
+                    'artwork_id' => $this->artwork->id,
+                    'date' => $date,
+                ],
+            ]);
+
+        $this->assertDatabaseHas('customers', [
+            'user_id' => $this->user->id,
+            'first_name' => $this->customer->first_name,
+            'last_name' => $this->customer->last_name,
+            'email' => $this->customer->email,
+            'phone' => $this->customer->phone,
+            'address' => $this->customer->address,
+            'city' => $this->customer->city,
+        ]);
+
+        $this->assertEquals($this->artwork->refresh()->state, Artwork::STATE_SOLD);
+    }
+
+    public function testStoreWithArtworkAlreadyInOrder()
+    {
+        $date = FakeDate::date();
+        $this->json(
+            'POST',
+            '/api/order',
+            [
+                'first_name' => $this->customer->first_name,
+                'last_name' => $this->customer->last_name,
+                'email' => $this->customer->email,
+                'phone' => $this->customer->phone,
+                'address' => $this->customer->address,
+                'city' => $this->customer->city,
+                'country' => $this->customer->country,
+                'artwork_id' => $this->artwork->id,
+                'date' => $date,
+            ],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(400)
+            ->assertJson([
+                'error' => 'http_error',
+                "message" => 'An Order with this artwork already exists.'
+            ]);
     }
 
     public function testStoreUnAuthenticated()
@@ -387,7 +476,7 @@ class OrderControllerTest extends TestCase
     //
     ////////////////
 
-        public function testShowWithInvalidId()
+    public function testShowWithInvalidId()
     {
         $this->json(
             'GET',
@@ -421,21 +510,26 @@ class OrderControllerTest extends TestCase
             ->assertStatus(200)
             ->assertJson([
                 'data' => [
-                        'id' => $this->order->id,
-                        'customer_id' => $this->customer->id,
-                        'customer_first_name' => $this->customer->first_name,
-                        'customer_last_name' => $this->customer->last_name,
-                        'customer_phone' => $this->customer->phone,
-                        'customer_email' => $this->customer->email,
-                        'customer_address' => $this->customer->address,
-                        'customer_city' => $this->customer->city,
-                        'customer_country' => $this->customer->country,
-                        'artwork_id' => $this->artwork->id,
-                        'artwork_name' => $this->artwork->name,
-                        'artwork_price' => $this->artwork->price,
-                        'artwork_ref' => $this->artwork->ref,
-                        'artwork_state' => $this->artwork->state,
-                        'artwork_images' => $this->artwork->images,
+                    'id' => $this->order->id,
+                    'customer' => [
+                        'id' => $this->customer->id,
+                        'first_name' => $this->customer->first_name,
+                        'last_name' => $this->customer->last_name,
+                        'phone' => $this->customer->phone,
+                        'email' => $this->customer->email,
+                        'address' => $this->customer->address,
+                        'city' => $this->customer->city,
+                        'country' => $this->customer->country
+                    ],
+                    'artwork' => [
+                        'id' => $this->artwork->id,
+                        'name' => $this->artwork->name,
+                        'price' => $this->artwork->price,
+                        'ref' => $this->artwork->ref,
+                        'state' => $this->artwork->state,
+                        'images' => MediaResource::collection($this->artwork->getMedia('images'))->toArray(null)
+                    ],
+                    'date' => $this->order->date->format('Y-m-d')
                 ]
             ]);
     }
@@ -497,6 +591,8 @@ class OrderControllerTest extends TestCase
             ->assertJson([
                 'message' => 'Order deleted.'
             ]);
+
+        $this->assertEquals($this->artwork->refresh()->state, Artwork::STATE_IN_STOCK);
     }
 
     public function testDeleteUnauthenticated()
