@@ -23,7 +23,7 @@ class CustomerController extends Controller
     {
         $data = $request->only(['email', 'phone', 'first_name', 'last_name', 'per_page', 'country', 'city', 'address']);
 
-        $customer = $request->user()->customers()
+        $customer = $request->user()->gallery->customers()
             ->when(isset($data['first_name']), function ($customer) use ($data) {
                 return $customer->where('first_name', 'like', '%' . $data['first_name'] . '%');
             })
@@ -64,7 +64,7 @@ class CustomerController extends Controller
     public function store(CustomerStoreRequest $request)
     {
         return new CustomerResource(
-            $request->user()->customers()->create(
+            $request->user()->gallery->customers()->create(
                 $request->only(['email', 'first_name', 'last_name', 'phone', 'country', 'city', 'address'])
             )
         );
@@ -79,8 +79,8 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        if ($customer->user_id != request()->user()->id) {
-            throw new UnauthorizedException('The current user does not own this customer.');
+        if ($customer->gallery->id != request()->user()->gallery->id) {
+            throw new UnauthorizedException('The current gallery does not own this customer.');
         }
         return new CustomerResource($customer);
     }
@@ -95,8 +95,8 @@ class CustomerController extends Controller
      */
     public function update(CustomerUpdateRequest $request, Customer $customer)
     {
-        if ($customer->user_id !== $request->user()->id) {
-            throw new UnauthorizedException('The current user does not own this customer.');
+        if ($customer->gallery->id != request()->user()->gallery->id) {
+            throw new UnauthorizedException('The current gallery does not own this customer.');
         }
 
         $data = $request->only(['email', 'first_name', 'last_name', 'phone', 'country', 'city', 'address']);
@@ -115,8 +115,8 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
-        if ($customer->user_id != request()->user()->id) {
-            throw new UnauthorizedException('The current user does not own this customer.');
+        if ($customer->gallery->id != request()->user()->gallery->id) {
+            throw new UnauthorizedException('The current gallery does not own this customer.');
         }
 
         $customer->delete();
