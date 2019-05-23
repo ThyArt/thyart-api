@@ -36,8 +36,23 @@ class Gallery extends Model
     protected $hidden = [
     ];
 
-    public function user()
+    public function users()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(User::class);
+    }
+
+    public function artists()
+    {
+        return $this->hasMany(Artist::class);
+    }
+
+    public function customers()
+    {
+        return $this->hasMany(Customer::class);
+    }
+
+    public function artworks()
+    {
+        return $this->hasMany(Artwork::class);
     }
 }

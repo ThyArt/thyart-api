@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Passport\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * App\User
@@ -44,7 +45,10 @@ use Laravel\Passport\HasApiTokens;
  */
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, Notifiable, HasRoles;
+
+    const ROLE_GALLERIST = 'gallerist';
+    const ROLE_MEMBER = 'member';
 
     /**
      * The attributes that are mass assignable.
@@ -64,24 +68,9 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    public function galleries()
+    public function gallery()
     {
-        return $this->hasMany(Gallery::class);
-    }
-
-    public function artists()
-    {
-        return $this->hasMany(Artist::class);
-    }
-
-    public function customers()
-    {
-        return $this->hasMany(Customer::class);
-    }
-
-    public function artworks()
-    {
-        return $this->hasMany(Artwork::class);
+        return $this->belongsTo(Gallery::class);
     }
 
     public function orders()
