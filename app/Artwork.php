@@ -68,7 +68,7 @@ class Artwork extends Model implements HasMedia
     /**
      * @return BelongsTo
      */
-    public function user()
+    public function gallery()
     {
         return $this->belongsTo(Gallery::class);
     }

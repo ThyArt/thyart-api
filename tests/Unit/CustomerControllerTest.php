@@ -4,6 +4,8 @@ namespace Tests\Unit;
 
 use App\Customer;
 use App\User;
+use App\Gallery;
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Laravel\Passport\ClientRepository;
@@ -14,6 +16,7 @@ class CustomerControllerTest extends TestCase
     private $clientRepository;
     private $userPassword;
     private $user;
+    private $gallery;
     private $accessToken;
     private $customers;
 
@@ -33,8 +36,17 @@ class CustomerControllerTest extends TestCase
             ThrottleRequests::class
         );
 
-        $this->user = factory(User::class)->create(['password' => bcrypt($this->userPassword)]);
-        $this->customers = factory(Customer::class, 2)->create(['user_id' => $this->user->id]);
+        $this->seed('PermissionsAndRolesTableSeeder');
+        $this->gallery = factory(Gallery::class)->create();
+        $this->user = factory(User::class)->create(
+            [
+                'password' => bcrypt($this->userPassword),
+                'gallery_id' => $this->gallery->id,
+                'role' => 'admin'
+            ]
+        );
+        $this->user->assignRole('admin');
+        $this->customers = factory(Customer::class, 2)->create(['gallery_id' => $this->gallery->id]);
 
         $client = $this->clientRepository->create($this->user->id, 'Testing', 'http://localhost', false, true);
 
@@ -449,10 +461,10 @@ class CustomerControllerTest extends TestCase
             ]);
     }
 
-    public function testIndexWithOtherUser()
+    public function testIndexWithOtherGallery()
     {
-        $secondUser = factory(User::class)->create();
-        factory(Customer::class, 2)->create(['user_id' => $secondUser->id]);
+        $secondGallery = factory(Gallery::class)->create();
+        factory(Customer::class, 2)->create(['gallery_id' => $secondGallery->id]);
 
         $this->json(
             'GET',
@@ -684,10 +696,10 @@ class CustomerControllerTest extends TestCase
             ->assertJson(['message' => 'Unauthenticated.']);
     }
 
-    public function testShowOtherUserCustomer()
+    public function testShowOtherGalleryCustomer()
     {
-        $secondUser = factory(User::class)->create();
-        $customer = factory(Customer::class)->create(['user_id' => $secondUser->id]);
+        $secondGallery = factory(Gallery::class)->create();
+        $customer = factory(Customer::class)->create(['gallery_id' => $secondGallery->id]);
 
         $this->json(
             'GET',
@@ -702,7 +714,7 @@ class CustomerControllerTest extends TestCase
             ->assertStatus(403)
             ->assertJson([
                 'error' => 'unauthorized',
-                'message' => 'The current user does not own this customer.'
+                'message' => 'The current gallery does not own this customer.'
             ]);
     }
 
@@ -837,10 +849,10 @@ class CustomerControllerTest extends TestCase
             ->assertJson(['message' => 'Unauthenticated.']);
     }
 
-    public function testUpdateOtherUserCustomer()
+    public function testUpdateOtherGalleryCustomer()
     {
-        $secondUser = factory(User::class)->create();
-        $customer = factory(Customer::class)->create(['user_id' => $secondUser->id]);
+        $secondGallery = factory(Gallery::class)->create();
+        $customer = factory(Customer::class)->create(['gallery_id' => $secondGallery->id]);
 
         $this->json(
             'PATCH',
@@ -855,7 +867,7 @@ class CustomerControllerTest extends TestCase
             ->assertStatus(403)
             ->assertJson([
                 'error' => 'unauthorized',
-                'message' => 'The current user does not own this customer.'
+                'message' => 'The current gallery does not own this customer.'
             ]);
     }
 
@@ -913,8 +925,8 @@ class CustomerControllerTest extends TestCase
 
     public function testDeleteOtherUserCustomer()
     {
-        $secondUser = factory(User::class)->create();
-        $customer = factory(Customer::class)->create(['user_id' => $secondUser->id]);
+        $secondGallery = factory(Gallery::class)->create();
+        $customer = factory(Customer::class)->create(['gallery_id' => $secondGallery->id]);
 
         $this->json(
             'DELETE',
@@ -929,7 +941,7 @@ class CustomerControllerTest extends TestCase
             ->assertStatus(403)
             ->assertJson([
                 'error' => 'unauthorized',
-                'message' => 'The current user does not own this customer.'
+                'message' => 'The current gallery does not own this customer.'
             ]);
     }
 }

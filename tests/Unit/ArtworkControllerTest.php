@@ -8,6 +8,7 @@ use Spatie\MediaLibrary\Models\Media;
 use Tests\TestCase;
 use App\Artwork;
 use App\User;
+use App\Gallery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Passport\ClientRepository;
 use Faker\Provider\Image;
@@ -37,8 +38,17 @@ class ArtworkControllerTest extends TestCase
             ThrottleRequests::class
         );
 
-        $this->user = factory(User::class)->create(['password' => bcrypt($this->userPassword)]);
-        $this->artwork = factory(Artwork::class)->create(['user_id' => $this->user->id]);
+        $this->seed('PermissionsAndRolesTableSeeder');
+        $this->gallery = factory(Gallery::class)->create();
+        $this->user = factory(User::class)->create(
+            [
+                'password' => bcrypt($this->userPassword),
+                'gallery_id' => $this->gallery->id,
+                'role' => 'admin'
+            ]
+        );
+        $this->user->assignRole('admin');
+        $this->artwork = factory(Artwork::class)->create(['gallery_id' => $this->gallery->id]);
 
         $client = $this->clientRepository->create($this->user->id, 'Testing', 'http://localhost', false, true);
 
@@ -65,6 +75,7 @@ class ArtworkControllerTest extends TestCase
         parent::tearDown();
 
         $this->user = null;
+        $this->gallery = null;
         $this->artwork = null;
         $this->accessToken = null;
     }
@@ -489,10 +500,10 @@ class ArtworkControllerTest extends TestCase
             ->assertJson(['message' => 'Unauthenticated.']);
     }
 
-    public function testShowOtherUserArtwork()
+    public function testShowOtherGalleryArtwork()
     {
-        $secondUser = factory(User::class)->create();
-        $artwork = factory(Artwork::class)->create(['user_id' => $secondUser->id]);
+        $secondGallery = factory(Gallery::class)->create();
+        $artwork = factory(Artwork::class)->create(['gallery_id' => $secondGallery->id]);
 
         $this->json(
             'GET',
@@ -507,7 +518,7 @@ class ArtworkControllerTest extends TestCase
             ->assertStatus(403)
             ->assertJson([
                 'error' => 'unauthorized',
-                'message' => 'The current user does not own this artwork.'
+                'message' => 'The current gallery does not own this artwork.'
             ]);
     }
 

@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Passport\ClientRepository;
 use Tests\TestCase;
 
-class UserControllerTest extends TestCase
+class UserBControllerTest extends TestCase
 {
     protected $gallery;
     protected $user;
@@ -65,6 +65,7 @@ class UserControllerTest extends TestCase
         parent::tearDown();
 
         $this->user = null;
+        $this->gallery = null;
         $this->accessToken = null;
     }
 

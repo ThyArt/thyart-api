@@ -28,11 +28,9 @@ Route::group(["namespace" => 'Api', 'prefix' => 'user'], function () {
 });
 
 Route::group(["namespace" => 'Api', 'prefix' => 'gallery', 'middleware' => 'auth:api'], function () {
-    Route::post('', 'GalleryController@store');
-    Route::get('', 'GalleryController@index');
-    Route::get('/{gallery}', 'GalleryController@show');
-    Route::patch('/{gallery}', 'GalleryController@update');
-    Route::delete('/{gallery}', 'GalleryController@destroy');
+    Route::get('/', 'GalleryController@show');
+    Route::patch('/', 'GalleryController@update');
+    Route::delete('/', 'GalleryController@destroy');
 });
 
 Route::group(["namespace" => 'Api', 'prefix' => 'artist', 'middleware' => 'auth:api'], function () {

@@ -32,8 +32,16 @@ class GalleryControllerTest extends TestCase
         $this->withoutMiddleware(
             ThrottleRequests::class
         );
-
-        $this->user = factory(User::class)->create(['password' => bcrypt($this->userPassword)]);
+        $this->seed('PermissionsAndRolesTableSeeder');
+        $this->gallery = factory(Gallery::class)->create();
+        $this->user = factory(User::class)->create(
+            [
+                'password' => bcrypt($this->userPassword),
+                'gallery_id' => $this->gallery->id,
+                'role' => 'admin'
+            ]
+        );
+        $this->user->assignRole('admin');
         $client = $this->clientRepository->create($this->user->id, 'Testing', 'http://localhost', false, true);
 
         $this->accessToken = $this->json(
@@ -64,418 +72,16 @@ class GalleryControllerTest extends TestCase
 
     //--------------------------
     //
-    // TEST INDEX
-    //
-    //--------------------------
-
-    public function testIndex()
-    {
-        $firstGallery = factory(Gallery::class)->create();
-        $secondGallery = factory(Gallery::class)->create();
-
-        $this->json(
-            'GET',
-            '/api/gallery',
-            [],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(200)
-            ->assertJson([
-                'data' => [
-                    [
-                        'id' => $firstGallery->id,
-                        'name' => $firstGallery->name,
-                        'phone' => $firstGallery->phone,
-                        'address' => $firstGallery->address,
-
-                    ],
-                    [
-                        'id' => $secondGallery->id,
-                        'name' => $secondGallery->name,
-                        'phone' => $secondGallery->phone,
-                        'address' => $secondGallery->address,
-                    ]
-                ]
-            ]);
-    }
-
-
-    public function testIndexUnAuthenticated()
-    {
-        $this->json(
-            'GET',
-            '/api/gallery',
-            [],
-            [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(401)
-            ->assertJson(['message' => 'Unauthenticated.']);
-    }
-
-    public function testIndexSearchByName()
-    {
-        $gallery = factory(Gallery::class)->create();
-        $this->json(
-            'GET',
-            '/api/gallery',
-            ['name' => $gallery->name],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(200)
-            ->assertJson([
-                'data' => [
-                    [
-                        'id' => $gallery->id,
-                        'name' => $gallery->name,
-                        'address' => $gallery->address,
-                        'phone' => $gallery->phone,
-                    ]
-                ]
-            ]);
-    }
-
-    public function testIndexSearchByNameUnValid()
-    {
-        $this->json(
-            'GET',
-            '/api/gallery',
-            ['name' => 'Wrong name'],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(200)
-            ->assertJson(['data' => []]);
-    }
-
-
-    public function testIndexSearchByAddress()
-    {
-        $gallery = factory(Gallery::class)->create();
-        $this->json(
-            'GET',
-            '/api/gallery',
-            ['address' => $gallery->address],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(200)
-            ->assertJson([
-                'data' => [
-                    [
-                        'id' => $gallery->id,
-                        'name' => $gallery->name,
-                        'address' => $gallery->address,
-                        'phone' => $gallery->phone,
-                    ]
-                ]
-            ]);
-    }
-
-    public function testIndexSearchByAddressUnValid()
-    {
-        $this->json(
-            'GET',
-            '/api/gallery',
-            ['address' => 'Wrong address'],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(200)
-            ->assertJson(['data' => []]);
-    }
-
-    public function testIndexSearchByPhone()
-    {
-        $gallery = factory(Gallery::class)->create();
-        $this->json(
-            'GET',
-            '/api/gallery',
-            ['phone' => $gallery->phone],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(200)
-            ->assertJson([
-                'data' => [
-                    [
-                        'id' => $gallery->id,
-                        'name' => $gallery->name,
-                        'address' => $gallery->address,
-                        'phone' => $gallery->phone,
-                    ]
-                ]
-            ]);
-    }
-
-    public function testIndexSearchByPhoneUnValid()
-    {
-        $this->json(
-            'GET',
-            '/api/gallery',
-            ['phone' => 'Wrong phone'],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(200)
-            ->assertJson(['data' => []]);
-    }
-
-    public function testIndexSearchByMultipleFields()
-    {
-        $firstGallery = factory(Gallery::class)->create();
-        $secondGallery = factory(Gallery::class)->create();
-        $this->json(
-            'GET',
-            '/api/gallery',
-            [
-                'name' => $firstGallery->name,
-                'address' => $firstGallery->address,
-                'phone' => $secondGallery->phone
-            ],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(200)
-            ->assertJson([
-                'data' => [
-                    [
-                        'id' => $firstGallery->id,
-                        'name' => $firstGallery->name,
-                        'address' => $firstGallery->address,
-                        'phone' => $firstGallery->phone,
-                    ],
-                    [
-                        'id' => $secondGallery->id,
-                        'name' => $secondGallery->name,
-                        'address' => $secondGallery->address,
-                        'phone' => $secondGallery->phone,
-                    ]
-                ]
-            ]);
-    }
-
-    //--------------------------
-    //
-    // TEST STORE
-    //
-    //--------------------------
-
-    public function testStoreWithNonExistentArguments()
-    {
-        $this->json(
-            'POST',
-            '/api/gallery',
-            [],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(400)
-            ->assertJson(
-                [
-                    "error" => "validation_failed",
-                    "messages" => [
-                        "The name field is required.",
-                        "The address field is required.",
-                        "The phone field is required."
-                    ]
-                ]
-            );
-    }
-
-    //TODO : Test with existing number or address
-
-    public function testStoreWithInvalidArguments()
-    {
-        $this->json(
-            'POST',
-            '/api/gallery',
-            [
-                'name' => str_random(256),
-                'address' => str_random(256),
-                'phone' => str_random(256)
-            ],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(400)
-            ->assertJson([
-                "error" => "validation_failed",
-                "messages" => [
-                    "The name may not be greater than 255 characters.",
-                    "The address may not be greater than 255 characters.",
-                    "The phone may not be greater than 255 characters.",
-                ]
-            ]);
-    }
-
-    public function testStoreWithValidArguments()
-    {
-        $name = 'TestName';
-        $address = 'TestAddress';
-        $phone = 'TestPhone';
-
-        $this->json(
-            'POST',
-            '/api/gallery',
-            [
-                'name' => $name,
-                'address' => $address,
-                'phone' => $phone
-            ],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-            ->assertStatus(201)
-            ->assertJson([
-                'data' => [
-                    'name' => $name,
-                    'address' => $address,
-                    'phone' => $phone
-                ],
-            ]);
-
-        $this->assertDatabaseHas('galleries', ['name' => $name, 'address' => $address, 'phone' => $phone]);
-    }
-
-    public function testStoreUnauthenticated()
-    {
-        $name = 'TestName';
-        $address = 'TestAddress';
-        $phone = 'TestPhone';
-
-        $this->json(
-            'POST',
-            '/api/gallery',
-            [
-                'name' => $name,
-                'address' => $address,
-                'phone' => $phone
-            ],
-            [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        )
-
-        ->assertStatus(401)
-        ->assertJson(['message' => 'Unauthenticated.']);
-    }
-
-    //--------------------------
-    //
-    // TEST SHOW
-    //
-    //--------------------------
-
-    public function testShowWithInvalidId()
-    {
-        $this->json(
-            'GET',
-            '/api/gallery/99999',
-            [],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ]
-        )
-            ->assertStatus(404)
-            ->assertJson([
-                'error' => 'model_not_found',
-                'message' => 'Gallery with such parameters does not exists.'
-            ]);
-    }
-
-    public function testShowWithValidId()
-    {
-        $gallery = factory(Gallery::class)->create();
-        $this->json(
-            'GET',
-            '/api/gallery/' . $gallery->id,
-            [],
-            [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ]
-        )
-            ->assertStatus(200)
-            ->assertJson([
-                'data' => [
-                    'id' => $gallery->id,
-                    'name' => $gallery->name,
-                    'address' => $gallery->address,
-                    'phone' => $gallery->phone
-                ],
-            ]);
-    }
-
-    public function testShowUnauthenticated()
-    {
-        $gallery = factory(Gallery::class)->create();
-        $this->json(
-            'GET',
-            '/api/gallery/' . $gallery->id,
-            [],
-            [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ]
-        )
-            ->assertStatus(401)
-            ->assertJson(['message' => 'Unauthenticated.']);
-    }
-
-    //--------------------------
-    //
     // TEST UPDATE
     //
     //--------------------------
     
     public function testUpdateWithNonExistentArguments()
     {
-        $gallery = factory(Gallery::class)->create();
+        $gallery = $this->gallery;
         $this->json(
             'PATCH',
-            '/api/gallery/' . $gallery->id,
+            '/api/gallery/',
             [],
             [
                 'Authorization' => 'Bearer ' . $this->accessToken,
@@ -496,10 +102,10 @@ class GalleryControllerTest extends TestCase
 
     public function testUpdateWithInvalidArguments()
     {
-        $gallery = factory(Gallery::class)->create();
+        $gallery = $this->gallery;
         $this->json(
             'PATCH',
-            '/api/gallery/' . $gallery->id,
+            '/api/gallery/',
             [
                 'name' => str_random(256),
                 'address' => str_random(256),
@@ -529,10 +135,10 @@ class GalleryControllerTest extends TestCase
         $name = 'testName';
         $address = 'testAddress';
         $phone = 'testPhone';
-        $gallery = factory(Gallery::class)->create();
+        $gallery = $this->gallery;
         $this->json(
             'PATCH',
-            '/api/gallery/' . $gallery->id,
+            '/api/gallery/',
             [
                 'name' => $name,
                 'address' => $address,
@@ -560,10 +166,9 @@ class GalleryControllerTest extends TestCase
         $name = 'testName';
         $address = 'testAddress';
         $phone = 'testPhone';
-        $gallery = factory(Gallery::class)->create();
         $this->json(
             'PATCH',
-            '/api/gallery/' . $gallery->id,
+            '/api/gallery/',
             [
                 'name' => $name,
                 'address' => $address,
@@ -580,10 +185,9 @@ class GalleryControllerTest extends TestCase
 
     public function testDestroy()
     {
-        $gallery = factory(Gallery::class)->create();
         $this->json(
             'DELETE',
-            '/api/gallery/' . $gallery->id,
+            '/api/gallery/',
             [],
             [
                 'Accept' => 'application/json',
@@ -599,10 +203,9 @@ class GalleryControllerTest extends TestCase
 
     public function testDestroyUnauthenticated()
     {
-        $gallery = factory(Gallery::class)->create();
         $this->json(
             'DELETE',
-            '/api/gallery/' . $gallery->id,
+            '/api/gallery/',
             [],
             [
                 'Accept' => 'application/json',
