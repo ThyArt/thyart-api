@@ -35,7 +35,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereCountry($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereFirstName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereLastName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereGalleryId($value)
  */
 class Customer extends Model
 {
@@ -46,8 +46,8 @@ class Customer extends Model
     protected $hidden = [
     ];
 
-    public function user()
+    public function gallery()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Gallery::class);
     }
 }
