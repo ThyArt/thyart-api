@@ -33,6 +33,14 @@ use Laravel\Passport\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Artist[] $artists
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Artwork[] $artworks
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Customer[] $customers
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Gallery[] $galleries
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Order[] $orders
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User query()
  */
 class User extends Authenticatable
 {
@@ -56,6 +64,11 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    public function galleries()
+    {
+        return $this->hasMany(Gallery::class);
+    }
+
     public function artists()
     {
         return $this->hasMany(Artist::class);
@@ -69,5 +82,10 @@ class User extends Authenticatable
     public function artworks()
     {
         return $this->hasMany(Artwork::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }

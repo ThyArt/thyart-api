@@ -4,8 +4,8 @@ namespace Tests\Unit;
 
 use App\Artist;
 use App\User;
-use Faker\Provider\fr_FR\PhoneNumber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Laravel\Passport\ClientRepository;
 use Tests\TestCase;
 
@@ -29,6 +29,9 @@ class ArtistControllerTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
+        $this->withoutMiddleware(
+            ThrottleRequests::class
+        );
 
         $this->user = factory(User::class)->create(['password' => bcrypt($this->userPassword)]);
         $this->artists = factory(Artist::class, 2)->create(['user_id' => $this->user->id]);

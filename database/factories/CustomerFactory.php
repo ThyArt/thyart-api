@@ -2,7 +2,6 @@
 
 use App\User;
 use Faker\Generator as Faker;
-use Faker\Provider\fr_FR\PhoneNumber;
 
 $factory->define(App\Customer::class, function (Faker $faker) {
     return [

@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Customer;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Laravel\Passport\ClientRepository;
 use Tests\TestCase;
 
@@ -28,6 +29,9 @@ class CustomerControllerTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
+        $this->withoutMiddleware(
+            ThrottleRequests::class
+        );
 
         $this->user = factory(User::class)->create(['password' => bcrypt($this->userPassword)]);
         $this->customers = factory(Customer::class, 2)->create(['user_id' => $this->user->id]);
