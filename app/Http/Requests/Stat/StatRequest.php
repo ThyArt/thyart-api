@@ -23,8 +23,6 @@ class StatRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'email' => 'string|max:255'
-        ];
+        return [];
     }
 }
