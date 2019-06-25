@@ -3,13 +3,14 @@
 namespace Tests\Unit;
 
 use App\User;
+use App\Gallery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Routing\Middleware\ThrottleRequests;
 use Laravel\Passport\ClientRepository;
 use Tests\TestCase;
 
-class UserControllerTest extends TestCase
+class UserBControllerTest extends TestCase
 {
+    protected $gallery;
     protected $user;
     protected $accessToken;
 
@@ -28,11 +29,17 @@ class UserControllerTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->withoutMiddleware(
-            ThrottleRequests::class
-        );
 
-        $this->user = factory(User::class)->create(['password' => bcrypt($this->userPassword)]);
+        $this->seed('PermissionsAndRolesTableSeeder');
+        $this->gallery = factory(Gallery::class)->create();
+        $this->user = factory(User::class)->create(
+            [
+                'password' => bcrypt($this->userPassword),
+                'gallery_id' => $this->gallery->id,
+                'role' => 'admin'
+            ]
+        );
+        $this->user->assignRole('admin');
         $client = $this->clientRepository->create($this->user->id, 'Testing', 'http://localhost', false, true);
 
         $this->accessToken = $this->json(
@@ -58,12 +65,13 @@ class UserControllerTest extends TestCase
         parent::tearDown();
 
         $this->user = null;
+        $this->gallery = null;
         $this->accessToken = null;
     }
 
     public function testIndex()
     {
-        $secondUser = factory(User::class)->create();
+        $secondUser = factory(User::class)->create(['gallery_id' =>  $this->gallery->id]);
 
         $this->json(
             'GET',
@@ -116,7 +124,7 @@ class UserControllerTest extends TestCase
 
     public function testIndexSearchByFirstname()
     {
-        $secondUser = factory(User::class)->create();
+        $secondUser = factory(User::class)->create(['gallery_id' =>  $this->gallery->id]);
         $this->json(
             'GET',
             '/api/user',
@@ -157,7 +165,7 @@ class UserControllerTest extends TestCase
 
     public function testIndexSearchByLastname()
     {
-        $secondUser = factory(User::class)->create();
+        $secondUser = factory(User::class)->create(['gallery_id' =>  $this->gallery->id]);
         $this->json(
             'GET',
             '/api/user',
@@ -200,7 +208,7 @@ class UserControllerTest extends TestCase
 
     public function testIndexSearchByName()
     {
-        $secondUser = factory(User::class)->create();
+        $secondUser = factory(User::class)->create(['gallery_id' =>  $this->gallery->id]);
         $this->json(
             'GET',
             '/api/user',
@@ -241,7 +249,7 @@ class UserControllerTest extends TestCase
 
     public function testIndexSearchByEmail()
     {
-        $secondUser = factory(User::class)->create();
+        $secondUser = factory(User::class)->create(['gallery_id' =>  $this->gallery->id]);
         $this->json(
             'GET',
             '/api/user',
@@ -282,7 +290,7 @@ class UserControllerTest extends TestCase
 
     public function testIndexSearchByRole()
     {
-        $secondUser = factory(User::class)->create();
+        $secondUser = factory(User::class)->create(['gallery_id' =>  $this->gallery->id]);
         $this->json(
             'GET',
             '/api/user',
@@ -335,7 +343,7 @@ class UserControllerTest extends TestCase
 
     public function testIndexSearchByMultipleFields()
     {
-        $secondUser = factory(User::class)->create();
+        $secondUser = factory(User::class)->create(['gallery_id' =>  $this->gallery->id]);
         $this->json(
             'GET',
             '/api/user',
@@ -457,7 +465,7 @@ class UserControllerTest extends TestCase
         $firstname = 'TestFirstname';
         $lastname = 'TestLastname';
         $name = 'TestName';
-        $email = 'test@example.com';
+        $email = 'test1@example.com';
         $password = 'TestPassword';
 
         $this->json(
@@ -610,7 +618,7 @@ class UserControllerTest extends TestCase
 
     public function testUpdateWithExistingEmail()
     {
-        $secondUser = factory(User::class)->create();
+        $secondUser = factory(User::class)->create(['gallery_id' =>  $this->gallery->id]);
 
         $this->json(
             'PATCH',

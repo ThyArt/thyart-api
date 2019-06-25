@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Gallery;
+namespace App\Http\Requests\User;
 
+use App\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class GalleryStoreRequest extends FormRequest
+class UserRoleUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +26,10 @@ class GalleryStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string|max:255',
-            'address' => 'string|max:255',
-            'phone' => 'string|max:255',
+            'role' => ['string', Rule::in([
+                User::ROLE_GALLERIST,
+                User::ROLE_MEMBER,
+            ])],
         ];
     }
 }

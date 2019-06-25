@@ -39,9 +39,9 @@ use Illuminate\Database\Eloquent\Model;
 class Artist extends Model
 {
     protected $fillable = ['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'country'];
-    public function user()
+    public function gallery()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Gallery::class);
     }
 
     public function artworks()

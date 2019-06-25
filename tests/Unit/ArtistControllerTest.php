@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Artist;
 use App\User;
+use App\Gallery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Laravel\Passport\ClientRepository;
@@ -13,6 +14,7 @@ class ArtistControllerTest extends TestCase
 {
     private $clientRepository;
     private $userPassword;
+    private $gallery;
     private $user;
     private $accessToken;
     private $artists;
@@ -32,9 +34,17 @@ class ArtistControllerTest extends TestCase
         $this->withoutMiddleware(
             ThrottleRequests::class
         );
-
-        $this->user = factory(User::class)->create(['password' => bcrypt($this->userPassword)]);
-        $this->artists = factory(Artist::class, 2)->create(['user_id' => $this->user->id]);
+        $this->seed('PermissionsAndRolesTableSeeder');
+        $this->gallery = factory(Gallery::class)->create();
+        $this->user = factory(User::class)->create(
+            [
+                'password' => bcrypt($this->userPassword),
+                'gallery_id' => $this->gallery->id,
+                'role' => 'admin'
+            ]
+        );
+        $this->user->assignRole('admin');
+        $this->artists = factory(Artist::class, 2)->create(['gallery_id' => $this->gallery->id]);
 
         $client = $this->clientRepository->create($this->user->id, 'Testing', 'http://localhost', false, true);
 
@@ -60,6 +70,7 @@ class ArtistControllerTest extends TestCase
     {
         parent::tearDown();
 
+        $this->gallery = null;
         $this->user = null;
         $this->artists = null;
         $this->accessToken = null;
@@ -449,10 +460,10 @@ class ArtistControllerTest extends TestCase
             ]);
     }
 
-    public function testIndexWithOtherUser()
+    public function testIndexWithOtherGallery()
     {
-        $secondUser = factory(User::class)->create();
-        factory(Artist::class, 2)->create(['user_id' => $secondUser->id]);
+        $secondGallery = factory(Gallery::class)->create();
+        factory(Artist::class, 2)->create(['gallery_id' => $secondGallery->id]);
 
         $this->json(
             'GET',
@@ -684,10 +695,10 @@ class ArtistControllerTest extends TestCase
             ->assertJson(['message' => 'Unauthenticated.']);
     }
 
-    public function testShowOtherUserArtist()
+    public function testShowOtherGalleryArtist()
     {
-        $secondUser = factory(User::class)->create();
-        $artist = factory(Artist::class)->create(['user_id' => $secondUser->id]);
+        $secondGallery = factory(Gallery::class)->create();
+        $artist = factory(Artist::class)->create(['gallery_id' => $secondGallery->id]);
 
         $this->json(
             'GET',
@@ -702,7 +713,7 @@ class ArtistControllerTest extends TestCase
             ->assertStatus(403)
             ->assertJson([
                 'error' => 'unauthorized',
-                'message' => 'The current user does not own this artist.'
+                'message' => 'The current gallery does not own this artist.'
             ]);
     }
 
@@ -837,10 +848,10 @@ class ArtistControllerTest extends TestCase
             ->assertJson(['message' => 'Unauthenticated.']);
     }
 
-    public function testUpdateOtherUserArtist()
+    public function testUpdateOtherGalleryArtist()
     {
-        $secondUser = factory(User::class)->create();
-        $artist = factory(Artist::class)->create(['user_id' => $secondUser->id]);
+        $secondGallery = factory(Gallery::class)->create();
+        $artist = factory(Artist::class)->create(['gallery_id' => $secondGallery->id]);
 
         $this->json(
             'PATCH',
@@ -855,7 +866,7 @@ class ArtistControllerTest extends TestCase
             ->assertStatus(403)
             ->assertJson([
                 'error' => 'unauthorized',
-                'message' => 'The current user does not own this artist.'
+                'message' => 'The current gallery does not own this artist.'
             ]);
     }
 
@@ -911,10 +922,10 @@ class ArtistControllerTest extends TestCase
             ->assertJson(['message' => 'Unauthenticated.']);
     }
 
-    public function testDeleteOtherUserArtist()
+    public function testDeleteOtherGalleryArtist()
     {
-        $secondUser = factory(User::class)->create();
-        $artist = factory(Artist::class)->create(['user_id' => $secondUser->id]);
+        $secondGallery = factory(Gallery::class)->create();
+        $artist = factory(Artist::class)->create(['gallery_id' => $secondGallery->id]);
 
         $this->json(
             'DELETE',
@@ -929,7 +940,7 @@ class ArtistControllerTest extends TestCase
             ->assertStatus(403)
             ->assertJson([
                 'error' => 'unauthorized',
-                'message' => 'The current user does not own this artist.'
+                'message' => 'The current gallery does not own this artist.'
             ]);
     }
 }

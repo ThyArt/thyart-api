@@ -24,7 +24,7 @@ class ArtworkController extends Controller
     public function index(ArtworkIndexRequest $request)
     {
         $data = $request->only(['name', 'price_min', 'price_max', 'state', 'ref']);
-        $artworks = $request->user()->artworks()
+        $artworks = $request->user()->gallery->artworks()
             ->when(isset($data['name']), function ($artwork) use ($data) {
                 return $artwork->where('name', 'like', '%' . $data['name'] . '%');
             })
@@ -73,6 +73,7 @@ class ArtworkController extends Controller
         return new ArtworkResource(
             $request
                 ->user()
+                ->gallery
                 ->artworks()
                 ->save($artwork)
         );
@@ -88,8 +89,8 @@ class ArtworkController extends Controller
 
     public function storeImage(ImageStoreRequest $request, Artwork $artwork)
     {
-        if ($artwork->user->id !== $request->user()->id) {
-            throw new UnauthorizedException('The current user does not own this artwork.');
+        if ($artwork->gallery->id !== $request->user()->gallery->id) {
+            throw new UnauthorizedException('The current gallery does not own this artwork.');
         }
 
         foreach ($request->file('images') as $file) {
@@ -103,8 +104,8 @@ class ArtworkController extends Controller
 
     public function destroyImage(Artwork $artwork, $media)
     {
-        if ($artwork->user->id !== request()->user()->id) {
-            throw new UnauthorizedException('The current user does not own this artwork.');
+        if ($artwork->gallery->id !== request()->user()->gallery->id) {
+            throw new UnauthorizedException('The current gallery does not own this artwork.');
         }
 
         try {
@@ -125,8 +126,8 @@ class ArtworkController extends Controller
 
     public function show(Artwork $artwork)
     {
-        if ($artwork->user->id !== request()->user()->id) {
-            throw new UnauthorizedException('The current user does not own this artwork.');
+        if ($artwork->gallery->id !== request()->user()->gallery->id) {
+            throw new UnauthorizedException('The current gallery does not own this artwork.');
         }
         return new ArtworkResource($artwork);
     }
@@ -141,8 +142,8 @@ class ArtworkController extends Controller
      */
     public function update(ArtworkUpdateRequest $request, Artwork $artwork)
     {
-        if ($artwork->user->id !== request()->user()->id) {
-            throw new UnauthorizedException('The current user does not own this artwork.');
+        if ($artwork->gallery->id !== request()->user()->gallery->id) {
+            throw new UnauthorizedException('The current gallery does not own this artwork.');
         }
         $artwork->fill($request->only(['name', 'price', 'state', 'ref']));
         $artwork->save();
@@ -159,8 +160,8 @@ class ArtworkController extends Controller
      */
     public function destroy(Artwork $artwork)
     {
-        if ($artwork->user->id !== request()->user()->id) {
-            throw new UnauthorizedException('The current user does not own this artwork.');
+        if ($artwork->gallery->id !== request()->user()->gallery->id) {
+            throw new UnauthorizedException('The current gallery does not own this artwork.');
         }
 
         $artwork->delete();
