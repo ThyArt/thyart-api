@@ -4,11 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\User\UserIndexRequest;
 use App\Http\Requests\User\UserStoreRequest;
+use App\Http\Requests\User\MemberStoreRequest;
 use App\Http\Requests\User\UserUpdateRequest;
+use App\Http\Requests\User\UserRoleUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Validation\UnauthorizedException;
+use App\Http\Resources\PermissionResource;
+use App\Gallery;
 
 class UserController extends Controller
 {
@@ -29,20 +35,24 @@ class UserController extends Controller
 
         $user = User
             ::when(isset($data['firstname']), function ($user) use ($data) {
-                return $user->orWhere('firstname', 'like', '%'. $data['firstname'] . '%');
+                return $user->orWhere('firstname', 'like', '%' . $data['firstname'] . '%');
+            })
+            ->when(isset($data['firstname']), function ($user) use ($data) {
+                return $user->orWhere('firstname', 'like', '%' . $data['firstname'] . '%');
             })
             ->when(isset($data['lastname']), function ($user) use ($data) {
-                return $user->orWhere('lastname', 'like', '%'. $data['lastname'] . '%');
+                return $user->orWhere('lastname', 'like', '%' . $data['lastname'] . '%');
             })
             ->when(isset($data['name']), function ($user) use ($data) {
-                return $user->orWhere('name', 'like', '%'. $data['name'] . '%');
+                return $user->orWhere('name', 'like', '%' . $data['name'] . '%');
             })
             ->when(isset($data['email']), function ($user) use ($data) {
                 return $user->orWhere('email', 'like', '%' . $data['email'] . '%');
             })
             ->when(isset($data['role']), function ($user) use ($data) {
                 return $user->orWhere('role', 'like', $data['role']);
-            });
+            })
+            ->where('gallery_id', $request->user()->gallery->id);
 
         $per_page = 25;
         if (isset($data['per_page'])) {
@@ -61,17 +71,39 @@ class UserController extends Controller
     {
         $data = $request->only(['firstname', 'lastname', 'name', 'email', 'password']);
 
-        $user = User::newModelInstance();
-        $user->password = bcrypt($data['password']);
-        $user->firstname = $data['firstname'];
-        $user->lastname = $data['lastname'];
-        $user->name = $data['name'];
-        $user->email = $data['email'];
-        $user->role = 'admin';
+        $gallery = Gallery::newModelInstance();
+        $gallery->save();
 
-        $user->save();
+        $data['password'] = bcrypt($data['password']);
+        $data['role'] = 'admin';
+
+        $user = $gallery->users()->create($data);
+        $user->assignRole('admin');
+
         return new UserResource($user);
     }
+
+
+    /**
+     * Store a newly created user in storage.
+     *
+     * @param MemberStoreRequest $request
+     * @return UserResource
+     */
+    public function storeMember(MemberStoreRequest $request)
+    {
+        $data = $request->only(['firstname', 'lastname', 'name', 'email', 'password', 'role']);
+
+        $data['password'] = bcrypt($data['password']);
+        $data['gallery_id'] = $request->user()->galleryId;
+        $data['role'] = (isset($data['role'])) ? $data['role'] : 'member';
+
+        $user = $request->user()->gallery->users()->create($data);
+        $user->assignRole($data['role']);
+
+        return new UserResource($user);
+    }
+
 
     /**
      * Display the specified user.
@@ -81,6 +113,10 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        //dump("ALED");
+        if ($user->gallery->id != request()->user()->gallery->id) {
+            throw new UnauthorizedException('That member doesn\'t work in your gallery.');
+        }
         return new UserResource($user);
     }
 
@@ -92,6 +128,40 @@ class UserController extends Controller
     public function showByToken()
     {
         return new UserResource(request()->user());
+    }
+
+    /**
+     * Display a listing of the users.
+     *
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function getOwnPermissions()
+    {
+        return PermissionResource::collection(request()->user()->getAllPermissions());
+    }
+
+    /**
+     * Update the specified user in storage.
+     *
+     * @param UserRoleUpdateRequest $request
+     * @param \App\User $user
+     * @return UserResource
+     * @throws ValidationException
+     */
+    public function updateRole(UserRoleUpdateRequest $request, User $user)
+    {
+        $data = $request->only(['role']);
+        if ($user->hasRole('admin')) {
+            throw new UnauthorizedException('You cannot change the role of an admin.');
+        }
+        if ($user->galleryId != $request->user()->galleryId) {
+            throw new UnauthorizedException('That member doesn\'t work in your gallery.');
+        }
+        $user->assignRole($data['role']);
+        $user->role = $data['role'];
+        $user->save();
+
+        return new UserResource($user->refresh());
     }
 
     /**

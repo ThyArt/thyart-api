@@ -21,7 +21,7 @@ class GalleryController extends Controller
     {
         $data = $request->only(['name', 'address', 'phone']);
 
-        $gallery = $request->user()->galleries()
+        $gallery = $request->user()->gallery
             ->when(isset($data['name']), function ($gallery) use ($data) {
                 return $gallery->orWhere('name', 'like', '%' . $data['name'] . '%');
             })
@@ -41,32 +41,13 @@ class GalleryController extends Controller
     }
 
     /**
-     * Store a newly created gallery in storage.
-     *
-     * @param  GalleryStoreRequest  $request
-     * @return GalleryResource
-     */
-    public function store(GalleryStoreRequest $request)
-    {
-        return new GalleryResource(
-            $request
-                ->user()
-                ->galleries()
-                ->create($request->only(['name', 'address', 'phone']))
-        );
-    }
-
-    /**
      * Display the specified gallery.
      *
-     * @param  \App\Gallery  $gallery
      * @return GalleryResource
      */
-    public function show(Gallery $gallery)
+    public function show()
     {
-        if ($gallery->user->id != request()->user()->id) {
-            throw new UnauthorizedException('The current user does not own this gallery.');
-        }
+        $gallery = request()->user()->gallery;
         return new GalleryResource($gallery);
     }
 
@@ -74,17 +55,13 @@ class GalleryController extends Controller
      * Update the specified gallery in storage.
      *
      * @param  GalleryUpdateRequest  $request
-     * @param  \App\Gallery  $gallery
      * @return GalleryResource
      */
-    public function update(GalleryUpdateRequest $request, Gallery $gallery)
+    public function update(GalleryUpdateRequest $request)
     {
-        if ($gallery->user->id != request()->user()->id) {
-            throw new UnauthorizedException('The current user does not own this gallery.');
-        }
-
         $data = $request->only(['name', 'address', 'phone']);
 
+        $gallery = $request->user()->gallery;
         $gallery->update($data);
 
         return new GalleryResource($gallery);
@@ -93,16 +70,12 @@ class GalleryController extends Controller
     /**
      * Remove the specified gallery from storage.
      *
-     * @param  \App\Gallery  $gallery
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Gallery $gallery)
+    public function destroy()
     {
-        if ($gallery->user->id != request()->user()->id) {
-            throw new UnauthorizedException('The current user does not own this gallery.');
-        }
-
+        $gallery = request()->user()->gallery;
         $gallery->delete();
 
         return response()->json(['message' => 'Gallery deleted.'], 200);

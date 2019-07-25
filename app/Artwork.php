@@ -34,7 +34,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Artwork whereRef($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Artwork whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Artwork whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Artwork whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Artwork whereGalleryId($value)
  * @mixin \Eloquent
  * @property-read \App\Order $order
  */
@@ -68,9 +68,9 @@ class Artwork extends Model implements HasMedia
     /**
      * @return BelongsTo
      */
-    public function user()
+    public function gallery()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Gallery::class);
     }
 
     /**

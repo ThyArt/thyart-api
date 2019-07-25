@@ -23,7 +23,7 @@ class ArtistController extends Controller
     {
         $data = $request->only(['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'country', 'per_page']);
 
-        $artists = $request->user()->artists()
+        $artists = $request->user()->gallery->artists()
             ->when(isset($data['first_name']), function ($customer) use ($data) {
                 return $customer->where('first_name', 'like', '%' . $data['first_name'] . '%');
             })
@@ -64,6 +64,7 @@ class ArtistController extends Controller
         return new ArtistResource(
             $request
                 ->user()
+                ->gallery
                 ->artists()
                 ->create(request(['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'country']))
         );
@@ -78,8 +79,8 @@ class ArtistController extends Controller
      */
     public function show(Artist $artist)
     {
-        if ($artist->user->id !== request()->user()->id) {
-            throw new UnauthorizedException('The current user does not own this artist.');
+        if ($artist->gallery->id !== request()->user()->gallery->id) {
+            throw new UnauthorizedException('The current gallery does not own this artist.');
         }
         return new ArtistResource($artist);
     }
@@ -93,8 +94,8 @@ class ArtistController extends Controller
      */
     public function update(ArtistUpdateRequest $request, Artist $artist)
     {
-        if ($artist->user->id !== $request->user()->id) {
-            throw new UnauthorizedException('The current user does not own this artist.');
+        if ($artist->gallery->id !== $request->user()->gallery->id) {
+            throw new UnauthorizedException('The current gallery does not own this artist.');
         }
 
         $artist->update($request->only(['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'country']));
@@ -111,8 +112,8 @@ class ArtistController extends Controller
      */
     public function destroy(Artist $artist)
     {
-        if ($artist->user->id !== request()->user()->id) {
-            throw new UnauthorizedException('The current user does not own this artist.');
+        if ($artist->gallery->id !== request()->user()->gallery->id) {
+            throw new UnauthorizedException('The current gallery does not own this artist.');
         }
 
         $artist->delete();

@@ -8,6 +8,7 @@ use App\Http\Resources\ArtworkResource;
 use App\Http\Resources\CustomerResource;
 use App\Http\Resources\MediaResource;
 use App\Order;
+use App\Gallery;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Routing\Middleware\ThrottleRequests;
@@ -40,10 +41,18 @@ class OrderControllerTest extends TestCase
         $this->withoutMiddleware(
             ThrottleRequests::class
         );
-
-        $this->user = factory(User::class)->create(['password' => bcrypt($this->userPassword)]);
-        $this->customer = factory(Customer::class)->create(['user_id' => $this->user->id]);
-        $this->artwork = factory(Artwork::class)->create(['user_id' => $this->user->id, 'state' => Artwork::STATE_SOLD]);
+        $this->seed('PermissionsAndRolesTableSeeder');
+        $this->gallery = factory(Gallery::class)->create();
+        $this->user = factory(User::class)->create(
+            [
+                'password' => bcrypt($this->userPassword),
+                'gallery_id' => $this->gallery->id,
+                'role' => 'admin'
+            ]
+        );
+        $this->user->assignRole('admin');
+        $this->customer = factory(Customer::class)->create(['gallery_id' => $this->gallery->id]);
+        $this->artwork = factory(Artwork::class)->create(['gallery_id' => $this->gallery->id, 'state' => Artwork::STATE_SOLD]);
 
         $this->order = factory(Order::class)->create([
             'user_id' => $this->user->id,
@@ -81,6 +90,7 @@ class OrderControllerTest extends TestCase
     {
         parent::tearDown();
 
+        unset($this->gallery);
         unset($this->user);
         unset($this->order);
         unset($this->accessToken);
@@ -343,7 +353,7 @@ class OrderControllerTest extends TestCase
 
     public function testStoreWithValidArguments()
     {
-        $this->artwork = factory(Artwork::class)->create(['user_id' => $this->user->id, 'state' => Artwork::STATE_IN_STOCK]);
+        $this->artwork = factory(Artwork::class)->create(['gallery_id' => $this->gallery->id, 'state' => Artwork::STATE_IN_STOCK]);
 
         $date = FakeDate::date();
         $this->json(
@@ -380,8 +390,8 @@ class OrderControllerTest extends TestCase
 
     public function testStoreWithNonExistentCustomer()
     {
-        $this->artwork = factory(Artwork::class)->create(['user_id' => $this->user->id, 'state' => Artwork::STATE_IN_STOCK]);
-        $this->customer = factory(Customer::class)->make(['user_id' => $this->user->id]);
+        $this->artwork = factory(Artwork::class)->create(['gallery_id' => $this->gallery->id, 'state' => Artwork::STATE_IN_STOCK]);
+        $this->customer = factory(Customer::class)->make(['gallery_id' => $this->gallery->id]);
 
         $date = FakeDate::date();
         $this->json(
@@ -413,7 +423,7 @@ class OrderControllerTest extends TestCase
             ]);
 
         $this->assertDatabaseHas('customers', [
-            'user_id' => $this->user->id,
+            'gallery_id' => $this->gallery->id,
             'first_name' => $this->customer->first_name,
             'last_name' => $this->customer->last_name,
             'email' => $this->customer->email,

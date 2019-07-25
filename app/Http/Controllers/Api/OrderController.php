@@ -45,16 +45,16 @@ class OrderController extends Controller
      */
     public function store(OrderStoreRequest $request)
     {
-        $user = $request->user();
+        $gallery = $request->user()->gallery;
 
         $data = $request->only(['email', 'first_name', 'last_name', 'phone', 'address', 'country', 'city', 'artwork_id', 'date']);
 
-        $artwork =  $user->artworks()->findOrFail($data['artwork_id']);
+        $artwork =  $gallery->artworks()->findOrFail($data['artwork_id']);
         if ($artwork->order) {
             abort(400, "An Order with this artwork already exists.");
         }
 
-        $customer = $user->customers()->firstOrNew(
+        $customer = $gallery->customers()->firstOrNew(
             ['email' => $data['email']],
             ['first_name' => $data['first_name'],
                     'last_name' => $data['last_name'],
