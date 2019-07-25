@@ -146,10 +146,6 @@ initiate_testing_database:
 	@$(call to_logs,../,$(call docker_compose,exec -u laradock workspace php artisan migrate --env=testing))
 	@$(call print_output,GREEN,testing database migrated)
 
-	@$(call print_output,WHITE,executing seeders on testing environment)
-	@$(call to_logs,../,$(call docker_compose,exec -u laradock workspace php artisan db:seed --env=testing))
-	@$(call print_output,GREEN,seeders executed on testing environment)
-
 run_tests:
 	$(call docker_compose,exec -u laradock workspace ./vendor/bin/phpunit)
 
