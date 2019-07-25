@@ -55,26 +55,16 @@ class LinkWithGalleryInsteadOfUser extends Migration
      */
     public function down()
     {
-<<<<<<< HEAD
 
         Schema::table('customers', function (Blueprint $table) {
             $table->dropForeign(['gallery_id']);
             $table->dropColumn('gallery_id');
         });
         Schema::table('customers', function (Blueprint $table) {
-=======
-        Schema::table('customers', function (Blueprint $table) {
-            $table->dropForeign(['gallery_id']);
-            $table->dropColumn('gallery_id');
->>>>>>> 8427ea8e1b040fa8a74b44d9f2984a6018d25a47
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 8427ea8e1b040fa8a74b44d9f2984a6018d25a47
         Schema::table('artists', function (Blueprint $table) {
             $table->dropForeign(['gallery_id']);
             $table->dropColumn('gallery_id');
@@ -90,21 +80,11 @@ class LinkWithGalleryInsteadOfUser extends Migration
         });
 
         Schema::table('galleries', function (Blueprint $table) {
-<<<<<<< HEAD
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->dropColumn('name');
             $table->dropColumn('address');
             $table->dropColumn('phone');
-=======
-            $table->dropForeign(['gallery_id']);
-            $table->dropColumn('gallery_id');
-            $table->unsignedInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string('name');
-            $table->string('address');
-            $table->string('phone');
->>>>>>> 8427ea8e1b040fa8a74b44d9f2984a6018d25a47
         });
 
         Schema::table('users', function (Blueprint $table) {
