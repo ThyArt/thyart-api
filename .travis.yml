@@ -17,6 +17,9 @@ before_script:
 - php artisan passport:keys --env=testing
 script:
 - "./vendor/bin/phpunit"
+after_success:
+  - chmod +x .travis/getenv.sh
+  - ./.travis/getenv.sh
 env:
   global:
   - PATH=$HOME/.local/bin:$PATH
