@@ -4,16 +4,19 @@ php:
 services:
 - mysql
 install:
+- pip install --user awscli
 - composer self-update
 - composer install --no-interaction
-- pip install --user awscli
 before_script:
+- aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+- aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
 - mysql -e 'create database thyart_testing;'
 - cp .env.travis .env.testing
 - php artisan key:generate --env=testing
 - php artisan migrate --env=testing
 - php artisan passport:keys --env=testing
 script:
+- aws s3 ls
 - "./vendor/bin/phpunit"
 env:
   global:
