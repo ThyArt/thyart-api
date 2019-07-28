@@ -8,6 +8,7 @@ services:
 install:
   - composer self-update
   - composer install --no-interaction
+  - pip install --user awscli
 
 before_script:
   - mysql -e 'create database thyart_testing;'
@@ -18,3 +19,7 @@ before_script:
 
 script:
   - ./vendor/bin/phpunit
+
+env:
+  global:
+    - PATH=$HOME/.local/bin:$PATH
