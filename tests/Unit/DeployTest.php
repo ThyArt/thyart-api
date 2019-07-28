@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Passport\Client;
 use Tests\TestCase;
 
-class AwsDeployTest extends TestCase
+class DeployTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -29,7 +29,7 @@ class AwsDeployTest extends TestCase
 
     public function testClientIsCreatedWithValues()
     {
-        $this->artisan('aws:deploy');
+        $this->artisan('deploy');
 
         $testedClient = Client::first();
         $this->assertEquals($testedClient->user_id, null);
@@ -43,8 +43,8 @@ class AwsDeployTest extends TestCase
 
     public function testClientIsCreatedOnce()
     {
-        $this->artisan('aws:deploy');
-        $this->artisan('aws:deploy');
+        $this->artisan('deploy');
+        $this->artisan('deploy');
 
         $this->assertEquals(Client::count(), 1);
     }

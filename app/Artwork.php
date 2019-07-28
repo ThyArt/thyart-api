@@ -48,8 +48,8 @@ class Artwork extends Model implements HasMedia
 
     protected $fillable = ['name', 'price', 'state', 'ref'];
     protected $diskStorage = [
-        's3' => ['dev', 'test', 'prod'],
-        'public' => ['local', 'codebuild', 'testing']
+        's3' => ['staging', 'production'],
+        'public' => ['local', 'travis', 'testing']
     ];
 
     /**
