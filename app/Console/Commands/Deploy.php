@@ -6,21 +6,21 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Laravel\Passport\Client;
 
-class AwsDeploy extends Command
+class Deploy extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'aws:deploy';
+    protected $signature = 'deploy';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command to run next to an elastic beanstalk deployment';
+    protected $description = 'migrate and install passport';
 
     /**
      * Create a new command instance.
