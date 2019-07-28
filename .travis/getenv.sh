@@ -1,4 +1,4 @@
-if [[ "$TRAVIS_BRANCH" == 'feature/travis' ]];
+if [[ "$TRAVIS_BRANCH" == 'dev' ]];
 then
   aws s3 cp s3://thyart-ops/env/api/staging/.env .env
   aws s3 cp s3://thyart-ops/env/api/staging/.env.testing .env.testing
