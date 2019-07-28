@@ -16,7 +16,6 @@ before_script:
 - php artisan migrate --env=testing
 - php artisan passport:keys --env=testing
 script:
-- aws s3 ls
 - "./vendor/bin/phpunit"
 env:
   global:
