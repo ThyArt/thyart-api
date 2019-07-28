@@ -1,8 +1,18 @@
 language: php
 php:
   - '7.2'
+
 services:
   - mysql
 
 install:
-  - composer install
+  - composer self-update
+  - composer install --no-interaction
+
+before_script:
+  - mysql -e 'create database thyart_testing;'
+  - cp .env.travis .env.testing
+  - php artisan key:generate --env=testing
+
+script:
+  - ./vendor/bin/phpunit
