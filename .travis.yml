@@ -13,6 +13,8 @@ before_script:
   - mysql -e 'create database thyart_testing;'
   - cp .env.travis .env.testing
   - php artisan key:generate --env=testing
+  - php artisan migrate --env=testing
+  - php artisan passport:keys --env=testing
 
 script:
   - ./vendor/bin/phpunit
