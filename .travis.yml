@@ -1,12 +1,20 @@
 language: php
 php:
 - '7.2'
+
 services:
 - mysql
+
+addons:
+  ssh_known_hosts:
+    - staging.api.thyart.fr
+    - api.thyart.fr
+
 install:
 - pip install --user awscli
 - composer self-update
 - composer install --no-interaction
+
 before_script:
 - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
 - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
@@ -15,8 +23,10 @@ before_script:
 - php artisan key:generate --env=testing
 - php artisan migrate --env=testing
 - php artisan passport:keys --env=testing
+
 script:
 - "./vendor/bin/phpunit"
+
 before_deploy:
   - chmod +x .travis/getenv.sh
   - "./.travis/getenv.sh"
@@ -24,6 +34,7 @@ before_deploy:
   - eval "$(ssh-agent -s)"
   - chmod 400 /tmp/deploy_rsa
   - ssh-add /tmp/deploy_rsa
+
 deploy:
   provider: script
   skip_cleanup: true
