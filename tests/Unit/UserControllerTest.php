@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Passport\ClientRepository;
 use Tests\TestCase;
 
-class UserBControllerTest extends TestCase
+class UserControllerTest extends TestCase
 {
     protected $gallery;
     protected $user;
