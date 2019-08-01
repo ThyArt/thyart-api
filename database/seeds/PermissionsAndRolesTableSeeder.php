@@ -12,6 +12,7 @@ class PermissionsAndRolesTableSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         $permissions = [];
+
         $permissions[] = Permission::findOrCreate('store member');
         $permissions[] = Permission::findOrCreate('update role');
         $permissions[] = Permission::findOrCreate('store artist');
@@ -29,16 +30,15 @@ class PermissionsAndRolesTableSeeder extends Seeder
         $permissions[] = Permission::findOrCreate('store artwork image');
         $permissions[] = Permission::findOrCreate('destroy artwork image');
 
-        $admin = Role::create(['name' => 'admin']);
+        $admin = Role::findOrCreate('admin');
         $admin->syncPermissions($permissions);
 
-
-        $gallerist = Role::create(['name' => 'gallerist']);
+        $gallerist = Role::findOrCreate('gallerist');
         $gallerist->syncPermissions($permissions);
         $gallerist->revokePermissionTo('store member');
         $gallerist->revokePermissionTo('update role');
 
-        $member = Role::create(['name' => 'member']);
+        $member = Role::findOrCreate('member');
         $member->syncPermissions($permissions);
         $member->revokePermissionTo('store member');
         $member->revokePermissionTo('update role');
