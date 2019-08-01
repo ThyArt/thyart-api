@@ -12,23 +12,22 @@ class PermissionsAndRolesTableSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         $permissions = [];
-        $permissions[] = Permission::create(['name' => 'store member']);
-        $permissions[] = Permission::create(['name' => 'update role']);
-        $permissions[] = Permission::create(['name' => 'store artist']);
-        $permissions[] = Permission::create(['name' => 'get artist']);
-        $permissions[] = Permission::create(['name' => 'update artist']);
-        $permissions[] = Permission::create(['name' => 'destroy artist']);
-        $permissions[] = Permission::create(['name' => 'store customer']);
-        $permissions[] = Permission::create(['name' => 'get customer']);
-        $permissions[] = Permission::create(['name' => 'update customer']);
-        $permissions[] = Permission::create(['name' => 'destroy customer']);
-        $permissions[] = Permission::create(['name' => 'store artwork']);
-        $permissions[] = Permission::create(['name' => 'get artwork']);
-        $permissions[] = Permission::create(['name' => 'update artwork']);
-        $permissions[] = Permission::create(['name' => 'destroy artwork']);
-        $permissions[] = Permission::create(['name' => 'store artwork image']);
-        $permissions[] = Permission::create(['name' => 'destroy artwork image']);
-
+        $permissions[] = Permission::findOrCreate('store member');
+        $permissions[] = Permission::findOrCreate('update role');
+        $permissions[] = Permission::findOrCreate('store artist');
+        $permissions[] = Permission::findOrCreate('get artist');
+        $permissions[] = Permission::findOrCreate('update artist');
+        $permissions[] = Permission::findOrCreate('destroy artist');
+        $permissions[] = Permission::findOrCreate('store customer');
+        $permissions[] = Permission::findOrCreate('get customer');
+        $permissions[] = Permission::findOrCreate('update customer');
+        $permissions[] = Permission::findOrCreate('destroy customer');
+        $permissions[] = Permission::findOrCreate('store artwork');
+        $permissions[] = Permission::findOrCreate('get artwork');
+        $permissions[] = Permission::findOrCreate('update artwork');
+        $permissions[] = Permission::findOrCreate('destroy artwork');
+        $permissions[] = Permission::findOrCreate('store artwork image');
+        $permissions[] = Permission::findOrCreate('destroy artwork image');
 
         $admin = Role::create(['name' => 'admin']);
         $admin->syncPermissions($permissions);
