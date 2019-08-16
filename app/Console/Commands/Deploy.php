@@ -40,6 +40,7 @@ class Deploy extends Command
     public function handle()
     {
         Artisan::call('migrate', ['--force' => true]);
+        Artisan::call('permission:set');
 
         if (!Client::where('password_client', true)->exists()) {
             $client = (new Client)->forceFill([
