@@ -109,4 +109,10 @@ class Artwork extends Model implements HasMedia
 
         return $this;
     }
+    public function storeCImage($file)
+    {
+        $this
+            ->addMedia($file)
+            ->toMediaCollection('cimages', $this->getStorageByEnv());
+    }
 }

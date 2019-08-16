@@ -20,7 +20,8 @@ class ArtworkResource extends JsonResource
             'price' => $this->price,
             'ref' => $this->ref,
             'state' => $this->state,
-            'images' => MediaResource::collection($this->getMedia('images'))
+            'images' => MediaResource::collection($this->getMedia('images')),
+            'cimages' => MediaResource::collection($this->getMedia('cimages'))
         ];
     }
 }
