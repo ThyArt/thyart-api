@@ -4,11 +4,15 @@ php:
 
 services:
 - mysql
+- imagick
 
 addons:
   ssh_known_hosts:
     - staging.api.thyart.fr
     - api.thyart.fr
+
+before_install:
+  - yes '' | pecl install imagick
 
 install:
   - pip install --user awscli
