@@ -29,7 +29,7 @@ class CustomerControllerTest extends TestCase
         $this->userPassword = 'CustomerControllerTest';
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->withoutMiddleware(
@@ -68,7 +68,7 @@ class CustomerControllerTest extends TestCase
         )->json()['access_token'];
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 

@@ -13,7 +13,7 @@ class DeployTest extends TestCase
     private $clientSecret;
     private $client;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->app = $this->createApplication();
         $this->clientSecret = str_random(40);
@@ -21,7 +21,7 @@ class DeployTest extends TestCase
         $_SERVER['PASSPORT_CLIENT_SECRET'] = $this->clientSecret;
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->clientSecret);
         unset($this->app);

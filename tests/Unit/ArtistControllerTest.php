@@ -28,7 +28,7 @@ class ArtistControllerTest extends TestCase
         $this->userPassword = 'ArtistControllerTest';
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->withoutMiddleware(
@@ -66,7 +66,7 @@ class ArtistControllerTest extends TestCase
         )->json()['access_token'];
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 
