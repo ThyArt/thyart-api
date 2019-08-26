@@ -35,7 +35,7 @@ class OrderControllerTest extends TestCase
         $this->userPassword = 'OrderControllerTest';
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->withoutMiddleware(
@@ -86,7 +86,7 @@ class OrderControllerTest extends TestCase
         )->json()['access_token'];
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 
