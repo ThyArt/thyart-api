@@ -64,7 +64,6 @@ Route::group(["namespace" => 'Api', 'prefix' => 'artwork', 'middleware' => 'auth
     route::delete('/{artwork}', 'ArtworkController@destroy')->middleware('permission:destroy artwork');
 
     Route::post('/{artwork}/image', 'ArtworkController@storeImage')->middleware('permission:store artwork image');
-    Route::post('/{artwork}/cimage', 'ArtworkController@storeCImage')->middleware('permission:store artwork image');
     Route::delete('/{artwork}/image/{media}', 'ArtworkController@destroyImage')->middleware('permission:destroy artwork image');
 });
 
