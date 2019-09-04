@@ -528,7 +528,6 @@ class ArtistControllerTest extends TestCase
                         "The country field is required.",
                     ]
                 ]
-
             );
     }
 

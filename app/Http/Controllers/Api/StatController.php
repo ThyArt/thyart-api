@@ -53,48 +53,54 @@ class StatController extends Controller
             "daily" => (function () use ($artworks, $orders, $now, $day) {
                 $total = 0;
                 foreach ($orders as $order) {
-                    if (Carbon::createFromTimeString($order->date)->between($now, $day))
+                    if (Carbon::createFromTimeString($order->date)->between($now, $day)) {
                         $total += $artworks->find($order->artwork_id)->price;
+                    }
                 }
                 return $total;
             })(),
             "weekly" => (function () use ($artworks, $orders, $now, $week) {
                 $total = 0;
                 foreach ($orders as $order) {
-                    if (Carbon::createFromTimeString($order->date)->between($now, $week))
+                    if (Carbon::createFromTimeString($order->date)->between($now, $week)) {
                         $total += $artworks->find($order->artwork_id)->price;
+                    }
                 }
                 return $total;
             })(),
             "monthly" => (function () use ($artworks, $orders, $now, $month) {
                 $total = 0;
                 foreach ($orders as $order) {
-                    if (Carbon::createFromTimeString($order->date)->between($now, $month))
+                    if (Carbon::createFromTimeString($order->date)->between($now, $month)) {
                         $total += $artworks->find($order->artwork_id)->price;
+                    }
                 }
                 return $total;
             })(),
             "trimester" => (function () use ($artworks, $orders, $now, $trimester) {
                 $total = 0;
                 foreach ($orders as $order) {
-                    if (Carbon::createFromTimeString($order->date)->between($now, $trimester))
+                    if (Carbon::createFromTimeString($order->date)->between($now, $trimester)) {
                         $total += $artworks->find($order->artwork_id)->price;
+                    }
                 }
                 return $total;
             })(),
             "semester" => (function () use ($artworks, $orders, $now, $semester) {
                 $total = 0;
                 foreach ($orders as $order) {
-                    if (Carbon::createFromTimeString($order->date)->between($now, $semester))
+                    if (Carbon::createFromTimeString($order->date)->between($now, $semester)) {
                         $total += $artworks->find($order->artwork_id)->price;
+                    }
                 }
                 return $total;
             })(),
             "yearly" => (function () use ($artworks, $orders, $now, $year) {
                 $total = 0;
                 foreach ($orders as $order) {
-                    if (Carbon::createFromTimeString($order->date)->between($now, $year))
+                    if (Carbon::createFromTimeString($order->date)->between($now, $year)) {
                         $total += $artworks->find($order->artwork_id)->price;
+                    }
                 }
                 return $total;
             })()

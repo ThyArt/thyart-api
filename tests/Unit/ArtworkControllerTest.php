@@ -326,7 +326,6 @@ class ArtworkControllerTest extends TestCase
                         "The state field is required.",
                     ]
                 ]
-
             );
     }
 
@@ -580,7 +579,14 @@ class ArtworkControllerTest extends TestCase
         $mediaResources = MediaResource::collection($this->artwork->getMedia('images'))->toArray(null);
 
         foreach ($mediaResources as $mediaResource) {
-            $this->assertEquals(array_keys($mediaResource), ['id', 'url', 'name', 'file_name']);
+            $this->assertEquals(array_keys($mediaResource), ['id', 'urls', 'name', 'file_name']);
+
+            if (isset($mediaResource['urls'])) {
+                $this->assertEquals(
+                    array_keys($mediaResource['urls']),
+                    ['origin', 'small', 'medium', 'large', 'xlarge']
+                );
+            }
         }
     }
 }
