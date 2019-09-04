@@ -326,7 +326,6 @@ class ArtworkControllerTest extends TestCase
                         "The state field is required.",
                     ]
                 ]
-
             );
     }
 

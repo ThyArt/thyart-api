@@ -307,7 +307,6 @@ class OrderControllerTest extends TestCase
                         "The date field is required."
                     ]
                 ]
-
             );
     }
 

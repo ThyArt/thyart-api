@@ -102,7 +102,7 @@ class ArtworkController extends Controller
         return new ArtworkResource($artwork->refresh());
     }
 
-public function destroyImage(Artwork $artwork, $media)
+    public function destroyImage(Artwork $artwork, $media)
     {
         if ($artwork->gallery->id !== request()->user()->gallery->id) {
             throw new UnauthorizedException('The current gallery does not own this artwork.');

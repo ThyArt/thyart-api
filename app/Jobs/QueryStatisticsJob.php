@@ -35,8 +35,7 @@ class QueryStatisticsJob implements ShouldQueue
     {
         $orders = User::with('orders', ['price', 'date'])->get();
 
-        foreach ($orders as $ord)
-        {
+        foreach ($orders as $ord) {
             /* Store sum of all prices in stat DB using $ord->date under usr->id*/
             print("Stored gains");
         }

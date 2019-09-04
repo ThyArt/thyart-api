@@ -529,7 +529,6 @@ class CustomerControllerTest extends TestCase
                         "The country field is required.",
                     ]
                 ]
-
             );
     }
 
