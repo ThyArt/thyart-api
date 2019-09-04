@@ -21,7 +21,6 @@ class ArtworkResource extends JsonResource
             'ref' => $this->ref,
             'state' => $this->state,
             'images' => MediaResource::collection($this->getMedia('images')),
-            'cimages' => MediaResource::collection($this->getMedia('cimages'))
         ];
     }
 }

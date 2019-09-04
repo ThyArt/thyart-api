@@ -52,6 +52,25 @@ class Artwork extends Model implements HasMedia
         'public' => ['local', 'travis', 'testing']
     ];
 
+    public function registerMediaConversions(Media $media = null)
+    {
+        $this->addMediaConversion('small')
+            ->width(128)
+            ->height(128);
+
+        $this->addMediaConversion('medium')
+            ->width(256)
+            ->height(256);
+
+        $this->addMediaConversion('large')
+            ->width(512)
+            ->height(512);
+
+        $this->addMediaConversion('xlarge')
+            ->width(1024)
+            ->height(1024);
+    }
+
     /**
      * @return string
      */
@@ -108,11 +127,5 @@ class Artwork extends Model implements HasMedia
             ->toMediaCollection('images', $this->getStorageByEnv());
 
         return $this;
-    }
-    public function storeCImage($file)
-    {
-        $this
-            ->addMedia($file)
-            ->toMediaCollection('cimages', $this->getStorageByEnv());
     }
 }

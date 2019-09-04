@@ -102,29 +102,6 @@ class ArtworkController extends Controller
         return new ArtworkResource($artwork->refresh());
     }
 
-    /**
-     * Store a compressed image in storage.
-     *
-     * @param ImageStoreRequest $request
-     * @param Artwork $artwork
-     * @return ArtworkResource
-     */
-
-    public function storeCImage(ImageStoreRequest $request, Artwork $artwork)
-    {
-        if ($artwork->gallery->id !== $request->user()->gallery->id) {
-            throw new UnauthorizedException('The current gallery does not own this artwork.');
-        }
-
-        foreach ($request->file('images') as $file) {
-            $artwork->storeCImage($file);
-        }
-
-        $artwork->save();
-
-        return new ArtworkResource($artwork->refresh());
-    }
-
 public function destroyImage(Artwork $artwork, $media)
     {
         if ($artwork->gallery->id !== request()->user()->gallery->id) {

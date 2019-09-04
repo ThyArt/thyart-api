@@ -55,12 +55,22 @@ class LinkWithGalleryInsteadOfUser extends Migration
      */
     public function down()
     {
-
-        Schema::table('customers', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['gallery_id']);
             $table->dropColumn('gallery_id');
         });
-        Schema::table('customers', function (Blueprint $table) {
+
+        Schema::table('galleries', function (Blueprint $table) {
+            $table->unsignedInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->dropColumn('name');
+            $table->dropColumn('address');
+            $table->dropColumn('phone');
+        });
+
+        Schema::table('artworks', function (Blueprint $table) {
+            $table->dropForeign(['gallery_id']);
+            $table->dropColumn('gallery_id');
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
@@ -72,24 +82,11 @@ class LinkWithGalleryInsteadOfUser extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
-        Schema::table('artworks', function (Blueprint $table) {
+        Schema::table('customers', function (Blueprint $table) {
             $table->dropForeign(['gallery_id']);
             $table->dropColumn('gallery_id');
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-        });
-
-        Schema::table('galleries', function (Blueprint $table) {
-            $table->unsignedInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->dropColumn('name');
-            $table->dropColumn('address');
-            $table->dropColumn('phone');
-        });
-
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['gallery_id']);
-            $table->dropColumn('gallery_id');
         });
     }
 }
