@@ -21,7 +21,9 @@ Route::group(["namespace" => 'Api', 'prefix' => 'user'], function () {
     Route::get('', 'UserController@index');
     Route::get('/self', 'UserController@showByToken');
     Route::get('/self/permissions', 'UserController@getOwnPermissions');
+    Route::get('/{user}/permissions', 'UserController@getUserPermissions');
     Route::post('/role/{user}', 'UserController@updateRole')->middleware('permission:update role');
+    Route::post('/permission/{user}/{permission}', 'UserController@updatePermission')->middleware('permission:update role');
     Route::get('/{user}', 'UserController@show');
     Route::patch('', 'UserController@update');
     Route::delete('', 'UserController@destroy');
