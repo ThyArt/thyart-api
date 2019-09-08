@@ -23,6 +23,10 @@ class PermissionsAndRolesTableSeeder extends Seeder
         $permissions[] = Permission::findOrCreate('get customer');
         $permissions[] = Permission::findOrCreate('update customer');
         $permissions[] = Permission::findOrCreate('destroy customer');
+        $permissions[] = Permission::findOrCreate('store exhibition');
+        $permissions[] = Permission::findOrCreate('get exhibition');
+        $permissions[] = Permission::findOrCreate('update exhibition');
+        $permissions[] = Permission::findOrCreate('destroy exhibition');
         $permissions[] = Permission::findOrCreate('store artwork');
         $permissions[] = Permission::findOrCreate('get artwork');
         $permissions[] = Permission::findOrCreate('update artwork');
@@ -44,6 +48,7 @@ class PermissionsAndRolesTableSeeder extends Seeder
         $member->revokePermissionTo('update role');
         $member->revokePermissionTo('destroy artist');
         $member->revokePermissionTo('destroy customer');
+        $member->revokePermissionTo('destroy exhibition');
         $member->revokePermissionTo('destroy artwork');
         $member->revokePermissionTo('destroy artwork image');
     }

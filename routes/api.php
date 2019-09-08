@@ -51,6 +51,14 @@ Route::group(["namespace" => 'Api', 'prefix' => 'customer', 'middleware' => 'aut
     Route::delete('/{customer}', 'CustomerController@destroy')->middleware('permission:destroy customer');
 });
 
+Route::group(["namespace" => 'Api', 'prefix' => 'exhibition', 'middleware' => 'auth:api'], function () {
+    Route::post('', 'ExhibitionController@store')->middleware('permission:store exhibition');
+    Route::get('', 'ExhibitionController@index')->middleware('permission:get exhibition');
+    Route::get('/{exhibition}', 'ExhibitionController@show')->middleware('permission:get exhibition');
+    Route::patch('/{exhibition}', 'ExhibitionController@update')->middleware('permission:update exhibition');
+    Route::delete('/{exhibition}', 'ExhibitionController@destroy')->middleware('permission:destroy exhibition');
+});
+
 Route::group(["namespace" => 'Api', 'prefix' => 'order', 'middleware' => 'auth:api'], function () {
     Route::post('', 'OrderController@store');
     Route::get('', 'OrderController@index');
@@ -63,7 +71,7 @@ Route::group(["namespace" => 'Api', 'prefix' => 'artwork', 'middleware' => 'auth
     Route::get('', 'ArtworkController@index')->middleware('permission:get artwork');
     Route::get('/{artwork}', 'ArtworkController@show')->middleware('permission:get artwork');
     Route::patch('/{artwork}', 'ArtworkController@update')->middleware('permission:update artwork');
-    route::delete('/{artwork}', 'ArtworkController@destroy')->middleware('permission:destroy artwork');
+    Route::delete('/{artwork}', 'ArtworkController@destroy')->middleware('permission:destroy artwork');
 
     Route::post('/{artwork}/image', 'ArtworkController@storeImage')->middleware('permission:store artwork image');
     Route::delete('/{artwork}/image/{media}', 'ArtworkController@destroyImage')->middleware('permission:destroy artwork image');

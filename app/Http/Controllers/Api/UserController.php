@@ -101,6 +101,8 @@ class UserController extends Controller
     {
         $data = $request->only(['firstname', 'lastname', 'name', 'email', 'password', 'role']);
 
+        $passwd = $data['password'];
+
         $data['password'] = bcrypt($data['password']);
         $data['gallery_id'] = $request->user()->galleryId;
         $data['role'] = (isset($data['role'])) ? $data['role'] : 'member';
@@ -108,7 +110,7 @@ class UserController extends Controller
         $user = $request->user()->gallery->users()->create($data);
         $user->assignRole($data['role']);
 
-        Mail::send('email.subscription', ['user' => $user], function ($m) use ($user) {
+        Mail::send('email.subscriptionMember', ['user' => $user, 'passwd' => $passwd], function ($m) use ($user) {
             $m->to($user->email, $user->name)->subject('Welcome to ThyArt');
         });
 
