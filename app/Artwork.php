@@ -56,19 +56,23 @@ class Artwork extends Model implements HasMedia
     {
         $this->addMediaConversion('small')
             ->width(128)
-            ->height(128);
+            ->height(128)
+            ->nonQueued();
 
         $this->addMediaConversion('medium')
             ->width(256)
-            ->height(256);
+            ->height(256)
+            ->nonQueued();
 
         $this->addMediaConversion('large')
             ->width(512)
-            ->height(512);
+            ->height(512)
+            ->nonQueued();
 
         $this->addMediaConversion('xlarge')
             ->width(1024)
-            ->height(1024);
+            ->height(1024)
+            ->nonQueued();
     }
 
     /**
