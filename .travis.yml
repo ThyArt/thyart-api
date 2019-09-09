@@ -32,7 +32,13 @@ script:
   - ./vendor/bin/phpunit
 
 after_success:
-  - rm -rf .git thyart-api-docker .env .env.* .git* createdb.sql.example Makefile
+  - rm -vrf .git .env .env.* .git* /bootstrap/cache/*.php
+  - mkdir -p storage/framework/cache/data
+  - composer dump-autoload
+  - php artisan cache:clear
+  - php artisan route:cache
+  - php artisan config:clear
+  - php artisan view:clear
   - openssl aes-256-cbc -K $encrypted_9784c95ca8cd_key -iv $encrypted_9784c95ca8cd_iv -in ./.travis/deploy_rsa.enc -out /tmp/deploy_rsa -d
   - eval "$(ssh-agent -s)"
   - chmod 400 /tmp/deploy_rsa
