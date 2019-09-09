@@ -8,13 +8,16 @@ use App\Http\Requests\User\MemberStoreRequest;
 use App\Http\Requests\User\UserUpdateRequest;
 use App\Http\Requests\User\UserRoleUpdateRequest;
 use App\Http\Resources\UserResource;
+use App\Mail\Subscription;
 use App\User;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Validation\UnauthorizedException;
 use App\Http\Resources\PermissionResource;
 use App\Gallery;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -80,6 +83,10 @@ class UserController extends Controller
         $user = $gallery->users()->create($data);
         $user->assignRole('admin');
 
+        Mail::send('email.subscription', ['user' => $user], function ($m) use ($user) {
+            $m->to($user->email, $user->name)->subject('Welcome to ThyArt');
+        });
+
         return new UserResource($user);
     }
 
@@ -94,12 +101,18 @@ class UserController extends Controller
     {
         $data = $request->only(['firstname', 'lastname', 'name', 'email', 'password', 'role']);
 
+        $passwd = $data['password'];
+
         $data['password'] = bcrypt($data['password']);
         $data['gallery_id'] = $request->user()->galleryId;
         $data['role'] = (isset($data['role'])) ? $data['role'] : 'member';
 
         $user = $request->user()->gallery->users()->create($data);
         $user->assignRole($data['role']);
+
+        Mail::send('email.subscriptionMember', ['user' => $user, 'passwd' => $passwd], function ($m) use ($user) {
+            $m->to($user->email, $user->name)->subject('Welcome to ThyArt');
+        });
 
         return new UserResource($user);
     }
@@ -113,7 +126,6 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        //dump("ALED");
         if ($user->gallery->id != request()->user()->gallery->id) {
             throw new UnauthorizedException('That member doesn\'t work in your gallery.');
         }
@@ -140,6 +152,11 @@ class UserController extends Controller
         return PermissionResource::collection(request()->user()->getAllPermissions());
     }
 
+    public function getUserPermissions(User $user)
+    {
+        return PermissionResource::collection($user->getAllPermissions());
+    }
+
     /**
      * Update the specified user in storage.
      *
@@ -162,6 +179,24 @@ class UserController extends Controller
         $user->save();
 
         return new UserResource($user->refresh());
+    }
+
+    public function updatePermission(Request $request, User $user, Permission $permission)
+    {
+        if ($user->hasRole('admin')) {
+            throw new UnauthorizedException('You cannot change the role of an admin.');
+        }
+        if ($user->galleryId != $request->user()->galleryId) {
+            throw new UnauthorizedException('That member doesn\'t work in your gallery.');
+        }
+
+        if ($user->hasPermissionTo($permission)) {
+            $user->revokePermissionTo($permission);
+        } else {
+            $user->givePermissionTo($permission);
+        }
+        $user->save();
+        return PermissionResource::collection(request()->user()->getAllPermissions());
     }
 
     /**

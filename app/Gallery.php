@@ -51,6 +51,11 @@ class Gallery extends Model
         return $this->hasMany(Customer::class);
     }
 
+    public function exhibitions()
+    {
+        return $this->hasMany(Exhibition::class);
+    }
+
     public function artworks()
     {
         return $this->hasMany(Artwork::class);
