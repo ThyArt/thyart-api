@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\User;
 use App\Gallery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Passport\ClientRepository;
 use Tests\TestCase;
 
@@ -462,6 +463,8 @@ class UserControllerTest extends TestCase
 
     public function testStoreWithValidArguments()
     {
+        Mail::fake();
+
         $firstname = 'TestFirstname';
         $lastname = 'TestLastname';
         $name = 'TestName';

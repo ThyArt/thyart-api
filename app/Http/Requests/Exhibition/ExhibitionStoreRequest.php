@@ -3,7 +3,6 @@
 
 namespace App\Http\Requests\Exhibition;
 
-
 use Illuminate\Foundation\Http\FormRequest;
 
 class ExhibitionStoreRequest extends FormRequest

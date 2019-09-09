@@ -3,7 +3,6 @@
 
 namespace App\Http\Controllers\Api;
 
-
 use App\Exhibition;
 use App\Http\Requests\Exhibition\ExhibitionIndexRequest;
 use App\Http\Requests\Exhibition\ExhibitionStoreRequest;
