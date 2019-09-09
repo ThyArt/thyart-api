@@ -1,3 +1,0 @@
-[submodule "thyart-api-docker"]
-	path = thyart-api-docker
-	url = https://github.com/Laradock/laradock.git
