@@ -77,6 +77,13 @@ Route::group(["namespace" => 'Api', 'prefix' => 'artwork', 'middleware' => 'auth
     Route::delete('/{artwork}/image/{media}', 'ArtworkController@destroyImage')->middleware('permission:destroy artwork image');
 });
 
+Route::group(["namespace" => 'Api', 'prefix' => 'newsletter', 'middleware' => 'auth:api'], function () {
+    Route::post('', 'NewsletterController@store')->middleware('permission:store newsletter');
+    Route::get('', 'NewsletterController@index')->middleware('permission:get newsletter');
+    Route::get('/{newsletter}', 'NewsletterController@show')->middleware('permission:get newsletter');
+    Route::patch('/{newsletter}', 'NewsletterController@update')->middleware('permission:update newsletter');
+    Route::delete('/{newsletter}', 'NewsletterController@destroy')->middleware('permission:destroy newsletter');
+});
 
 Route::group(["namespace" => 'Auth', 'prefix' => 'password'], function () {
     Route::post('create', 'PasswordResetController@create');
