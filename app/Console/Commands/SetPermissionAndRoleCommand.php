@@ -61,6 +61,10 @@ class SetPermissionAndRoleCommand extends Command
         $permissions[] = Permission::findOrCreate('destroy artwork');
         $permissions[] = Permission::findOrCreate('store artwork image');
         $permissions[] = Permission::findOrCreate('destroy artwork image');
+        $permissions[] = Permission::findOrCreate('update newsletter');
+        $permissions[] = Permission::findOrCreate('store newsletter');
+        $permissions[] = Permission::findOrCreate('get newsletter');
+        $permissions[] = Permission::findOrCreate('destroy newsletter');
 
 
         $admin = Role::findOrCreate('admin');
@@ -80,6 +84,8 @@ class SetPermissionAndRoleCommand extends Command
         $member->revokePermissionTo('destroy exhibition');
         $member->revokePermissionTo('destroy artwork');
         $member->revokePermissionTo('destroy artwork image');
+        $member->revokePermissionTo('destroy newsletter');
+
 
         $this->line('<fg=white;bg=green>Permissions successfully set');
     }
