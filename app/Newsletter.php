@@ -40,7 +40,7 @@ use Illuminate\Database\Eloquent\Model;
 class Newsletter extends Model
 {
     protected $fillable = [
-        'first_name', 'last_name', 'phone', 'email', 'address', 'country', 'city'
+        'subject', 'description'
     ];
 
     protected $hidden = [
@@ -50,4 +50,10 @@ class Newsletter extends Model
     {
         return $this->belongsTo(Gallery::class);
     }
+
+    public function customers()
+    {
+        return $this->belongsToMany(Customer::class)->withTimestamps();;
+    }
+
 }

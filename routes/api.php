@@ -65,6 +65,7 @@ Route::group(["namespace" => 'Api', 'prefix' => 'newsletter', 'middleware' => 'a
     Route::get('/{newsletter}', 'NewsletterController@show')->middleware('permission:get newsletter');
     Route::patch('/{newsletter}', 'NewsletterController@update')->middleware('permission:update newsletter');
     Route::delete('/{newsletter}', 'NewsletterController@destroy')->middleware('permission:destroy newsletter');
+    Route::post('/{newsletter}', 'NewsletterController@send')->middleware('permission:send newsletter');
 });
 
 Route::group(["namespace" => 'Api', 'prefix' => 'order', 'middleware' => 'auth:api'], function () {
