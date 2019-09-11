@@ -55,6 +55,10 @@ class SetPermissionAndRoleCommand extends Command
         $permissions[] = Permission::findOrCreate('get exhibition');
         $permissions[] = Permission::findOrCreate('update exhibition');
         $permissions[] = Permission::findOrCreate('destroy exhibition');
+        $permissions[] = Permission::findOrCreate('store newsletter');
+        $permissions[] = Permission::findOrCreate('get newsletter');
+        $permissions[] = Permission::findOrCreate('update newsletter');
+        $permissions[] = Permission::findOrCreate('destroy newsletter');
         $permissions[] = Permission::findOrCreate('store artwork');
         $permissions[] = Permission::findOrCreate('get artwork');
         $permissions[] = Permission::findOrCreate('update artwork');
@@ -77,7 +81,6 @@ class SetPermissionAndRoleCommand extends Command
         $member->revokePermissionTo('update role');
         $member->revokePermissionTo('destroy artist');
         $member->revokePermissionTo('destroy customer');
-        $member->revokePermissionTo('destroy exhibition');
         $member->revokePermissionTo('destroy artwork');
         $member->revokePermissionTo('destroy artwork image');
 

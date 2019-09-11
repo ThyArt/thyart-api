@@ -59,6 +59,14 @@ Route::group(["namespace" => 'Api', 'prefix' => 'exhibition', 'middleware' => 'a
     Route::delete('/{exhibition}', 'ExhibitionController@destroy')->middleware('permission:destroy exhibition');
 });
 
+Route::group(["namespace" => 'Api', 'prefix' => 'newsletter', 'middleware' => 'auth:api'], function () {
+    Route::post('', 'NewsletterController@store')->middleware('permission:store newsletter');
+    Route::get('', 'NewsletterController@index')->middleware('permission:get newsletter');
+    Route::get('/{newsletter}', 'NewsletterController@show')->middleware('permission:get newsletter');
+    Route::patch('/{newsletter}', 'NewsletterController@update')->middleware('permission:update newsletter');
+    Route::delete('/{newsletter}', 'NewsletterController@destroy')->middleware('permission:destroy newsletter');
+});
+
 Route::group(["namespace" => 'Api', 'prefix' => 'order', 'middleware' => 'auth:api'], function () {
     Route::post('', 'OrderController@store');
     Route::get('', 'OrderController@index');

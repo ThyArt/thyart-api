@@ -53,6 +53,10 @@ class UnsetPermissionAndRoleCommand extends Command
         Permission::findByName('get exhibition')->delete();
         Permission::findByName('update exhibition')->delete();
         Permission::findByName('destroy exhibition')->delete();
+        Permission::findByName('store newsletter')->delete();
+        Permission::findByName('get newsletter')->delete();
+        Permission::findByName('update newsletter')->delete();
+        Permission::findByName('destroy newsletter')->delete();
         Permission::findByName('store artwork')->delete();
         Permission::findByName('get artwork')->delete();
         Permission::findByName('update artwork')->delete();
