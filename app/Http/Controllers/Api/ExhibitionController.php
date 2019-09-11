@@ -4,9 +4,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Exhibition;
-use App\Http\Requests\Exhibition\ExhibitionIndexRequest;
-use App\Http\Requests\Exhibition\ExhibitionStoreRequest;
-use App\Http\Requests\Exhibition\ExhibitionUpdateRequest;
+use App\Http\Requests\Exhibition\NewsletterIndexRequest;
+use App\Http\Requests\Exhibition\NewsletterStoreRequest;
+use App\Http\Requests\Exhibition\NewsletterUpdateRequest;
 use App\Http\Resources\ExhibitionResource;
 use Illuminate\Validation\UnauthorizedException;
 
@@ -15,11 +15,11 @@ class ExhibitionController
     /**
      * Display a listing of the exhibitions.
      *
-     * @param ExhibitionIndexRequest $request
+     * @param NewsletterIndexRequest $request
      *
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index(ExhibitionIndexRequest $request)
+    public function index(NewsletterIndexRequest $request)
     {
         $data = $request->only(['name', 'begin', 'end', 'per_page']);
 
@@ -45,11 +45,11 @@ class ExhibitionController
     /**
      * Store a newly created exhibition in storage.
      *
-     * @param ExhibitionStoreRequest $request
+     * @param NewsletterStoreRequest $request
      *
      * @return ExhibitionResource
      */
-    public function store(ExhibitionStoreRequest $request)
+    public function store(NewsletterStoreRequest $request)
     {
         return new ExhibitionResource(
             $request->user()->gallery->exhibitions()->create(
@@ -76,12 +76,12 @@ class ExhibitionController
     /**
      * Update the specified exhibition in storage.
      *
-     * @param ExhibitionUpdateRequest $request
+     * @param NewsletterUpdateRequest $request
      * @param Exhibition $exhibition
      *
      * @return ExhibitionResource
      */
-    public function update(ExhibitionUpdateRequest $request, Exhibition $exhibition)
+    public function update(NewsletterUpdateRequest $request, Exhibition $exhibition)
     {
         if ($exhibition->gallery->id != request()->user()->gallery->id) {
             throw new UnauthorizedException('The current gallery does not own this exhibition.');
