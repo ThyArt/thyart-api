@@ -48,6 +48,7 @@ class NewsletterController extends Controller
         foreach ($customerIds as $customerId) {
             $customer = Customer::find($customerId);
             if (is_null($customer) || ($customer->gallery->id != $user->gallery->id)) {
+                $newsletter->customers()->detach();
                 $newsletter->delete();
                 throw new UnauthorizedException('The Customer doesn\'t exist or doesn\'t belong to you');
             }
