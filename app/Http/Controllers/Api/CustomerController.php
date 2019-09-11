@@ -63,6 +63,7 @@ class CustomerController extends Controller
      */
     public function store(CustomerStoreRequest $request)
     {
+
         return new CustomerResource(
             $request->user()->gallery->customers()->create(
                 $request->only(['email', 'first_name', 'last_name', 'phone', 'country', 'city', 'address'])

@@ -33,8 +33,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereCity($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereCountry($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereFirstName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereLastName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereGalleryId($value)
  */
 class Customer extends Model
@@ -49,5 +47,12 @@ class Customer extends Model
     public function gallery()
     {
         return $this->belongsTo(Gallery::class);
+    }
+
+    public function newsletters()
+    {
+        return $this->belongsToMany(Newsletter::class)->withTimestamps();
+        /*return $this->belongsToMany(Newsletter::class, 'newsletter_customer',
+            'newsletter_id', 'customer_id');*/
     }
 }
