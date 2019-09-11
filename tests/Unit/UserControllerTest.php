@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\User;
 use App\Gallery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Passport\ClientRepository;
 use Tests\TestCase;
 
@@ -26,7 +27,7 @@ class UserControllerTest extends TestCase
         $this->userPassword = 'UserControllerTest';
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -60,7 +61,7 @@ class UserControllerTest extends TestCase
         )->json()['access_token'];
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 
@@ -462,6 +463,8 @@ class UserControllerTest extends TestCase
 
     public function testStoreWithValidArguments()
     {
+        Mail::fake();
+
         $firstname = 'TestFirstname';
         $lastname = 'TestLastname';
         $name = 'TestName';

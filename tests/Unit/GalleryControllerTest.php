@@ -26,7 +26,7 @@ class GalleryControllerTest extends TestCase
         $this->userPassword = 'UserControllerTest';
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->withoutMiddleware(
@@ -62,7 +62,7 @@ class GalleryControllerTest extends TestCase
         )->json()['access_token'];
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 
