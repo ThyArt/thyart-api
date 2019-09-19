@@ -1,5 +1,7 @@
 <?php
 
+use App\Gallery;
+use App\User;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -55,38 +57,48 @@ class LinkWithGalleryInsteadOfUser extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['gallery_id']);
-            $table->dropColumn('gallery_id');
-        });
+        Schema::disableForeignKeyConstraints();
+
 
         Schema::table('galleries', function (Blueprint $table) {
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
             $table->dropColumn('name');
             $table->dropColumn('address');
             $table->dropColumn('phone');
         });
 
-        Schema::table('artworks', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['gallery_id']);
             $table->dropColumn('gallery_id');
+        });
+
+        Schema::table('artworks', function (Blueprint $table) {
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
+            $table->dropForeign(['gallery_id']);
+            $table->dropColumn('gallery_id');
         });
 
         Schema::table('artists', function (Blueprint $table) {
-            $table->dropForeign(['gallery_id']);
-            $table->dropColumn('gallery_id');
+
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
+            $table->dropForeign(['gallery_id']);
+            $table->dropColumn('gallery_id');
         });
 
         Schema::table('customers', function (Blueprint $table) {
-            $table->dropForeign(['gallery_id']);
-            $table->dropColumn('gallery_id');
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
+            $table->dropForeign(['gallery_id']);
+            $table->dropColumn('gallery_id');
         });
+
+        Schema::enableForeignKeyConstraints();
     }
 }

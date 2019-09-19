@@ -46,7 +46,7 @@ class CreateNewsletterTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('newsletter');
         Schema::dropIfExists('customer_newsletter');
+        Schema::dropIfExists('newsletters');
     }
 }
