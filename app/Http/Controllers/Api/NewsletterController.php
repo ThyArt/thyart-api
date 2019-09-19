@@ -3,7 +3,6 @@
 
 namespace App\Http\Controllers\Api;
 
-
 use App\Customer;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Newsletter\NewsletterIndexRequest;

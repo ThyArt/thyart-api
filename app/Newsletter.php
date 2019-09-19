@@ -3,9 +3,7 @@
 
 namespace App;
 
-
 use Illuminate\Database\Eloquent\Model;
-
 
 /**
  * App\Newsletter
@@ -53,7 +51,7 @@ class Newsletter extends Model
 
     public function customers()
     {
-        return $this->belongsToMany(Customer::class)->withTimestamps();;
+        return $this->belongsToMany(Customer::class)->withTimestamps();
+        ;
     }
-
 }

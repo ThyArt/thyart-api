@@ -83,7 +83,6 @@ class LinkWithGalleryInsteadOfUser extends Migration
         });
 
         Schema::table('artists', function (Blueprint $table) {
-
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 
