@@ -4,9 +4,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Exhibition;
-use App\Http\Requests\Exhibition\NewsletterIndexRequest;
-use App\Http\Requests\Exhibition\NewsletterStoreRequest;
-use App\Http\Requests\Exhibition\NewsletterUpdateRequest;
+use App\Http\Requests\Exhibition\ExhibitionIndexRequest;
+use App\Http\Requests\Exhibition\ExhibitionStoreRequest;
+use App\Http\Requests\Exhibition\ExhibitionUpdateRequest;
 use App\Http\Resources\ExhibitionResource;
 use Illuminate\Validation\UnauthorizedException;
 
@@ -19,7 +19,7 @@ class ExhibitionController
      *
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index(NewsletterIndexRequest $request)
+    public function index(ExhibitionIndexRequest $request)
     {
         $data = $request->only(['name', 'begin', 'end', 'per_page']);
 
@@ -49,7 +49,7 @@ class ExhibitionController
      *
      * @return ExhibitionResource
      */
-    public function store(NewsletterStoreRequest $request)
+    public function store(ExhibitionStoreRequest $request)
     {
         return new ExhibitionResource(
             $request->user()->gallery->exhibitions()->create(
@@ -81,7 +81,7 @@ class ExhibitionController
      *
      * @return ExhibitionResource
      */
-    public function update(NewsletterUpdateRequest $request, Exhibition $exhibition)
+    public function update(ExhibitionUpdateRequest $request, Exhibition $exhibition)
     {
         if ($exhibition->gallery->id != request()->user()->gallery->id) {
             throw new UnauthorizedException('The current gallery does not own this exhibition.');
