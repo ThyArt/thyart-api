@@ -16,6 +16,9 @@ class StatController extends Controller
 {
 
     /**
+     * Processes the statistics of an owner
+     *
+     * @group Stats
      * @param StatRequest $request
      *
      * @return array

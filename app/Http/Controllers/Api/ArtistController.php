@@ -16,6 +16,17 @@ class ArtistController extends Controller
     /**
      * Display a listing of the users.
      *
+     * @group Artists
+     *
+     * @bodyParam first_name string the artist's first name
+     * @bodyParam last_name string the artist's last name
+     * @bodyParam email string the artist's email
+     * @bodyParam phone string the artist's phone number
+     * @bodyParam address string the artist's address
+     * @bodyParam city string the artist's city of residence
+     * @bodyParam country string the artist's country of residence
+     * @bodyParam per_page int the number of artists to be displayed per page
+     *
      * @param ArtistIndexRequest $request
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
@@ -56,6 +67,16 @@ class ArtistController extends Controller
     /**
      * Store a newly created user in storage.
      *
+     * @group Artists
+     *
+     * @bodyParam first_name string the artist's first name
+     * @bodyParam last_name string the artist's last name
+     * @bodyParam email string the artist's email
+     * @bodyParam phone string the artist's phone number
+     * @bodyParam address string the artist's address
+     * @bodyParam city string the artist's city of residence
+     * @bodyParam country string the artist's country of residence
+     *
      * @param ArtistStoreRequest $request
      * @return ArtistResource
      */
@@ -88,6 +109,19 @@ class ArtistController extends Controller
     /**
      * Update the specified user in storage.
      *
+     * @group Artists
+     *
+     * @bodyParam first_name string the artist's first name
+     * @bodyParam last_name string the artist's last name
+     * @bodyParam email string the artist's email
+     * @bodyParam phone string the artist's phone number
+     * @bodyParam address string the artist's address
+     * @bodyParam city string the artist's city of residence
+     * @bodyParam country string the artist's country of residence
+     * @bodyParam per_page int the number of artists to be displayed per page
+     *
+     * @queryParam artist Artist the artist to be modified
+     *
      * @param ArtistUpdateRequest $request
      * @param Artist $artist
      * @return ArtistResource
@@ -105,6 +139,10 @@ class ArtistController extends Controller
 
     /**
      * Remove the specified user from storage.
+     *
+     * @group Artists
+     *
+     * @queryParam artist Artist the artist to be deleted
      *
      * @param Artist $artist
      * @return \Illuminate\Http\JsonResponse

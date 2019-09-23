@@ -15,6 +15,16 @@ use Illuminate\Validation\UnauthorizedException;
 
 class OrderController extends Controller
 {
+    /**
+     * Query an index of orders
+     *
+     * @group Orders
+     *
+     * @bodyParam customer_id int the customer's order ID
+     * @bodyParam artwork_id int the sold artwork's ID
+     * @bodyParam date date the date at which the artwork was sold
+     * @bodyParam per_page the number of desired orders per page
+    **/
     public function index(OrderIndexRequest $request)
     {
         $data = $request->only(['customer_id', 'artwork_id', 'date', 'per_page']);
@@ -39,6 +49,20 @@ class OrderController extends Controller
 
 
     /**
+     * Store an order in the database
+     *
+     * @group Orders
+     *
+     * @bodyParam email string the customer's email
+     * @bodyParam first_name string the customer's first name
+     * @bodyParam last_name string the customer's last name
+     * @bodyParam phone string the customer's phone number
+     * @bodyParam address string the customer's address
+     * @bodyParam country string the customer's country of residence
+     * @bodyParam city string the customer's city of residence
+     * @bodyParam artwork_id int the sold artwork's ID
+     * @bodyParam date date the date at which the artwork was sold
+     *
      * @param OrderStoreRequest $request
      * @return OrderResource
      * @throws ArtworkNotAvailableException
@@ -78,7 +102,12 @@ class OrderController extends Controller
         );
     }
 
-
+    /**
+     * @group Orders
+     *
+     * @queryParam order OrderResource the order to show
+     *
+    **/
     public function show(Order $order)
     {
         if ($order->user->id !== request()->user()->id) {
@@ -87,6 +116,12 @@ class OrderController extends Controller
         return new OrderDetailResource($order);
     }
 
+
+    /**
+     * @group Orders
+     *
+     * @queryParam order OrderResource the order to delete
+    **/
     public function destroy(Order $order)
     {
         if ($order->user_id != request()->user()->id) {

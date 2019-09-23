@@ -15,6 +15,17 @@ class CustomerController extends Controller
     /**
      * Display a listing of the customers.
      *
+     * @group Customers
+     *
+     * @bodyParam email string the customer's email address
+     * @bodyParam phone string the customer's phone number
+     * @bodyParam first_name string the customer's first name
+     * @bodyParam last_name string the customer's last name
+     * @bodyParam per_page_name int the number of customer's to be displayed per page
+     * @bodyParam country string the customer's country of residence
+     * @bodyParam city string the customer's city of residence
+     * @bodyParam address string the customer's address
+     *
      * @param CustomerIndexRequest $request
      *
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
@@ -57,7 +68,15 @@ class CustomerController extends Controller
     /**
      * Store a newly created customer in storage.
      *
-     * @param CustomerStoreRequest $request
+     * @group Customers
+     *
+     * @bodyParam email string the customer's email address
+     * @bodyParam phone string the customer's phone number
+     * @bodyParam first_name string the customer's first name
+     * @bodyParam last_name string the customer's last name
+     * @bodyParam country string the customer's country of residence
+     * @bodyParam city string the customer's city of residence
+     * @bodyParam address string the customer's address
      *
      * @return CustomerResource
      */
@@ -73,6 +92,10 @@ class CustomerController extends Controller
     /**
      * Display the specified user.
      *
+     * @group Customers
+     *
+     * @queryParam customer Customer the customer to be displayed
+     *
      * @param Customer $customer
      *
      * @return CustomerResource
@@ -87,6 +110,19 @@ class CustomerController extends Controller
 
     /**
      * Update the specified customer in storage.
+     *
+     * @group Customers
+     *
+     * @bodyParam email string the customer's email address
+     * @bodyParam phone string the customer's phone number
+     * @bodyParam first_name string the customer's first name
+     * @bodyParam last_name string the customer's last name
+     * @bodyParam per_page_name int the number of customer's to be displayed per page
+     * @bodyParam country string the customer's country of residence
+     * @bodyParam city string the customer's city of residence
+     * @bodyParam address string the customer's address
+     *
+     * @queryParam customer Customer the customer to be modified
      *
      * @param CustomerUpdateRequest $request
      * @param Customer $customer
@@ -109,9 +145,14 @@ class CustomerController extends Controller
     /**
      * Remove the specified customer from storage.
      *
+     * @group Customers
+     *
+     * @queryParam customer Customer the customer to be deleted
+     *
      * @param Customer $customer
      *
      * @return \Illuminate\Http\JsonResponse
+     * @throws UnauthorizedException
      */
     public function destroy(Customer $customer)
     {

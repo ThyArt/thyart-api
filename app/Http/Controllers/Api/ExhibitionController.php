@@ -15,6 +15,13 @@ class ExhibitionController
     /**
      * Display a listing of the exhibitions.
      *
+     * @group Exhibitions
+     *
+     * @bodyParam name string the exhibition name
+     * @bodyParam begin date the date for the start of the exhibition
+     * @bodyParam end date the date for the end of the exhibition
+     * @bodyParam per_page int the number of exhibition desired per page
+     *
      * @param NewsletterIndexRequest $request
      *
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
@@ -45,6 +52,12 @@ class ExhibitionController
     /**
      * Store a newly created exhibition in storage.
      *
+     * @group Exhibitions
+     *
+     * @bodyParam name string the exhibition name
+     * @bodyParam begin date the date for the start of the exhibition
+     * @bodyParam end date the date for the end of the exhibition
+     *
      * @param NewsletterStoreRequest $request
      *
      * @return ExhibitionResource
@@ -61,6 +74,10 @@ class ExhibitionController
     /**
      * Display the specified user.
      *
+     * @group Exhibitions
+     *
+     * @queryParam exhibition Exhibition the exhibition to be displayed
+     *
      * @param Exhibition $exhibition
      *
      * @return ExhibitionResource
@@ -75,6 +92,14 @@ class ExhibitionController
 
     /**
      * Update the specified exhibition in storage.
+     *
+     * @group Exhibitions
+     *
+     * @bodyParam name string the exhibition name
+     * @bodyParam begin date the date for the start of the exhibition
+     * @bodyParam end date the date for the end of the exhibition
+     *
+     * @queryParam exhibition Exhibition the exhibition to be modified
      *
      * @param NewsletterUpdateRequest $request
      * @param Exhibition $exhibition
@@ -103,9 +128,14 @@ class ExhibitionController
     /**
      * Remove the specified exhibition from storage.
      *
+     * @group Exhibitions
+     *
+     * @queryParam exhibition Exhibition the exhibition to be deleted
+     *
      * @param Exhibition $exhibition
      *
      * @return \Illuminate\Http\JsonResponse
+     * @throws UnauthorizedException
      */
     public function destroy(Exhibition $exhibition)
     {
