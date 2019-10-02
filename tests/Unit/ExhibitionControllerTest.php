@@ -78,7 +78,7 @@ class ExhibitionControllerTest extends TestCase
         parent::tearDown();
 
         $this->user = null;
-        $this->exhibitionss = null;
+        $this->exhibition = null;
         $this->accessToken = null;
     }
 
