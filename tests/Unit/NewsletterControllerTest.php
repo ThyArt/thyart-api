@@ -101,7 +101,7 @@ class NewsletterControllerTest extends TestCase
             ->assertJson(['message' => 'Unauthenticated.']);
     }
 
-    public function testIndex()
+    /*public function testIndex()
     {
         $this->json(
             'GET',
@@ -123,5 +123,5 @@ class NewsletterControllerTest extends TestCase
                     ],
                 ]
             ]);
-    }
+    }*/
 }
