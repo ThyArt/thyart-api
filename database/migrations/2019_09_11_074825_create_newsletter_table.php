@@ -23,8 +23,7 @@ class CreateNewsletterTable extends Migration
             $table->foreign('gallery_id')->references('id')->on('galleries')->onDelete('cascade');
         });
 
-        Schema::create('customer_newsletter', function(Blueprint $table)
-        {
+        Schema::create('customer_newsletter', function (Blueprint $table) {
             $table->integer('customer_id')->unsigned()->nullable();
             $table->foreign('customer_id')->references('id')
                 ->on('customers');
@@ -36,7 +35,6 @@ class CreateNewsletterTable extends Migration
 
             $table->timestamps();
         });
-
     }
 
     /**
@@ -46,7 +44,7 @@ class CreateNewsletterTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('newsletter');
         Schema::dropIfExists('customer_newsletter');
+        Schema::dropIfExists('newsletters');
     }
 }

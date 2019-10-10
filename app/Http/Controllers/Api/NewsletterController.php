@@ -3,7 +3,6 @@
 
 namespace App\Http\Controllers\Api;
 
-
 use App\Customer;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Newsletter\NewsletterIndexRequest;
@@ -18,6 +17,12 @@ class NewsletterController extends Controller
 {
     /**
      * Display a listing of the newsletters.
+     *
+     * @group Newsletters
+     *
+     * @bodyParam subject string the subject of the newsletter
+     * @bodyParam description string a description of the newsletter
+     * @per_page int the number of newsletters to be displayed per page
      *
      * @param NewsletterIndexRequest $request
      *
@@ -59,6 +64,11 @@ class NewsletterController extends Controller
     /**
      * Store a newly created newsletter in storage.
      *
+     * @group Newsletters
+     *
+     * @bodyParam subject string the subject of the newsletter
+     * @bodyParam description string a description of the newsletter
+
      * @param NewsletterStoreRequest $request
      *
      * @return NewsletterResource
@@ -79,6 +89,10 @@ class NewsletterController extends Controller
     /**
      * Display the specified user.
      *
+     * @group Newsletters
+     *
+     * @queryParam newsletter Newsletter the newsletter to be displayed
+     *
      * @param Newsletter $newsletter
      *
      * @return NewsletterResource
@@ -93,6 +107,13 @@ class NewsletterController extends Controller
 
     /**
      * Update the specified newsletter in storage.
+     *
+     * @group Newsletters
+     *
+     * @bodyParam subject string the subject of the newsletter
+     * @bodyParam description string a description of the newsletter
+     *
+     * @queryParam newsletter Newsletter the newsletter to be modified
      *
      * @param NewsletterUpdateRequest $request
      * @param Newsletter $newsletter
@@ -122,9 +143,14 @@ class NewsletterController extends Controller
     /**
      * Remove the specified newsletter from storage.
      *
+     * @group Newsletters
+     *
+     * @queryParam newsletter Newsletter the newsletter to be deleted
+     *
      * @param Newsletter $newsletter
      *
      * @return \Illuminate\Http\JsonResponse
+     * @throws UnauthorizedException
      */
     public function destroy(Newsletter $newsletter)
     {
@@ -139,6 +165,10 @@ class NewsletterController extends Controller
 
     /**
      * Send the specified newsletter.
+     *
+     * @group Newsletters
+     *
+     * @queryParam newsletter Newsletter the newsletter to be sent
      *
      * @param Newsletter $newsletter
      *

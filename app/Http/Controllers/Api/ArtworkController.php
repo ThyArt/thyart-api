@@ -17,7 +17,14 @@ class ArtworkController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
+     * @group Artworks
+
+     * @qbodyParam name string the name of the artwork
+     * @bodyParam price_min int minimum price range
+     * @bodyParam price_max int maximum price range
+     * @bodyParam state string the artwork's current state
+     * @bodyParam ref string the artwork reference value
+     * @bodyParam per_page int the number of desired artworks per page
      * @param ArtworkIndexRequest $request
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
@@ -52,6 +59,13 @@ class ArtworkController extends Controller
     /**
      * Store a newly created resource in storage.
      *
+     * @group Artworks
+     *
+     * @bodyParam name string the name of the artwork
+     * @bodyParam price int the price of the artwork
+     * @bodyParam state string the current state of the artwork
+     * @bodyparam ref string the artwork's reference string
+     *
      * @param ArtworkStoreRequest $request
      * @return ArtworkResource
      */
@@ -82,6 +96,10 @@ class ArtworkController extends Controller
     /**
      * Store an image in storage.
      *
+     * @group Artworks
+     * @queryParam artwork ArtworkRessource the artwork in which to store the image
+     * @bodyParam image string the serialized image to store
+     *
      * @param ImageStoreRequest $request
      * @param Artwork $artwork
      * @return ArtworkResource
@@ -102,6 +120,13 @@ class ArtworkController extends Controller
         return new ArtworkResource($artwork->refresh());
     }
 
+    /**
+     * Delete an image from an artwork
+     * @group Artworks
+     *
+     * @queryParam artwork ArtworkResource the artwork containing the media to be deleted
+     * @queryParam media MediaResource the media resource to delete
+     **/
     public function destroyImage(Artwork $artwork, $media)
     {
         if ($artwork->gallery->id !== request()->user()->gallery->id) {
@@ -120,6 +145,9 @@ class ArtworkController extends Controller
     /**
      * Display the specified resource.
      *
+     * @group Artworks
+     * @queryParam artwork ArtworkResource the artwork to show
+     *
      * @param  $artwork
      * @return ArtworkResource
      */
@@ -135,6 +163,15 @@ class ArtworkController extends Controller
 
     /**
      * Update the specified resource in storage.
+     *
+     * @group Artworks
+     *
+     * @bodyParam name string the name of the artwork
+     * @bodyParam price int the price of the artwork
+     * @bodyParam state string the current state of the artwork
+     * @bodyparam ref string the artwork's reference string
+     *
+     * @queryParam artwork ArtworkResource the artwork to mofidy
      *
      * @param ArtworkUpdateRequest $request
      * @param  $artwork
@@ -153,7 +190,9 @@ class ArtworkController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * @group Artworks
      *
+     * @queryParam artwork ArtworkResource the artwork to delete
      * @param  $artwork
      * @return Response
      * @throws \Exception

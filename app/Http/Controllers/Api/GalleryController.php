@@ -14,7 +14,13 @@ class GalleryController extends Controller
     /**
      * Display a listing of the gallery.
      *
-     * @param  GalleryIndexRequest  $request
+     * @group Galleries
+     *
+     * @bodyParam name string the name of the gallery
+     * @bodyParam address string the address of the gallery
+     * @bodyParam phone string the gallery's phone number
+     *
+     * @param  GalleryIndexRequest $request
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index(GalleryIndexRequest $request)
@@ -43,6 +49,10 @@ class GalleryController extends Controller
     /**
      * Display the specified gallery.
      *
+     * @group Galleries
+     *
+     * @queryParam gallery Gallery the gallery to be shown
+     *
      * @return GalleryResource
      */
     public function show()
@@ -53,6 +63,14 @@ class GalleryController extends Controller
 
     /**
      * Update the specified gallery in storage.
+     *
+     * @group Galleries
+     *
+     * @bodyParam name string the name of the gallery
+     * @bodyParam address string the address of the gallery
+     * @bodyParam phone string the gallery's phone number
+     *
+     * @queryParam gallery Gallery the gallery to be modified
      *
      * @param  GalleryUpdateRequest  $request
      * @return GalleryResource
@@ -70,6 +88,9 @@ class GalleryController extends Controller
     /**
      * Remove the specified gallery from storage.
      *
+     * @group Galleries
+     *
+     * @queryParam gallery Gallery the gallery to be deleted
      *
      * @return \Illuminate\Http\JsonResponse
      */
