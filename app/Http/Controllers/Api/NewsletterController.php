@@ -24,6 +24,7 @@ class NewsletterController extends Controller
      */
     public function index(NewsletterIndexRequest $request)
     {
+     
         $data = $request->only(['subject', 'description', 'per_page']);
 
         $newsletter = $request->user()->gallery->newsletters()

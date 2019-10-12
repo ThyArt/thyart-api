@@ -10,6 +10,7 @@ use App\Http\Resources\MediaResource;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Spatie\MediaLibrary\Models\Media;
 use App\Newsletter;
+use App\Customer;
 use App\User;
 use App\Gallery;
 use Laravel\Passport\ClientRepository;
@@ -49,7 +50,9 @@ class NewsletterControllerTest extends TestCase
             ]
         );
         $this->user->assignRole('admin');
+        $this->customers = factory(Customer::class)->create(['gallery_id' => $this->gallery->id]);
         $this->newsletter = factory(Newsletter::class)->create(['gallery_id' => $this->gallery->id]);
+
 
         $client = $this->clientRepository->create($this->user->id, 'Testing', 'http://localhost', false, true);
 
@@ -78,6 +81,7 @@ class NewsletterControllerTest extends TestCase
         $this->user = null;
         $this->newsletter = null;
         $this->accessToken = null;
+        $this->customers = null;
     }
 
     ////////////////
@@ -101,7 +105,7 @@ class NewsletterControllerTest extends TestCase
             ->assertJson(['message' => 'Unauthenticated.']);
     }
 
-    /*public function testIndex()
+    public function testIndex()
     {
         $this->json(
             'GET',
@@ -119,9 +123,35 @@ class NewsletterControllerTest extends TestCase
                     [
                         'id' => $this->newsletter->id,
                         'subject' => $this->newsletter->subject,
-                        'desription' => $this->newsletter->desription,
+                        'description' => $this->newsletter->description,
                     ],
                 ]
             ]);
-    }*/
+    }
+
+    public function testStoreWithNonExistentArguments()
+    {
+
+        $this->json(
+            'POST',
+            '/api/newsletter',
+            [],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(400)
+            ->assertJson(
+                [
+                    "error" => "validation_failed",
+                    "messages" => [
+                        "The subject field is required.",
+                        "The description field is required.",
+                        "The customer list field is required.",
+                    ]
+                ]
+            );
+    }
 }
