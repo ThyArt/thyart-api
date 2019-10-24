@@ -15,6 +15,7 @@ use App\User;
 use App\Gallery;
 use Laravel\Passport\ClientRepository;
 
+
 class NewsletterControllerTest extends TestCase
 {
     private $clientRepository;
@@ -35,12 +36,14 @@ class NewsletterControllerTest extends TestCase
 
     protected function setUp(): void
     {
+
         parent::setUp();
         $this->withoutMiddleware(
             ThrottleRequests::class
         );
 
         $this->seed('PermissionsAndRolesTableSeeder');
+        //$this->seed('NewsletterTableSeeder');
         $this->gallery = factory(Gallery::class)->create();
         $this->user = factory(User::class)->create(
             [
@@ -129,6 +132,90 @@ class NewsletterControllerTest extends TestCase
             ]);
     }
 
+    public function testIndexSearchBySubject()
+    {
+        $this->json(
+            'GET',
+            '/api/newsletter',
+            ['subject' => $this->newsletter->subject],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    [
+                        'id' => $this->newsletter->id,
+                        'subject' => $this->newsletter->subject,
+                        'description' => $this->newsletter->description,
+                    ]
+                ]
+            ]);
+    }
+
+    public function testIndexSearchByNonValidSubject()
+    {
+        $this->json(
+            'GET',
+            '/api/newsletter',
+            ['subject' => "nonvalide"],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => []
+            ]);
+    }
+
+    public function testIndexSearchByDescription()
+    {
+        $this->json(
+            'GET',
+            '/api/newsletter',
+            ['description' => $this->newsletter->description],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    [
+                        'id' => $this->newsletter->id,
+                        'subject' => $this->newsletter->subject,
+                        'description' => $this->newsletter->description,
+                    ]
+                ]
+            ]);
+    }
+
+        public function testIndexSearchByNonValidDescription()
+    {
+        $this->json(
+            'GET',
+            '/api/newsletter',
+            ['description' => "nonvalide"],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => []
+            ]);
+    }
+
     public function testStoreWithNonExistentArguments()
     {
 
@@ -153,5 +240,34 @@ class NewsletterControllerTest extends TestCase
                     ]
                 ]
             );
+    }
+
+    public function testStoreWithValidArguments()
+    {
+        dump($this->newsletter->customers);
+        /*$this->json(
+            'POST',
+            '/api/newsletter',
+            [
+                'subject' => 'some subject',
+                'description' => 'some description',
+                'customer_id' => $this->newsletter->customers[0]->id,
+            ],
+            [
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        )
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    [
+                        'subject' => 'some subject',
+                        'description' => 'some description',
+                        'customer_id' => $this->newsletter->customers[0]->id,
+                    ]
+                ]
+            ]);*/
     }
 }

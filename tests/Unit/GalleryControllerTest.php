@@ -33,6 +33,7 @@ class GalleryControllerTest extends TestCase
             ThrottleRequests::class
         );
         $this->seed('PermissionsAndRolesTableSeeder');
+        $this->seed('NewsletterTableSeeder');
         $this->gallery = factory(Gallery::class)->create();
         $this->user = factory(User::class)->create(
             [
