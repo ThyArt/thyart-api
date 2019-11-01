@@ -53,8 +53,9 @@ class NewsletterControllerTest extends TestCase
             ]
         );
         $this->user->assignRole('admin');
-        $this->customers = factory(Customer::class)->create(['gallery_id' => $this->gallery->id]);
-        $this->newsletter = factory(Newsletter::class)->create(['gallery_id' => $this->gallery->id]);
+        //$this->gallery = factory(Gallery::class)->create();
+        //$this->customer = factory(Customer::class)->create(['gallery_id' => $this->gallery->id]);
+        $this->newsletter = factory(Newsletter::class)->create(['customer_id' => $this->customer->id]);
 
 
         $client = $this->clientRepository->create($this->user->id, 'Testing', 'http://localhost', false, true);
