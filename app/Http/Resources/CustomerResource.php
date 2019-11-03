@@ -14,6 +14,12 @@ class CustomerResource extends JsonResource
      */
     public function toArray($request)
     {
+        $price = 0;
+        foreach ($this->orders as $order)
+        {
+            $artwork =  $this->gallery->artworks()->findOrFail($order->artwork_id);
+            $price += $artwork->price;
+        }
         return [
             'id' => $this->id,
             'first_name' => $this->first_name,
@@ -22,7 +28,8 @@ class CustomerResource extends JsonResource
             'email' => $this->email,
             'address' => $this->address,
             'city' => $this->city,
-            'country' => $this->country
+            'country' => $this->country,
+            'money_spend' => $price
         ];
     }
 }
