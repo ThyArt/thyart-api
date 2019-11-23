@@ -135,9 +135,9 @@ class UserController extends Controller
         $user = $request->user()->gallery->users()->create($data);
         $user->assignRole($data['role']);
 
-        /*        Mail::send('email.subscriptionMember', ['user' => $user, 'passwd' => $passwd], function ($m) use ($user) {
-                    $m->to($user->email, $user->name)->subject('Welcome to ThyArt');
-                });*/
+        Mail::send('email.subscriptionMember', ['user' => $user, 'passwd' => $passwd], function ($m) use ($user) {
+            $m->to($user->email, $user->name)->subject('Welcome to ThyArt');
+        });
 
         return new UserResource($user);
     }
@@ -155,6 +155,10 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        Mail::send('email.subscriptionMember', ['user' => $user, 'passwd' => "Nik"], function ($m) use ($user) {
+            $m->to($user->email, $user->name)->subject('Welcome to ThyArt');
+        });
+
         if ($user->gallery->id != request()->user()->gallery->id) {
             throw new UnauthorizedException('That member doesn\'t work in your gallery.');
         }
