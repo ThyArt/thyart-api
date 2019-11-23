@@ -112,6 +112,11 @@ class Artwork extends Model implements HasMedia
         return $this->hasOne(Order::class);
     }
 
+    public function newsletters()
+    {
+        return $this->belongsToMany(Newsletter::class)->withTimestamps();
+    }
+
     /**
      * @return bool
      */

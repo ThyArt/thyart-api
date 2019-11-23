@@ -29,6 +29,9 @@ class NewsletterUpdateRequest extends FormRequest
             'description' => 'string',
             'customer_list' => array(
                 'regex:/[0-9]+(,[0-9]+)*/'
+            ),
+            'artwork_list' => array(
+                'regex:/[0-9]+(,[0-9]+)*/'
             )
         ];
     }

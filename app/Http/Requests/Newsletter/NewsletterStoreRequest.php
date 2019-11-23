@@ -30,6 +30,9 @@ class NewsletterStoreRequest extends FormRequest
             'customer_list' => array(
                 'required',
                 'regex:/[0-9]+(,[0-9]+)*/'
+            ),
+            'artwork_list' => array(
+                'regex:/[0-9]+(,[0-9]+)*/'
             )
         ];
     }
