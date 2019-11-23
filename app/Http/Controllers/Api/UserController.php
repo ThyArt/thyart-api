@@ -100,9 +100,9 @@ class UserController extends Controller
         $user = $gallery->users()->create($data);
         $user->assignRole('admin');
 
-/*        Mail::send('email.subscription', ['user' => $user], function ($m) use ($user) {
-            $m->to($user->email, $user->name)->subject('Welcome to ThyArt');
-        });*/
+        /*        Mail::send('email.subscription', ['user' => $user], function ($m) use ($user) {
+                    $m->to($user->email, $user->name)->subject('Welcome to ThyArt');
+                });*/
 
         return new UserResource($user);
     }
@@ -134,6 +134,7 @@ class UserController extends Controller
 
         $user = $request->user()->gallery->users()->create($data);
         $user->assignRole($data['role']);
+
 
         Mail::send('email.subscriptionMember', ['user' => $user, 'passwd' => $passwd], function ($m) use ($user) {
             $m->to($user->email, $user->name)->subject('Welcome to ThyArt');
