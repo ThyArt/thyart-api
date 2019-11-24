@@ -30,7 +30,6 @@ class UserControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Mail::fake();
 
         $this->seed('PermissionsAndRolesTableSeeder');
         $this->gallery = factory(Gallery::class)->create();
