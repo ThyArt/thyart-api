@@ -18,6 +18,7 @@ Route::get('/ping', 'Api\PingController@ping');
 Route::group(["namespace" => 'Api', 'prefix' => 'user'], function () {
     Route::post('', 'UserController@store') ;
     Route::post('/member', 'UserController@storeMember')->middleware('permission:store member');
+    Route::delete('/member/{user}', 'UserController@destroyMember')->middleware('permission:delete member');
     Route::get('', 'UserController@index');
     Route::get('/self', 'UserController@showByToken');
     Route::get('/self/permissions', 'UserController@getOwnPermissions');

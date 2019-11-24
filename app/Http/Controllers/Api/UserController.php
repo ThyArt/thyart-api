@@ -100,9 +100,9 @@ class UserController extends Controller
         $user = $gallery->users()->create($data);
         $user->assignRole('admin');
 
-        /*        Mail::send('email.subscription', ['user' => $user], function ($m) use ($user) {
-                    $m->to($user->email, $user->name)->subject('Welcome to ThyArt');
-                });*/
+        Mail::send('email.subscription', ['user' => $user], function ($m) use ($user) {
+            $m->to($user->email, $user->name)->subject('Welcome to ThyArt');
+        });
 
         return new UserResource($user);
     }
@@ -144,6 +144,32 @@ class UserController extends Controller
 
 
     /**
+     * Remove the specified user from storage.
+     *
+     * @group Users
+     *
+     * @queryParam user User the user to be deleted
+     *
+     * @param User $user
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws UnauthorizedException
+     */
+    public function destroyMember(User $user)
+    {
+        if ($user->gallery->id != request()->user()->gallery->id) {
+            throw new UnauthorizedException('The current gallery does not own this member.');
+        }
+        if ($user->hasRole('admin')) {
+            throw new UnauthorizedException('You cannot delete an admin.');
+        }
+
+        $user->delete();
+
+        return response()->json(['message' => 'Member deleted.'], 200);
+    }
+
+    /**
      * Display the specified user.
      *
      * @group Users
@@ -155,9 +181,9 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        Mail::send('email.subscriptionMember', ['user' => $user, 'passwd' => "Nik"], function ($m) use ($user) {
+        /*Mail::send('email.subscriptionMember', ['user' => $user, 'passwd' => "Nik"], function ($m) use ($user) {
             $m->to($user->email, $user->name)->subject('Welcome to ThyArt');
-        });
+        });*/
 
         if ($user->gallery->id != request()->user()->gallery->id) {
             throw new UnauthorizedException('That member doesn\'t work in your gallery.');
