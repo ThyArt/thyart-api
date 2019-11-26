@@ -67,7 +67,6 @@ class CustomerControllerTest extends TestCase
             ]
         )->json()['access_token'];
     }
-
     protected function tearDown(): void
     {
         parent::tearDown();
