@@ -26,7 +26,7 @@ class NewsletterUpdateRequest extends FormRequest
     {
         return [
             'subject' => 'string|max:255',
-            'description' => 'string|max:16384',
+            'description' => 'string|max:750',
             'customer_list' => array(
                 'regex:/[0-9]+(,[0-9]+)*/'
             )

@@ -26,7 +26,7 @@ class NewsletterStoreRequest extends FormRequest
     {
         return [
             'subject' => 'required|string|max:255',
-            'description' => 'required|string|max:16384',
+            'description' => 'required|string|max:750',
             'customer_list' => array(
                 'required',
                 'regex:/[0-9]+(,[0-9]+)*/'

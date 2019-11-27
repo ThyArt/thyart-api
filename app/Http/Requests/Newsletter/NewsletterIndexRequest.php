@@ -26,7 +26,7 @@ class NewsletterIndexRequest extends FormRequest
     {
         return [
             'subject' => 'string|max:255',
-            'description' => 'string|max:16384',
+            'description' => 'string|max:750',
         ];
     }
 }
