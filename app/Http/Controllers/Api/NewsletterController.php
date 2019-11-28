@@ -54,7 +54,7 @@ class NewsletterController extends Controller
     private function bindNewsletterAndCustomer($customerIds, $newsletter, $user)
     {
         foreach ($customerIds as $customerId) {
-            $customer = Customer::find($customerId);
+            $customer = Customer::findOrFail($customerId);
             if (!isset($customer) || ($customer->gallery->id != $user->gallery->id)) {
                 $newsletter->customers()->detach();
                 $newsletter->delete();
@@ -67,7 +67,7 @@ class NewsletterController extends Controller
     private function bindNewsletterAndArtwork($artworkIds, $newsletter, $user)
     {
         foreach ($artworkIds as $artworkId) {
-            $artwork = Artwork::find($artworkId);
+            $artwork = Artwork::findOrFail($artworkId);
             if (!isset($artwork) || ($artwork->gallery->id != $user->gallery->id)) {
                 $newsletter->artworks()->detach();
                 $newsletter->delete();
