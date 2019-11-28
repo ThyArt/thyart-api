@@ -205,8 +205,8 @@ class NewsletterController extends Controller
         }
 
         foreach ($newsletter->customers()->get() as $customer) {
-            Mail::send('email.newsletter', ['customer' => $customer, 'newsletter' => $newsletter], function ($m) use ($customer) {
-                $m->to($customer->email, $customer->name)->subject('Welcome to ThyArt');
+            Mail::send('email.newsletter', ['customer' => $customer, 'newsletter' => $newsletter], function ($m) use ($customer, $newsletter) {
+                $m->to($customer->email, $customer->name)->subject($newsletter->subject);
             });
         }
 
