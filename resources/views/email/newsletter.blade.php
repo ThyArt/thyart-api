@@ -8,7 +8,8 @@
            {{ $newsletter->subject }}
 @endsection
 
-<h3 text-align="center">Hi, {{ $customer->first_name }} !</h3>
+@section('body')
+    <h3 text-align="center">Hi, {{ $customer->firstName }} !</h3>
     <br/>
 
     <p> {{ $newsletter->description }}</p><br/>
