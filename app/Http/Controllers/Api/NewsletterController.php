@@ -55,7 +55,7 @@ class NewsletterController extends Controller
     {
         foreach ($customerIds as $customerId) {
             $customer = Customer::find($customerId);
-            if (is_null($customer) || ($customer->gallery->id != $user->gallery->id)) {
+            if (!isset($customer) || ($customer->gallery->id != $user->gallery->id)) {
                 $newsletter->customers()->detach();
                 $newsletter->delete();
                 throw new UnauthorizedException('The Customer doesn\'t exist or doesn\'t belong to you');
@@ -68,7 +68,7 @@ class NewsletterController extends Controller
     {
         foreach ($artworkIds as $artworkId) {
             $artwork = Artwork::find($artworkId);
-            if (isset($artwork) || ($artwork->gallery->id != $user->gallery->id)) {
+            if (!isset($artwork) || ($artwork->gallery->id != $user->gallery->id)) {
                 $newsletter->artworks()->detach();
                 $newsletter->delete();
                 throw new UnauthorizedException('The Artwork doesn\'t exist or doesn\'t belong to you');
