@@ -609,8 +609,7 @@
                                                                         @section('body')
                                                                         @show
                                                                         @section('logo')
-                                                                            <img src="http://connexio.albax.pro/vendor/ressources/images/connexio/logo-connexio.png"
-                                                                                 align="right" width="150">
+                                                                            
                                                                         @show
                                                                     </td>
                                                                 </tr>
