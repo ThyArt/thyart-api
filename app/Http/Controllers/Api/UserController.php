@@ -181,10 +181,6 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        /*Mail::send('email.subscriptionMember', ['user' => $user, 'passwd' => "Nik"], function ($m) use ($user) {
-            $m->to($user->email, $user->name)->subject('Welcome to ThyArt');
-        });*/
-
         if ($user->gallery->id != request()->user()->gallery->id) {
             throw new UnauthorizedException('That member doesn\'t work in your gallery.');
         }

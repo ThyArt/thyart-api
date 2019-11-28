@@ -68,7 +68,7 @@ class NewsletterController extends Controller
     {
         foreach ($artworkIds as $artworkId) {
             $artwork = Artwork::find($artworkId);
-            if (is_null($artwork) || ($artwork->gallery->id != $user->gallery->id)) {
+            if (isset($artwork) || ($artwork->gallery->id != $user->gallery->id)) {
                 $newsletter->artworks()->detach();
                 $newsletter->delete();
                 throw new UnauthorizedException('The Artwork doesn\'t exist or doesn\'t belong to you');
@@ -229,7 +229,7 @@ class NewsletterController extends Controller
         if ($newsletter->gallery->id != request()->user()->gallery->id) {
             throw new UnauthorizedException('The current gallery does not own this newsletter.');
         }
-        $customer = $newsletter->customers()->get()[0];
+        $customer = $newsletter->customers()->get()->first();
         $view = View::make('email.newsletter', ['customer' => $customer, 'newsletter' => $newsletter]);
 
         $html = $view->render();
