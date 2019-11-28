@@ -15,7 +15,7 @@
     <p> {{ $newsletter->description }}</p><br/>
 
     @foreach ($newsletter->artworks as $artwork)
-        <img src="{{ $artwork->getMedia('images')->first->getFullUrl() }}"  alt="{{ $artwork->name }}"
+        <img src="{{ $artwork->getMedia('images')->first()->getFullUrl() }}"  alt="{{ $artwork->name }}"
              align="center" width="150">
     @endforeach
 
