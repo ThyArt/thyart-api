@@ -40,6 +40,7 @@ class UnsetPermissionAndRoleCommand extends Command
     public function handle()
     {
         Permission::findByName('store member')->delete();
+        Permission::findByName('delete member')->delete();
         Permission::findByName('update role')->delete();
         Permission::findByName('store artist')->delete();
         Permission::findByName('get artist')->delete();

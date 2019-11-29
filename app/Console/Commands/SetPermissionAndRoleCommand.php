@@ -42,6 +42,7 @@ class SetPermissionAndRoleCommand extends Command
         $permissions = [];
 
         $permissions[] = Permission::findOrCreate('store member');
+        $permissions[] = Permission::findOrCreate('delete member');
         $permissions[] = Permission::findOrCreate('update role');
         $permissions[] = Permission::findOrCreate('store artist');
         $permissions[] = Permission::findOrCreate('get artist');
@@ -74,11 +75,13 @@ class SetPermissionAndRoleCommand extends Command
         $gallerist = Role::findOrCreate('gallerist');
         $gallerist->syncPermissions($permissions);
         $gallerist->revokePermissionTo('store member');
+        $gallerist->revokePermissionTo('delete member');
         $gallerist->revokePermissionTo('update role');
 
         $member = Role::findOrCreate('member');
         $member->syncPermissions($permissions);
         $member->revokePermissionTo('store member');
+        $member->revokePermissionTo('delete member');
         $member->revokePermissionTo('update role');
         $member->revokePermissionTo('destroy artist');
         $member->revokePermissionTo('destroy customer');

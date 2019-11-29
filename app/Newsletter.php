@@ -52,6 +52,10 @@ class Newsletter extends Model
     public function customers()
     {
         return $this->belongsToMany(Customer::class)->withTimestamps();
-        ;
+    }
+
+    public function artworks()
+    {
+        return $this->belongsToMany(Artwork::class)->withTimestamps();
     }
 }

@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Artwork;
 use App\Customer;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Newsletter\NewsletterIndexRequest;
@@ -12,6 +13,8 @@ use App\Http\Resources\NewsletterResource;
 use App\Newsletter;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\UnauthorizedException;
+use View;
+
 
 class NewsletterController extends Controller
 {
@@ -51,13 +54,26 @@ class NewsletterController extends Controller
     private function bindNewsletterAndCustomer($customerIds, $newsletter, $user)
     {
         foreach ($customerIds as $customerId) {
-            $customer = Customer::find($customerId);
-            if (is_null($customer) || ($customer->gallery->id != $user->gallery->id)) {
+            $customer = Customer::findOrFail($customerId);
+            if (!isset($customer) || ($customer->gallery->id != $user->gallery->id)) {
                 $newsletter->customers()->detach();
                 $newsletter->delete();
                 throw new UnauthorizedException('The Customer doesn\'t exist or doesn\'t belong to you');
             }
             $customer->newsletters()->save($newsletter);
+        }
+    }
+
+    private function bindNewsletterAndArtwork($artworkIds, $newsletter, $user)
+    {
+        foreach ($artworkIds as $artworkId) {
+            $artwork = Artwork::findOrFail($artworkId);
+            if (!isset($artwork) || ($artwork->gallery->id != $user->gallery->id)) {
+                $newsletter->artworks()->detach();
+                $newsletter->delete();
+                throw new UnauthorizedException('The Artwork doesn\'t exist or doesn\'t belong to you');
+            }
+            $artwork->newsletters()->save($newsletter);
         }
     }
 
@@ -80,7 +96,9 @@ class NewsletterController extends Controller
         );
 
         $customerIds = explode(',', $request->get('customer_list'));
+        $artworkIds = explode(',', $request->get('artwork_list'));
         $this->bindNewsletterAndCustomer($customerIds, $newsletter, $request->user());
+        $this->bindNewsletterAndArtwork($artworkIds, $newsletter, $request->user());
 
 
         return new NewsletterResource($newsletter);
@@ -135,6 +153,12 @@ class NewsletterController extends Controller
             $this->bindNewsletterAndCustomer($customerIds, $newsletter, $request->user());
         }
 
+        if (isset($data['artwork_list'])) {
+            $artworkIds = explode(',', $data['artwork_list']);
+            $newsletter->artworks()->detach();
+            $this->bindNewsletterAndArtwork($artworkIds, $newsletter, $request->user());
+        }
+
         $newsletter->update($data);
 
         return new NewsletterResource($newsletter->refresh());
@@ -181,11 +205,35 @@ class NewsletterController extends Controller
         }
 
         foreach ($newsletter->customers()->get() as $customer) {
-            Mail::send('email.newsletter', ['customer' => $customer, 'newsletter' => $newsletter], function ($m) use ($customer) {
-                $m->to($customer->email, $customer->name)->subject('Welcome to ThyArt');
+            Mail::send('email.newsletter', ['customer' => $customer, 'newsletter' => $newsletter], function ($m) use ($customer, $newsletter) {
+                $m->to($customer->email, $customer->name)->subject($newsletter->subject);
             });
         }
 
         return response()->json(['message' => 'Newsletter sent.'], 200);
+    }
+
+    /**
+     * Preview the specified newsletter.
+     *
+     * @group Newsletters
+     *
+     * @queryParam newsletter Newsletter the newsletter to be sent
+     *
+     * @param Newsletter $newsletter
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function preview(Newsletter $newsletter)
+    {
+        if ($newsletter->gallery->id != request()->user()->gallery->id) {
+            throw new UnauthorizedException('The current gallery does not own this newsletter.');
+        }
+        $customer = $newsletter->customers()->get()->first();
+        $view = View::make('email.newsletter', ['customer' => $customer, 'newsletter' => $newsletter]);
+
+        $html = $view->render();
+
+        return response()->json(['view' => $html], 200);
     }
 }

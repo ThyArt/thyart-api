@@ -18,6 +18,7 @@ Route::get('/ping', 'Api\PingController@ping');
 Route::group(["namespace" => 'Api', 'prefix' => 'user'], function () {
     Route::post('', 'UserController@store') ;
     Route::post('/member', 'UserController@storeMember')->middleware('permission:store member');
+    Route::delete('/member/{user}', 'UserController@destroyMember')->middleware('permission:delete member');
     Route::get('', 'UserController@index');
     Route::get('/self', 'UserController@showByToken');
     Route::get('/self/permissions', 'UserController@getOwnPermissions');
@@ -66,6 +67,7 @@ Route::group(["namespace" => 'Api', 'prefix' => 'newsletter', 'middleware' => 'a
     Route::patch('/{newsletter}', 'NewsletterController@update')->middleware('permission:update newsletter');
     Route::delete('/{newsletter}', 'NewsletterController@destroy')->middleware('permission:destroy newsletter');
     Route::post('/{newsletter}', 'NewsletterController@send')->middleware('permission:send newsletter');
+    Route::get('/preview/{newsletter}', 'NewsletterController@preview')->middleware('permission:get newsletter');
 });
 
 Route::group(["namespace" => 'Api', 'prefix' => 'order', 'middleware' => 'auth:api'], function () {

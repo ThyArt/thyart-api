@@ -26,8 +26,11 @@ class NewsletterUpdateRequest extends FormRequest
     {
         return [
             'subject' => 'string|max:255',
-            'description' => 'string',
+            'description' => 'string|max:50000',
             'customer_list' => array(
+                'regex:/[0-9]+(,[0-9]+)*/'
+            ),
+            'artwork_list' => array(
                 'regex:/[0-9]+(,[0-9]+)*/'
             )
         ];

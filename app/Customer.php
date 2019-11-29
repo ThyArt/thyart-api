@@ -52,7 +52,11 @@ class Customer extends Model
     public function newsletters()
     {
         return $this->belongsToMany(Newsletter::class)->withTimestamps();
-        /*return $this->belongsToMany(Newsletter::class, 'newsletter_customer',
-            'newsletter_id', 'customer_id');*/
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
 }
